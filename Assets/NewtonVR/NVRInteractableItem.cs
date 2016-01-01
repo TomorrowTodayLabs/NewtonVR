@@ -38,7 +38,7 @@ namespace NewtonVR
                 }
                 else
                 {
-                    RotationDelta = AttachedHand.transform.rotation * Quaternion.Inverse(this.transform.rotation);
+                    RotationDelta = PickupTransform.rotation * Quaternion.Inverse(this.transform.rotation);
                     PositionDelta = (PickupTransform.position - this.transform.position);
                 }
 

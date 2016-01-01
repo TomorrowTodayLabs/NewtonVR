@@ -346,6 +346,15 @@ namespace NewtonVR
 
             for (int index = 0; index < renderers.Length; index++)
             {
+                if (visibility == VisibilityLevel.Visible)
+                {
+                    NVRHelpers.SetOpaque(renderers[index].material);
+                }
+                else
+                {
+                    NVRHelpers.SetTransparent(renderers[index].material);
+                }
+
                 Color color = renderers[index].material.color;
                 color.a = (float)visibility / 100;
                 renderers[index].material.color = color;
@@ -399,7 +408,7 @@ namespace NewtonVR
     public enum VisibilityLevel
     {
         Invisible = 0,
-        Ghost = 80,
+        Ghost = 70,
         Visible = 100,
     }
 
