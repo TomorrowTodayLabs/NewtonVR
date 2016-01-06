@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-namespace NewtonVR.Example
+namespace NewtonVR
 {
     public class NVRLetterSpinner : NVRInteractableRotator
     {
