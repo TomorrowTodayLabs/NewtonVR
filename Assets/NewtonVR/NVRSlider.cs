@@ -3,11 +3,15 @@ using System.Collections;
 
 namespace NewtonVR
 {
-    public class NVRInteractableSlider : NVRInteractable
+    public class NVRSlider : NVRInteractable
     {
+        [Tooltip("Set to zero when the slider is at StartPoint. Set to one when the slider is at EndPoint.")]
         public float CurrentValue = 0f;
 
+        [Tooltip("A transform at the position of the zero point of the slider")]
         public Transform StartPoint;
+
+        [Tooltip("A transform at the position of the one point of the slider")]
         public Transform EndPoint;
         
         protected float AttachedPositionMagic = 3000f;
@@ -18,18 +22,17 @@ namespace NewtonVR
         protected override void Awake()
         {
             base.Awake();
-            this.Rigidbody.freezeRotation = true;
 
             if (StartPoint == null)
             {
-                StartPoint = this.transform;
+                Debug.LogError("This slider has no StartPoint.");
             }
             if (EndPoint == null)
             {
-                EndPoint = this.transform;
+                Debug.LogError("This slider has no EndPoint.");
             }
 
-            this.transform.position = StartPoint.position;
+            this.transform.position = Vector3.Lerp(StartPoint.position, EndPoint.position, CurrentValue);
             SliderPath = EndPoint.position - StartPoint.position;
         }
 
@@ -73,7 +76,7 @@ namespace NewtonVR
                 }
             }
 
-            PickupTransform = new GameObject("PickupTransform: " + this.gameObject.name).transform;
+            PickupTransform = new GameObject(string.Format("[{0}] PickupTransform", this.gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;

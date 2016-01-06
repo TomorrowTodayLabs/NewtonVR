@@ -3,12 +3,16 @@ using System.Collections;
 
 namespace NewtonVR
 {
-    public class NVRInteractableRotator : NVRInteractable
+
+    public class NVRInteractableLever : NVRInteractable
     {
         public float CurrentAngle;
 
         protected virtual float DeltaMagic { get { return 1f; } }
         protected Transform InitialAttachPoint;
+
+        public Transform StartRotation;
+        public Transform EndRotation;
 
         protected override void Awake()
         {
@@ -48,7 +52,7 @@ namespace NewtonVR
                 }
             }
 
-            InitialAttachPoint = new GameObject(string.Format("[{0}] InitialAttachPoint", this.gameObject.name)).transform;
+            InitialAttachPoint = new GameObject(string.Format("[{0}] PickupTransform", this.gameObject.name)).transform;
             //InitialAttachPoint = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
             InitialAttachPoint.position = hand.transform.position;
             InitialAttachPoint.rotation = hand.transform.rotation;
@@ -63,6 +67,6 @@ namespace NewtonVR
             if (InitialAttachPoint != null)
                 Destroy(InitialAttachPoint.gameObject);
         }
-
     }
+
 }

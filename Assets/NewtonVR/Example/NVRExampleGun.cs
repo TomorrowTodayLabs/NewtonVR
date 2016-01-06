@@ -9,6 +9,8 @@ namespace NewtonVR.Example
 
         public Transform FirePoint;
 
+        public Vector3 BulletForce = new Vector3(0, 0, 1000);
+
         public override void UseButtonUp()
         {
             base.UseButtonUp();
@@ -17,7 +19,7 @@ namespace NewtonVR.Example
             bullet.transform.position = FirePoint.position;
             bullet.transform.forward = this.transform.forward;
 
-            bullet.GetComponent<Rigidbody>().AddRelativeForce(0, 0, 10000);
+            bullet.GetComponent<Rigidbody>().AddRelativeForce(BulletForce);
         }
     }
 }

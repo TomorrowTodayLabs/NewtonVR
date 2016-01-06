@@ -5,6 +5,7 @@ namespace NewtonVR
 {
     public class NVRInteractableItem : NVRInteractable
     {
+        [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
         public Transform InteractionPoint;
         
         protected float AttachedRotationMagic = 100f;
@@ -72,7 +73,7 @@ namespace NewtonVR
                 }
             }
 
-            PickupTransform = new GameObject("PickupTransform: " + this.gameObject.name).transform;
+            PickupTransform = new GameObject(string.Format("[{0}] PickupTransform", this.gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;

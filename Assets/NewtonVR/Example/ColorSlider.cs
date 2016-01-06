@@ -10,7 +10,7 @@ namespace NewtonVR.Example
 
         public Renderer Result;
 
-        public NVRInteractableSlider Slider;
+        public NVRSlider Slider;
 
         private void Update()
         {
