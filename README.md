@@ -52,7 +52,7 @@ When you've got an item you'd like to pick up, simply drop a `NVRInteractableIte
 
 <br>
 ## Closing
-We hope that this system can help you make an awesome VR experience! If you do be sure to let us know. Anybody is free to use it for basically any purpose: game jams, commercial games, educational apps, etc. Check the license for more info. We are actively using this system in our game and plan to update it as development continues. If you have questions or comments about this system you can contact us by leaving a message below, on twitter at [@TomorrowTodayLabs](http://www.twitter.com/tomorrowtodaylabs), or creating issues on the github.
+We hope that this system can help you make an awesome VR experience! If you do be sure to let us know. Anybody is free to use it for basically any purpose: game jams, commercial games, educational apps, etc. Check the license for more info. We are actively using this system in our game and plan to update it as development continues. If you have questions or comments about this system you can contact us by leaving a message below, on twitter at [@TTLabsVR](http://www.twitter.com/ttlabsvr), or creating issues on the github.
 
 <br>
 *NewtonVR*<br>*Development: Keith Bradner, Nick Abel*<br>*UX: Adrienne Hunter*
