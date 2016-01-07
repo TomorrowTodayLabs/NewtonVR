@@ -6,9 +6,13 @@ namespace NewtonVR
     public class NVRLever : NVRInteractable
     {
         public float CurrentAngle;
+        public bool StickyPositions = false;
+
+        protected enum LeverPosition { up, center, down };
 
         protected virtual float DeltaMagic { get { return 1f; } }
         protected Transform InitialAttachPoint;
+        protected HingeJoint HingeJoint;
 
         public Transform StartRotation;
         public Transform EndRotation;
@@ -16,7 +20,15 @@ namespace NewtonVR
         protected override void Awake()
         {
             base.Awake();
+            HingeJoint = Rigidbody.gameObject.GetComponent<HingeJoint>();
             this.Rigidbody.maxAngularVelocity = 100f;
+
+            if ((StartRotation != null) && (EndRotation != null))
+            {
+                //HingeJoint.limits.max = StartRotation.rotation.eulerAngles.;
+
+            }
+
         }
 
         protected override void FixedUpdate()
@@ -28,6 +40,7 @@ namespace NewtonVR
                 Vector3 PositionDelta = AttachedHand.transform.position - InitialAttachPoint.position * DeltaMagic;
 
                 this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
+
             }
 
             CurrentAngle = this.transform.localEulerAngles.z;

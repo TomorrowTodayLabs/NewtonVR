@@ -9,6 +9,7 @@ namespace NewtonVR
         public static NVRPlayer Instance;
         public bool PhysicalHands = false;
 
+        public NVRHead Head;
         public NVRHand[] Hands;
 
         private Dictionary<Collider, NVRHand> ColliderToHandMapping;
@@ -18,14 +19,24 @@ namespace NewtonVR
             Instance = this;
             NVRInteractables.Initialize();
 
+            if (Head == null)
+                this.GetComponentInChildren<NVRHead>();
+            if (Hands == null || Hands.Length == 0)
+                this.GetComponentsInChildren<NVRHand>();
+
             ColliderToHandMapping = new Dictionary<Collider, NVRHand>();
         }
 
-        private void Start()
+        public void RegisterHand(NVRHand hand)
         {
-            for (int index = 0; index < Hands.Length; index++)
+            Collider[] colliders = hand.GetComponentsInChildren<Collider>();
+
+            for (int index = 0; index < colliders.Length; index++)
             {
-                ColliderToHandMapping.Add(Hands[index].GetComponent<Collider>(), Hands[index]);
+                if (ColliderToHandMapping.ContainsKey(colliders[index]) == false)
+                {
+                    ColliderToHandMapping.Add(colliders[index], hand);
+                }
             }
         }
 

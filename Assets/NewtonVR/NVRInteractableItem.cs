@@ -8,7 +8,7 @@ namespace NewtonVR
         [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
         public Transform InteractionPoint;
         
-        protected float AttachedRotationMagic = 100f;
+        protected float AttachedRotationMagic = 20f;
         protected float AttachedPositionMagic = 3000f;
         
         protected Transform PickupTransform;
@@ -33,7 +33,6 @@ namespace NewtonVR
 
                 if (InteractionPoint != null)
                 {
-                    //todo: apply the non interaction point rotation concept to this
                     RotationDelta = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.rotation);
                     PositionDelta = (AttachedHand.transform.position - InteractionPoint.position);
                 }

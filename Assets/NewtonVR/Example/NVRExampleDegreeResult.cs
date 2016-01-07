@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NewtonVR.Example
 {
-    public class DegreeResult : MonoBehaviour
+    public class NVRExampleDegreeResult : MonoBehaviour
     {
         public NVRInteractableItem Knob;
 

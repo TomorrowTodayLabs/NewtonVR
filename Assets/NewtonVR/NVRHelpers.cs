@@ -5,7 +5,7 @@ namespace NewtonVR
 {
     public class NVRHelpers
     {
-        public static void SetTransparent(Material material)
+        public static void SetTransparent(Material material, Color? newcolor = null)
         {
             material.SetOverrideTag("RenderType", "Transparent");
             material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
@@ -18,6 +18,11 @@ namespace NewtonVR
             material.SetFloat("_Glossiness", 0f);
             material.renderQueue = 3000;
             material.mainTexture = null;
+
+            if (newcolor != null)
+            {
+                material.color = newcolor.Value;
+            }
         }
         
         public static void SetOpaque(Material material)

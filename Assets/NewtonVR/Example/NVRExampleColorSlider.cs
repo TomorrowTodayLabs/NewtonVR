@@ -3,10 +3,10 @@ using System.Collections;
 
 namespace NewtonVR.Example
 {
-    public class ColorSlider : MonoBehaviour
+    public class NVRExampleColorSlider : MonoBehaviour
     {
-        public Renderer From;
-        public Renderer To;
+        public Color From;
+        public Color To;
 
         public Renderer Result;
 
@@ -14,7 +14,7 @@ namespace NewtonVR.Example
 
         private void Update()
         {
-            Result.material.color = Color.Lerp(From.material.color, To.material.color, Slider.CurrentValue);
+            Result.material.color = Color.Lerp(From, To, Slider.CurrentValue);
         }
     }
 }
