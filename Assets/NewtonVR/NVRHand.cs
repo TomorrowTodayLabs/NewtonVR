@@ -5,8 +5,6 @@ using System.Linq;
 
 namespace NewtonVR
 {
-    [RequireComponent(typeof(Rigidbody))]
-    [RequireComponent(typeof(SphereCollider))]
     public class NVRHand : MonoBehaviour
     {
         private Valve.VR.EVRButtonId HoldButton = Valve.VR.EVRButtonId.k_EButton_Grip;
@@ -39,8 +37,10 @@ namespace NewtonVR
         private int EstimationSamples = 5;
         private int RotationEstimationSamples = 10;
 
-        private Collider[] TriggerColliders;
-        private Collider[] NontriggerColliders;
+        private NVRPhysicalController PhysicalController;
+
+        private Collider[] GhostColliders;
+        private Renderer[] GhostRenderers;
 
         public bool IsHovering
         {
@@ -60,18 +60,12 @@ namespace NewtonVR
 
         private void Awake()
         {
-            Rigidbody = this.GetComponent<Rigidbody>();
-
             CurrentlyHoveringOver = new Dictionary<NVRInteractable, Dictionary<Collider, float>>();
 
             LastPositions = new Vector3[EstimationSamples];
             LastRotations = new Quaternion[EstimationSamples];
             LastDeltas = new float[EstimationSamples];
             EstimationSampleIndex = 0;
-
-            Collider[] colliders = this.GetComponentsInChildren<Collider>();
-            NontriggerColliders = colliders.Where(collider => collider.isTrigger == false).ToArray();
-            TriggerColliders = colliders.Where(collider => collider.isTrigger == true).ToArray();
         }
 
         private void Update()
@@ -105,7 +99,9 @@ namespace NewtonVR
             }
 
             if (NVRPlayer.Instance.PhysicalHands == true)
+            {
                 UpdateVisibilityAndColliders();
+            }
         }
 
         private void UpdateVisibilityAndColliders()
@@ -115,8 +111,6 @@ namespace NewtonVR
                 if (CurrentHandState != HandState.GripDownNotInteracting)
                 {
                     SetVisibility(VisibilityLevel.Visible);
-                    SetTriggerState(false);
-                    SetNontriggerState(true);
                     CurrentHandState = HandState.GripDownNotInteracting;
                 }
             }
@@ -125,8 +119,6 @@ namespace NewtonVR
                 if (CurrentHandState != HandState.GripDownInteracting)
                 {
                     SetVisibility(VisibilityLevel.Ghost);
-                    SetTriggerState(true);
-                    SetNontriggerState(false);
                     CurrentHandState = HandState.GripDownInteracting;
                 }
             }
@@ -135,26 +127,8 @@ namespace NewtonVR
                 if (CurrentHandState != HandState.Idle)
                 {
                     SetVisibility(VisibilityLevel.Ghost);
-                    SetTriggerState(true);
-                    SetNontriggerState(false);
                     CurrentHandState = HandState.Idle;
                 }
-            }
-        }
-
-        private void SetTriggerState(bool state)
-        {
-            for (int index = 0; index < TriggerColliders.Length; index++)
-            {
-                TriggerColliders[index].enabled = state;
-            }
-        }
-
-        private void SetNontriggerState(bool state)
-        {
-            for (int index = 0; index < NontriggerColliders.Length; index++)
-            {
-                NontriggerColliders[index].enabled = state;
             }
         }
 
@@ -253,7 +227,6 @@ namespace NewtonVR
             }
         }
 
-
         private void PickupClosest()
         {
             NVRInteractable closest = null;
@@ -340,70 +313,94 @@ namespace NewtonVR
 
         private void SetVisibility(VisibilityLevel visibility)
         {
-            CurrentVisibility = visibility;
-
-            Renderer[] renderers = this.GetComponentsInChildren<Renderer>();
-
-            for (int index = 0; index < renderers.Length; index++)
+            if (CurrentVisibility != visibility)
             {
+                if (visibility == VisibilityLevel.Ghost)
+                {
+                    PhysicalController.Off();
+
+                    for (int index = 0; index < GhostRenderers.Length; index++)
+                    {
+                        GhostRenderers[index].enabled = true;
+                    }
+                    
+                    for (int index = 0; index < GhostColliders.Length; index++)
+                    {
+                        GhostColliders[index].enabled = true;
+                    }
+                }
+
                 if (visibility == VisibilityLevel.Visible)
                 {
-                    NVRHelpers.SetOpaque(renderers[index].material);
-                }
-                else
-                {
-                    NVRHelpers.SetTransparent(renderers[index].material);
-                }
+                    PhysicalController.On();
 
-                Color color = renderers[index].material.color;
-                color.a = (float)visibility / 100;
-                renderers[index].material.color = color;
+                    for (int index = 0; index < GhostRenderers.Length; index++)
+                    {
+                        GhostRenderers[index].enabled = false;
+                    }
+
+                    for (int index = 0; index < GhostColliders.Length; index++)
+                    {
+                        GhostColliders[index].enabled = false;
+                    }
+                }
             }
+
+            CurrentVisibility = visibility;
         }
 
         private IEnumerator DoSetDeviceIndex(int index)
         {
-            yield return null;
+            yield return new WaitForSeconds(1f);
+            yield return null; //wait for children to be initialized
 
-            SetVisibility(CurrentVisibility);
+            Rigidbody = this.GetComponent<Rigidbody>();
+            if (Rigidbody == null)
+                Rigidbody = this.gameObject.AddComponent<Rigidbody>();
+            Rigidbody.isKinematic = true;
+            
+            Transform trackhat = this.transform.FindChild("trackhat");
 
-            if (CurrentHandState == HandState.Uninitialized)
-            {
-                InitializeController();
-            }
-        }
+            Collider trackhatCollider = trackhat.GetComponent<Collider>();
+            if (trackhatCollider == null)
+                trackhatCollider = trackhat.gameObject.AddComponent<SphereCollider>();
+            trackhatCollider.isTrigger = true;
 
-        private void InitializeController()
-        {
+            NVRPlayer.Instance.RegisterHand(this);
+
             if (NVRPlayer.Instance.PhysicalHands == true)
             {
-                Renderer[] renderers = this.GetComponentsInChildren<Renderer>();
-                for (int index = 0; index < renderers.Length; index++)
+                if (PhysicalController != null)
                 {
-                    NVRHelpers.SetTransparent(renderers[index].material);
+                    PhysicalController.Kill();
                 }
 
-                Transform trackhat = this.transform.FindChild("trackhat");
+                PhysicalController = this.gameObject.AddComponent<NVRPhysicalController>();
+                PhysicalController.Initialize(this, false);
 
-                Collider trackhatCollider = trackhat.GetComponent<Collider>();
-                if (trackhatCollider == null)
-                    trackhatCollider = trackhat.gameObject.AddComponent<BoxCollider>();
+                Color transparentcolor = Color.white;
+                transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
 
-                Transform body = this.transform.FindChild("body");
-                Collider bodyCollider = body.GetComponent<Collider>();
-                if (bodyCollider == null)
-                    bodyCollider = body.gameObject.AddComponent<BoxCollider>();
+                GhostRenderers = this.GetComponentsInChildren<Renderer>();
+                for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
+                {
+                    NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
+                }
 
-                NontriggerColliders = new Collider[] { trackhatCollider, bodyCollider };
-                SetNontriggerState(false);
-                UpdateVisibilityAndColliders();
+                GhostColliders = new Collider[] { trackhatCollider };
+                CurrentVisibility = VisibilityLevel.Ghost;
             }
-            else
-            {
-                CurrentHandState = HandState.Idle;
-            }
+
+            CurrentHandState = HandState.Idle;
+        }
+
+        public void ForceGhost()
+        {
+            SetVisibility(VisibilityLevel.Ghost);
+            PhysicalController.Off();
         }
     }
+    
 
     public enum VisibilityLevel
     {

@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NewtonVR.Example
 {
-    public class LetterResult : MonoBehaviour
+    public class NVRExampleLetterResult : MonoBehaviour
     {
         public NVRLetterSpinner LetterSpinner;
 
