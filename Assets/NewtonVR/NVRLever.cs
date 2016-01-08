@@ -9,9 +9,9 @@ namespace NewtonVR
         public enum LeverPosition { Max, Mid, Min };
         public enum RotationAxis { XAxis, YAxis, ZAxis}
 
-        public float CurrentAngle;
         public float AngleRange;
         public float CurrentValue;
+
         [Tooltip("Will the lever snap to max, mid (if selected), and min positions. (Default = false)")]
         public bool StickyPositions = false;
         [Tooltip("Does the lever user the mid position? (Default = false)")]
@@ -88,9 +88,7 @@ namespace NewtonVR
                 Mid = HingeJoint.transform.localRotation;
                 Max = Mid * Quaternion.AngleAxis(HingeJoint.limits.max, HingeJoint.axis);
                 Min = Mid * Quaternion.AngleAxis(HingeJoint.limits.min, HingeJoint.axis);
-                Vector3 m_localAxis = HingeJoint.axis.normalized;
-                //Max = new Vector3((Rigidbody.transform.localEulerAngles.x + HingeJoint.limits.max) * m_localAxis.x, (Rigidbody.transform.localEulerAngles.y + HingeJoint.limits.max) * m_localAxis.y, (Rigidbody.transform.localEulerAngles.z + HingeJoint.limits.max) * m_localAxis.z);
-                //Min = new Vector3((Rigidbody.transform.localEulerAngles.x - HingeJoint.limits.min) * m_localAxis.x, (Rigidbody.transform.localEulerAngles.y - HingeJoint.limits.min) * m_localAxis.y, (Rigidbody.transform.localEulerAngles.z - HingeJoint.limits.min) * m_localAxis.z);
+
             }
 
             if (HingeJoint.useLimits)
@@ -149,12 +147,12 @@ namespace NewtonVR
 
         private float GetValue()
         {
-            float diff = 0.0f;
+            float m_diff = 0.0f;
             if (HingeJoint.useLimits)
             {
-                diff = HingeJoint.angle - HingeJoint.limits.min;
+                m_diff = HingeJoint.angle - HingeJoint.limits.min;
             }
-            return diff / AngleRange;
+            return m_diff / AngleRange;
         }
     }
 
