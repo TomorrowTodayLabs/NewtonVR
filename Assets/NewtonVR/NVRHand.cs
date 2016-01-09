@@ -20,6 +20,7 @@ namespace NewtonVR
         public Rigidbody Rigidbody;
 
         private VisibilityLevel CurrentVisibility = VisibilityLevel.Visible;
+        private bool VisibilityLocked = false;
 
         private HandState CurrentHandState = HandState.Uninitialized;
 
@@ -66,6 +67,8 @@ namespace NewtonVR
             LastRotations = new Quaternion[EstimationSamples];
             LastDeltas = new float[EstimationSamples];
             EstimationSampleIndex = 0;
+
+            VisibilityLocked = false;
         }
 
         private void Update()
@@ -80,6 +83,11 @@ namespace NewtonVR
             UseButtonPressed = Controller.GetPress(UseButton);
             UseButtonDown = Controller.GetPressDown(UseButton);
             UseButtonUp = Controller.GetPressUp(UseButton);
+
+            if (HoldButtonUp)
+            {
+                VisibilityLocked = false;
+            }
 
             if (HoldButtonDown == true)
             {
@@ -108,23 +116,25 @@ namespace NewtonVR
         {
             if (HoldButtonPressed == true && IsInteracting == false)
             {
-                if (CurrentHandState != HandState.GripDownNotInteracting)
+                if (CurrentHandState != HandState.GripDownNotInteracting && VisibilityLocked == false)
                 {
+                    VisibilityLocked = true;
                     SetVisibility(VisibilityLevel.Visible);
                     CurrentHandState = HandState.GripDownNotInteracting;
                 }
             }
             else if (HoldButtonDown == true && IsInteracting == true)
             {
-                if (CurrentHandState != HandState.GripDownInteracting)
+                if (CurrentHandState != HandState.GripDownInteracting && VisibilityLocked == false)
                 {
+                    VisibilityLocked = true;
                     SetVisibility(VisibilityLevel.Ghost);
                     CurrentHandState = HandState.GripDownInteracting;
                 }
             }
             else if (IsInteracting == false)
             {
-                if (CurrentHandState != HandState.Idle)
+                if (CurrentHandState != HandState.Idle && VisibilityLocked == false)
                 {
                     SetVisibility(VisibilityLevel.Ghost);
                     CurrentHandState = HandState.Idle;
