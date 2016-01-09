@@ -9,6 +9,7 @@ namespace NewtonVR
         public bool CanAttach = true;
         public NVRHand AttachedHand = null;
 
+        protected bool GravityOnInteractionEnd = false;
         protected Collider[] Colliders;
         protected virtual float DropDistance { get { return 3f; } }
         protected Vector3 ClosestHeldPoint;
@@ -80,6 +81,12 @@ namespace NewtonVR
         public virtual void BeginInteraction(NVRHand hand)
         {
             AttachedHand = hand;
+            if (this.Rigidbody.useGravity == true)
+            {
+                this.Rigidbody.useGravity = false;
+                GravityOnInteractionEnd = true;
+            }
+
         }
 
         public virtual void InteractingUpdate(NVRHand hand)
@@ -103,6 +110,11 @@ namespace NewtonVR
         {
             AttachedHand = null;
             ClosestHeldPoint = Vector3.zero;
+            if (GravityOnInteractionEnd)
+            {
+                this.Rigidbody.useGravity = true;
+                GravityOnInteractionEnd = false;
+            }
         }
 
         protected virtual void DroppedBecauseOfDistance()
