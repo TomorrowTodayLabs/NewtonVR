@@ -1,10 +1,13 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 namespace NewtonVR
 {
     public class NVRLever : NVRInteractable
     {
+
+        public GameObject ControlledObject;
 
         public enum LeverPosition { Max, Mid, Min };
         public enum RotationAxis { XAxis, YAxis, ZAxis}
@@ -18,13 +21,14 @@ namespace NewtonVR
         public bool ThreePosition = false;
         [Tooltip("Are the hinge setting set by this script? Max and Min hinge limits will be set by Max, Mid, and Min Rotations (Default = false)")]
         public bool SetHingeByScript = false;
+        public bool UseMotor;
 
         [Tooltip("Sets the hinge axis of rotation (Default = X Axis)")]
         public RotationAxis AxisOfRotation = RotationAxis.XAxis;
         [Tooltip("Sets the starting position of the lever (Default = Min")]
         public LeverPosition StartingPositionOfLever = LeverPosition.Min;
 
-        private LeverPosition CurrentPositionOfLever;
+        public LeverPosition CurrentPositionOfLever;
 
         protected virtual float DeltaMagic { get { return 1f; } }
         protected Transform InitialAttachPoint;
@@ -88,6 +92,7 @@ namespace NewtonVR
                 Mid = HingeJoint.transform.localRotation;
                 Max = Mid * Quaternion.AngleAxis(HingeJoint.limits.max, HingeJoint.axis);
                 Min = Mid * Quaternion.AngleAxis(HingeJoint.limits.min, HingeJoint.axis);
+                UseMotor = this.HingeJoint.useMotor;
 
             }
 
@@ -108,7 +113,16 @@ namespace NewtonVR
                 this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
 
             }
+            CurrentPositionOfLever = GetPosition();
             CurrentValue = GetValue();
+
+        }
+
+        private IEnumerator HoldPosition(float time)
+        {
+            if (UseMotor)
+                HingeJoint.useMotor = false;
+            yield return new WaitForSeconds(time);
         }
 
         public override void BeginInteraction(NVRHand hand)
@@ -135,11 +149,29 @@ namespace NewtonVR
             InitialAttachPoint.rotation = hand.transform.rotation;
             InitialAttachPoint.localScale = Vector3.one * 0.25f;
             InitialAttachPoint.parent = this.transform;
+
+            if (UseMotor)
+            {
+                HingeJoint.useMotor = false;
+            }
+
         }
 
         public override void EndInteraction()
         {
             base.EndInteraction();
+
+            if (UseMotor)
+            {
+                if (CurrentPositionOfLever == LeverPosition.Min)
+                {
+                    StartCoroutine(HoldPosition(0.5f));
+                }
+                else
+                {
+                    HingeJoint.useMotor = true;
+                }
+            }
 
             if (InitialAttachPoint != null)
                 Destroy(InitialAttachPoint.gameObject);
@@ -153,6 +185,15 @@ namespace NewtonVR
                 m_diff = HingeJoint.angle - HingeJoint.limits.min;
             }
             return m_diff / AngleRange;
+        }
+
+        private LeverPosition GetPosition()
+        {
+            if (this.Rigidbody.rotation == Max)
+                return LeverPosition.Max;
+            if (this.Rigidbody.rotation == Min)
+                return LeverPosition.Min;
+            return LeverPosition.Mid;
         }
     }
 
