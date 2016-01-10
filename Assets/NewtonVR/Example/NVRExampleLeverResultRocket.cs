@@ -3,35 +3,57 @@ using System.Collections;
 
 namespace NewtonVR
 {
-    public class NVRExampleLeverResultRocket : MonoBehaviour {
-
+    public class NVRExampleLeverResultRocket : MonoBehaviour
+    {
+        public GameObject RocketPrefab;
         public NVRLever Control;
-        public Rigidbody RigidBody;
-        private bool WaitingToBlastOff = false;
 
-	    // Use this for initialization
-	    void Awake () {
-            if (RigidBody == null)
-                RigidBody = this.GetComponent<Rigidbody>();
-            RigidBody.isKinematic = true;
-            RigidBody.useGravity = false;
+        private GameObject RocketInstance;
+        
+	    private void Awake()
+        {
+            StartCoroutine(DoSpawnShip());
         }
 	
-	    // Update is called once per frame
-	    void Update () {
-            if (Control.CurrentPositionOfLever == NVRLever.LeverPosition.Max && WaitingToBlastOff)
+	    private void Update()
+        {
+            if (Control.LeverEngaged == true)
             {
-                BlastOff();
-                WaitingToBlastOff = false;
+                StartCoroutine(DoBlastOff());
             }
 	    }
 
-        public void BlastOff()
+        public IEnumerator DoBlastOff()
         {
-            RigidBody.isKinematic = false;
-            RigidBody.useGravity = true;
-            RigidBody.AddExplosionForce(50f, new Vector3(this.transform.position.x, this.transform.position.y - 1, this.transform.position.z), 3, 50f, ForceMode.Force);
+            Rigidbody rb = RocketInstance.GetComponent<Rigidbody>();
+            rb.AddRelativeForce(new Vector3(0, 30000, 0), ForceMode.Force);
 
+            yield return new WaitForSeconds(0.5f);
+
+            StartCoroutine(DoSpawnShip());
+        }
+
+        private IEnumerator DoSpawnShip()
+        {
+            RocketInstance = (GameObject)GameObject.Instantiate(RocketPrefab, this.transform.position, this.transform.rotation);
+            RocketInstance.GetComponent<Rigidbody>().isKinematic = true;
+            RocketInstance.GetComponent<NVRInteractableItem>().CanAttach = false;
+
+            Vector3 startScale = Vector3.one * 0.1f;
+            Vector3 endScale = Vector3.one;
+
+            float startTime = Time.time;
+            float overTime = 0.5f;
+            float stopTime = startTime + overTime;
+
+            while (Time.time < stopTime)
+            {
+                RocketInstance.transform.localScale = Vector3.Lerp(startScale, endScale, (Time.time - startTime) / overTime);
+                yield return null;
+            }
+
+            RocketInstance.GetComponent<Rigidbody>().isKinematic = false;
+            RocketInstance.GetComponent<NVRInteractableItem>().CanAttach = true;
         }
     }
 }

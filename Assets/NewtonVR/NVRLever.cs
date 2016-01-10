@@ -6,95 +6,34 @@ namespace NewtonVR
 {
     public class NVRLever : NVRInteractable
     {
-
-        public GameObject ControlledObject;
-
-        public enum LeverPosition { Max, Mid, Min };
-        public enum RotationAxis { XAxis, YAxis, ZAxis}
-
-        public float AngleRange;
+        public float LastValue;
         public float CurrentValue;
-
-        [Tooltip("Will the lever snap to max, mid (if selected), and min positions. (Default = false)")]
-        public bool StickyPositions = false;
-        [Tooltip("Does the lever user the mid position? (Default = false)")]
-        public bool ThreePosition = false;
-        [Tooltip("Are the hinge setting set by this script? Max and Min hinge limits will be set by Max, Mid, and Min Rotations (Default = false)")]
-        public bool SetHingeByScript = false;
-        public bool UseMotor;
-
-        [Tooltip("Sets the hinge axis of rotation (Default = X Axis)")]
-        public RotationAxis AxisOfRotation = RotationAxis.XAxis;
-        [Tooltip("Sets the starting position of the lever (Default = Min")]
-        public LeverPosition StartingPositionOfLever = LeverPosition.Min;
-
-        public LeverPosition CurrentPositionOfLever;
+        public LeverPosition LastLeverPosition;
+        public LeverPosition CurrentLeverPosition;
+        public bool LeverEngaged = false;
 
         protected virtual float DeltaMagic { get { return 1f; } }
         protected Transform InitialAttachPoint;
         protected HingeJoint HingeJoint;
 
-        public Transform MaxRotation;
-        public Transform MidRotation;
-        public Transform MinRotation;
-
-        //private Vector3 Max, Mid, Min;
-        private Quaternion Max, Mid, Min;
+        protected bool UseMotor;
+        protected Quaternion Max, Mid, Min;
+        protected float AngleRange;
 
         protected override void Awake()
         {
             base.Awake();
             this.Rigidbody.maxAngularVelocity = 100f;
 
-            CurrentPositionOfLever = StartingPositionOfLever;
-
             if (HingeJoint == null)
             {
                 HingeJoint = Rigidbody.gameObject.GetComponent<HingeJoint>();
             }
 
-            if (SetHingeByScript)
-            {
-                //Finish this later
-                /*
-                switch (AxisOfRotation)
-                {
-                    case RotationAxis.XAxis:
-                        HingeJoint.axis = Vector3.right;
-                        break;
-                    case RotationAxis.YAxis:
-                        HingeJoint.axis = Vector3.up;
-                        break;
-                    case RotationAxis.ZAxis:
-                        HingeJoint.axis = Vector3.forward;
-                        break;
-                    default:
-                        HingeJoint.axis = Vector3.right;
-                        Debug.Log("Error, default RotationAxis set.");
-                        break;
-                }
-                if ((MaxRotation != null) && (MinRotation != null))
-                {
-                    Max = MaxRotation.localRotation.eulerAngles;
-                    Min = MinRotation.localRotation.eulerAngles;
-                    if (ThreePosition)
-                    {
-                        Mid = MidRotation.localRotation.eulerAngles;
-                    }
-                    HingeJoint.useLimits = true;
-                    //set limits
-                }
-                */
-            }
-            else
-            {
-
-                Mid = HingeJoint.transform.localRotation;
-                Max = Mid * Quaternion.AngleAxis(HingeJoint.limits.max, HingeJoint.axis);
-                Min = Mid * Quaternion.AngleAxis(HingeJoint.limits.min, HingeJoint.axis);
-                UseMotor = this.HingeJoint.useMotor;
-
-            }
+            Mid = HingeJoint.transform.localRotation;
+            Max = Mid * Quaternion.AngleAxis(HingeJoint.limits.max, HingeJoint.axis);
+            Min = Mid * Quaternion.AngleAxis(HingeJoint.limits.min, HingeJoint.axis);
+            UseMotor = this.HingeJoint.useMotor;
 
             if (HingeJoint.useLimits)
             {
@@ -111,67 +50,65 @@ namespace NewtonVR
                 Vector3 PositionDelta = AttachedHand.transform.position - InitialAttachPoint.position * DeltaMagic;
 
                 this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
-
             }
-            CurrentPositionOfLever = GetPosition();
-            CurrentValue = GetValue();
+        }
 
+        protected override void Update()
+        {
+            base.Update();
+
+            LeverEngaged = false;
+            LastValue = CurrentValue;
+            LastLeverPosition = CurrentLeverPosition;
+
+            CurrentValue = GetValue();
+            CurrentLeverPosition = GetPosition();
+
+            if (LastLeverPosition != LeverPosition.On && CurrentLeverPosition == LeverPosition.On)
+            {
+                LeverEngaged = true;
+                Engage();
+            }
+        }
+
+        protected virtual void Engage()
+        {
+            if (AttachedHand != null)
+                AttachedHand.EndInteraction(this);
+
+            CanAttach = false;
+
+            StartCoroutine(HoldPosition(1f));
         }
 
         private IEnumerator HoldPosition(float time)
         {
-            if (UseMotor)
-                HingeJoint.useMotor = false;
+            HingeJoint.useMotor = false;
+
             yield return new WaitForSeconds(time);
+
+            HingeJoint.useMotor = true;
+            CanAttach = true;
         }
 
         public override void BeginInteraction(NVRHand hand)
         {
             base.BeginInteraction(hand);
 
-            Vector3 closestPoint = Vector3.zero;
-            float shortestDistance = float.MaxValue;
-            for (int index = 0; index < Colliders.Length; index++)
-            {
-                Vector3 closest = Colliders[index].bounds.ClosestPoint(AttachedHand.transform.position);
-                float distance = Vector3.Distance(AttachedHand.transform.position, closest);
-
-                if (distance < shortestDistance)
-                {
-                    shortestDistance = distance;
-                    closestPoint = closest;
-                }
-            }
-
-            InitialAttachPoint = new GameObject(string.Format("[{0}] PickupTransform", this.gameObject.name)).transform;
-            //InitialAttachPoint = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
+            InitialAttachPoint = new GameObject(string.Format("[{0}] InitialAttachPoint", this.gameObject.name)).transform;
             InitialAttachPoint.position = hand.transform.position;
             InitialAttachPoint.rotation = hand.transform.rotation;
             InitialAttachPoint.localScale = Vector3.one * 0.25f;
             InitialAttachPoint.parent = this.transform;
-
-            if (UseMotor)
-            {
-                HingeJoint.useMotor = false;
-            }
-
+            
+            HingeJoint.useMotor = false;
         }
 
         public override void EndInteraction()
         {
             base.EndInteraction();
 
-            if (UseMotor)
-            {
-                if (CurrentPositionOfLever == LeverPosition.Min)
-                {
-                    StartCoroutine(HoldPosition(0.5f));
-                }
-                else
-                {
-                    HingeJoint.useMotor = true;
-                }
-            }
+            HingeJoint.useMotor = true;
 
             if (InitialAttachPoint != null)
                 Destroy(InitialAttachPoint.gameObject);
@@ -184,17 +121,31 @@ namespace NewtonVR
             {
                 m_diff = HingeJoint.angle - HingeJoint.limits.min;
             }
-            return m_diff / AngleRange;
+            return 1 - (m_diff / AngleRange);
         }
 
         private LeverPosition GetPosition()
         {
-            if (this.Rigidbody.rotation == Max)
-                return LeverPosition.Max;
-            if (this.Rigidbody.rotation == Min)
-                return LeverPosition.Min;
+            if (CurrentValue <= 0.05)
+                return LeverPosition.Off;
+            else if (CurrentValue >= 0.95)
+                return LeverPosition.On;
+
             return LeverPosition.Mid;
         }
-    }
 
+        public enum LeverPosition
+        {
+            Off,
+            Mid,
+            On
+        }
+
+        public enum RotationAxis
+        {
+            XAxis,
+            YAxis,
+            ZAxis
+        }
+    }
 }
