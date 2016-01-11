@@ -43,6 +43,8 @@ namespace NewtonVR
         private Collider[] GhostColliders;
         private Renderer[] GhostRenderers;
 
+        private int DeviceIndex = -1;
+
         public bool IsHovering
         {
             get
@@ -306,11 +308,17 @@ namespace NewtonVR
             }
         }
 
+        private void OnEnable()
+        {
+            if (this.gameObject.activeInHierarchy)
+                StartCoroutine(DoInitialize());
+        }
 
         private void SetDeviceIndex(int index)
         {
+            DeviceIndex = index;
             Controller = SteamVR_Controller.Input(index);
-            StartCoroutine(DoSetDeviceIndex(index));
+            StartCoroutine(DoInitialize());
         }
 
         public void DeregisterInteractable(NVRInteractable interactable)
@@ -359,9 +367,8 @@ namespace NewtonVR
             CurrentVisibility = visibility;
         }
 
-        private IEnumerator DoSetDeviceIndex(int index)
+        private IEnumerator DoInitialize()
         {
-            yield return new WaitForSeconds(1f);
             yield return null; //wait for children to be initialized
 
             Rigidbody = this.GetComponent<Rigidbody>();
