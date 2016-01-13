@@ -11,6 +11,7 @@ namespace NewtonVR
         public LeverPosition LastLeverPosition;
         public LeverPosition CurrentLeverPosition;
         public bool LeverEngaged = false;
+        public float EngageWaitTime = 1f;
 
         protected virtual float DeltaMagic { get { return 2f; } }
         protected Transform InitialAttachPoint;
@@ -78,7 +79,7 @@ namespace NewtonVR
 
             CanAttach = false;
 
-            StartCoroutine(HoldPosition(1f));
+            StartCoroutine(HoldPosition(EngageWaitTime));
         }
 
         private IEnumerator HoldPosition(float time)

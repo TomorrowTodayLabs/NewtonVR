@@ -7,10 +7,13 @@ namespace NewtonVR
     {
         public Rigidbody Rigidbody;
         public bool CanAttach = true;
+        public bool DisableKinematicOnAttach = true;
+        public bool EnableKinematicOnDetach = false;
+        public float DropDistance = 3;
+
         public NVRHand AttachedHand = null;
 
         protected Collider[] Colliders;
-        protected virtual float DropDistance { get { return 3f; } }
         protected Vector3 ClosestHeldPoint;
 
         public virtual bool IsAttached
@@ -80,6 +83,11 @@ namespace NewtonVR
         public virtual void BeginInteraction(NVRHand hand)
         {
             AttachedHand = hand;
+
+            if (DisableKinematicOnAttach == true)
+            {
+                Rigidbody.isKinematic = false;
+            }
         }
 
         public virtual void InteractingUpdate(NVRHand hand)
@@ -103,6 +111,11 @@ namespace NewtonVR
         {
             AttachedHand = null;
             ClosestHeldPoint = Vector3.zero;
+
+            if (EnableKinematicOnDetach == true)
+            {
+                Rigidbody.isKinematic = true;
+            }
         }
 
         protected virtual void DroppedBecauseOfDistance()
