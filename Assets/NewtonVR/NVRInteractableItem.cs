@@ -19,6 +19,7 @@ namespace NewtonVR
             this.Rigidbody.maxAngularVelocity = 100f;
         }
 
+        protected Vector3 LastVelocityAddition;
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
@@ -48,9 +49,14 @@ namespace NewtonVR
                     angle -= 360;
 
                 if (angle != 0)
-                    this.Rigidbody.angularVelocity = (Time.fixedDeltaTime * angle * axis) * AttachedRotationMagic;
+                {
+                    Vector3 AngularTarget = (Time.fixedDeltaTime * angle * axis) * AttachedRotationMagic;
+                    this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f);
+                }
 
-                this.Rigidbody.velocity = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
+                Vector3 VelocityTarget = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
+                
+                this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
             }
         }
 
@@ -76,10 +82,14 @@ namespace NewtonVR
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;
+
+            this.Rigidbody.useGravity = false;
         }
 
         public override void EndInteraction()
         {
+            this.Rigidbody.useGravity = true;
+
             base.EndInteraction();
 
             if (PickupTransform != null)
