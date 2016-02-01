@@ -10,8 +10,6 @@ namespace NewtonVR
         public NVRInteractableItem AttachedItem;
         public NVRAttachPoint AttachedPoint;
 
-        public bool MatchRotation = false;
-
         public bool IsAttached { get { return AttachedItem != null; } }
 
         protected float AttachRange = 0.1f;
@@ -63,6 +61,7 @@ namespace NewtonVR
         protected virtual void Attach(NVRAttachPoint point)
         {
             point.Attached(this);
+
             AttachedItem = point.Item;
             AttachedPoint = point;
         }

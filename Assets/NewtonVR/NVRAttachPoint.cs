@@ -48,7 +48,7 @@ namespace NewtonVR
             return null;
         }
 
-        public void Attached(NVRAttachJoint joint)
+        public virtual void Attached(NVRAttachJoint joint)
         {
             Vector3 TargetPosition = joint.transform.position + (Item.transform.position - this.transform.position);
             Rigidbody.MovePosition(TargetPosition);
@@ -59,7 +59,7 @@ namespace NewtonVR
             IsAttached = true;
             Rigidbody.useGravity = false;
         }
-        public void Detached(NVRAttachJoint joint)
+        public virtual void Detached(NVRAttachJoint joint)
         {
             IsAttached = false;
             Rigidbody.useGravity = true;
