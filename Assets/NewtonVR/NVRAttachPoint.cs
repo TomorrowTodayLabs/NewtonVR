@@ -13,12 +13,11 @@ namespace NewtonVR
         [HideInInspector]
         public NVRInteractableItem Item;
 
-        protected float PositionMagic = 500f;
-        protected float RotationMagic = 500f;
+        protected float PositionMagic = 10f;
 
         public bool IsAttached;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             IsAttached = false;
 
@@ -31,7 +30,7 @@ namespace NewtonVR
             AttachPointMapper.Register(this.GetComponent<Collider>(), this);
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             Rigidbody = Item.Rigidbody;
         }
@@ -51,7 +50,8 @@ namespace NewtonVR
 
         public void Attached(NVRAttachJoint joint)
         {
-            this.SetItemPosition(joint.transform.position);
+            Vector3 TargetPosition = joint.transform.position + (Item.transform.position - this.transform.position);
+            Rigidbody.MovePosition(TargetPosition);
 
             Rigidbody.velocity = Vector3.zero;
             Rigidbody.angularVelocity = Vector3.zero;
@@ -65,17 +65,11 @@ namespace NewtonVR
             Rigidbody.useGravity = true;
         }
 
-        public void SetItemPosition(Vector3 position)
-        {
-            Vector3 TargetPosition = position + (this.transform.position - Item.transform.position);
-            Rigidbody.MovePosition(TargetPosition);
-        }
-
         public void PullTowards(Vector3 position)
         {
             Vector3 delta = position - this.transform.position;
 
-            Rigidbody.AddForceAtPosition(delta * PositionMagic, this.transform.position);
+            Rigidbody.AddForceAtPosition(delta * PositionMagic, this.transform.position, ForceMode.VelocityChange);
         }
     }
 }
