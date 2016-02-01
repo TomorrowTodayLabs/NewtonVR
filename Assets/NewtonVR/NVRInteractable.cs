@@ -6,7 +6,9 @@ namespace NewtonVR
     public abstract class NVRInteractable : MonoBehaviour
     {
         public Rigidbody Rigidbody;
+
         public bool CanAttach = true;
+        
         public bool DisableKinematicOnAttach = true;
         public bool EnableKinematicOnDetach = false;
         public float DropDistance = 3;
@@ -15,6 +17,8 @@ namespace NewtonVR
 
         protected Collider[] Colliders;
         protected Vector3 ClosestHeldPoint;
+
+        protected bool WasUsingGravity = false;
 
         public virtual bool IsAttached
         {
@@ -88,6 +92,8 @@ namespace NewtonVR
             {
                 Rigidbody.isKinematic = false;
             }
+
+            WasUsingGravity = Rigidbody.useGravity;
         }
 
         public virtual void InteractingUpdate(NVRHand hand)
@@ -116,6 +122,8 @@ namespace NewtonVR
             {
                 Rigidbody.isKinematic = true;
             }
+
+            Rigidbody.useGravity = WasUsingGravity;
         }
 
         protected virtual void DroppedBecauseOfDistance()
