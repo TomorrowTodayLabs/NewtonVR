@@ -15,7 +15,7 @@ namespace NewtonVR
         protected float DropDistance { get { return 1f; } }
         protected Vector3 ClosestHeldPoint;
 
-        protected float AttachedRotationMagic = 100f;
+        protected float AttachedRotationMagic = 20f;
         protected float AttachedPositionMagic = 3000f;
 
         public void Initialize(NVRHand trackingHand, bool initialState)
@@ -24,9 +24,12 @@ namespace NewtonVR
 
             PhysicalController = GameObject.Instantiate(Hand.gameObject);
             PhysicalController.name = PhysicalController.name.Replace("(Clone)", " [Physical]");
+
+            GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
             GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRHand>());
             GameObject.DestroyImmediate(PhysicalController.GetComponent<SteamVR_TrackedObject>());
             GameObject.DestroyImmediate(PhysicalController.GetComponent<SteamVR_RenderModel>());
+            GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
 
             Collider[] clonedColliders = PhysicalController.GetComponentsInChildren<Collider>();
             for (int index = 0; index < clonedColliders.Length; index++)
@@ -41,6 +44,10 @@ namespace NewtonVR
 
             Rigidbody = PhysicalController.GetComponent<Rigidbody>();
             Rigidbody.isKinematic = false;
+            Rigidbody.useGravity = false;
+            Rigidbody.angularDrag = 0;
+            Rigidbody.maxAngularVelocity = 100f;
+            
 
             Transform trackhat = PhysicalController.transform.FindChild("trackhat");
             Collider trackhatCollider = trackhat.gameObject.AddComponent<BoxCollider>();
@@ -95,9 +102,13 @@ namespace NewtonVR
 
             RotationDelta.ToAngleAxis(out angle, out axis);
 
+            if (angle > 180)
+                angle -= 360;
+
             if (angle != 0)
             {
-                Vector3 AngularTarget = (Time.fixedDeltaTime * angle * axis) * AttachedRotationMagic;
+                Vector3 AngularTarget = angle * axis * AttachedRotationMagic;
+                AngularTarget = AngularTarget * Time.fixedDeltaTime;
                 this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f);
             }
 

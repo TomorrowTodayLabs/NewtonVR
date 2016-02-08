@@ -50,6 +50,7 @@ GameObject:
   - 81: {fileID: 8124890}
   - 92: {fileID: 9202834}
   - 124: {fileID: 12443660}
+  - 114: {fileID: 11439564}
   m_Layer: 0
   m_Name: Camera (head)
   m_TagString: MainCamera
@@ -140,7 +141,7 @@ Transform:
   m_GameObject: {fileID: 140386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 449252}
   - {fileID: 403292}
@@ -345,6 +346,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5be45115742b07478e21c85fcc233ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &11439564
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 120862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dd93dbead6c28e42b0408c298a10966, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11446752
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -376,14 +388,14 @@ MonoBehaviour:
   size: 0
   color: {r: 0, g: 1, b: 1, a: 1}
   vertices:
-  - {x: 1, y: 0.01, z: -0.7500001}
-  - {x: -1, y: 0.01, z: -0.7500001}
-  - {x: -1, y: 0.01, z: 0.7500001}
-  - {x: 1, y: 0.01, z: 0.7500001}
-  - {x: 1.15, y: 0.01, z: -0.9000001}
-  - {x: -1.15, y: 0.01, z: -0.9000001}
-  - {x: -1.15, y: 0.01, z: 0.9000001}
-  - {x: 1.15, y: 0.01, z: 0.9000001}
+  - {x: 1.5000007, y: 0.01, z: -1.1250005}
+  - {x: -1.5000007, y: 0.01, z: -1.1250005}
+  - {x: -1.5000007, y: 0.01, z: 1.1250005}
+  - {x: 1.5000007, y: 0.01, z: 1.1250005}
+  - {x: 1.6500007, y: 0.01, z: -1.2750005}
+  - {x: -1.6500007, y: 0.01, z: -1.2750005}
+  - {x: -1.6500007, y: 0.01, z: 1.2750005}
+  - {x: 1.6500007, y: 0.01, z: 1.2750005}
 --- !u!114 &11457864
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -396,8 +408,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PhysicalHands: 1
-  Head: {fileID: 0}
-  Hands: []
+  Head: {fileID: 11439564}
+  Hands:
+  - {fileID: 11419036}
+  - {fileID: 11464396}
 --- !u!114 &11464396
 MonoBehaviour:
   m_ObjectHideFlags: 1
