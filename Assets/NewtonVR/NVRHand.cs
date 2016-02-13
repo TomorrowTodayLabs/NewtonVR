@@ -375,13 +375,51 @@ namespace NewtonVR
             if (Rigidbody == null)
                 Rigidbody = this.gameObject.AddComponent<Rigidbody>();
             Rigidbody.isKinematic = true;
-            
-            Transform trackhat = this.transform.FindChild("trackhat");
 
-            Collider trackhatCollider = trackhat.GetComponent<Collider>();
-            if (trackhatCollider == null)
-                trackhatCollider = trackhat.gameObject.AddComponent<SphereCollider>();
-            trackhatCollider.isTrigger = true;
+            Collider[] Colliders = null;
+
+            string controllerModel = GetDeviceName();
+            switch (controllerModel)
+            {
+                case "vr_controller_05_wireless_b":
+                    Transform dk1Trackhat = this.transform.FindChild("trackhat");
+
+                    SphereCollider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<SphereCollider>();
+                    if (dk1TrackhatCollider == null)
+                    {
+                        dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<SphereCollider>();
+                        dk1TrackhatCollider.isTrigger = true;
+                    }
+
+                    Colliders = new Collider[] { dk1TrackhatCollider };
+                    break;
+
+                case "vr_controller_vive_1_5":
+
+                    Transform dk2Trackhat = this.transform.FindChild("trackhat");
+                    if (dk2Trackhat == null)
+                    {
+                        dk2Trackhat = new GameObject("trackhat").transform;
+                        dk2Trackhat.parent = this.transform;
+                        dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
+                        dk2Trackhat.localScale = Vector3.one * 0.1f;
+                        dk2Trackhat.localEulerAngles = new Vector3(325, 0, 0);
+                    }
+
+                    Collider dk2TrackhatCollider = dk2Trackhat.gameObject.GetComponent<SphereCollider>();
+                    if (dk2TrackhatCollider == null)
+                    {
+                        dk2TrackhatCollider = dk2Trackhat.gameObject.AddComponent<SphereCollider>();
+                        dk2TrackhatCollider.isTrigger = true;
+                    }
+
+                    Colliders = new Collider[] { dk2TrackhatCollider };
+                    break;
+
+                default:
+                    Debug.LogError("Error. Unsupported device type: " + controllerModel);
+                    break;
+            }
 
             NVRPlayer.Instance.RegisterHand(this);
 
@@ -404,7 +442,7 @@ namespace NewtonVR
                     NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
                 }
 
-                GhostColliders = new Collider[] { trackhatCollider };
+                GhostColliders = Colliders;
                 CurrentVisibility = VisibilityLevel.Ghost;
             }
 
@@ -415,6 +453,11 @@ namespace NewtonVR
         {
             SetVisibility(VisibilityLevel.Ghost);
             PhysicalController.Off();
+        }
+
+        public string GetDeviceName()
+        {
+            return this.GetComponent<SteamVR_RenderModel>().renderModelName;
         }
     }
     
