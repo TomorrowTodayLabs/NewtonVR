@@ -54,63 +54,36 @@ namespace NewtonVR
             {
                 case "vr_controller_05_wireless_b":
                     Transform dk1Trackhat = PhysicalController.transform.FindChild("trackhat");
-                    Collider dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<BoxCollider>();
+                    Collider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<BoxCollider>();
+                    if (dk1TrackhatCollider == null)
+                        dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<BoxCollider>();
 
                     Transform dk1Body = PhysicalController.transform.FindChild("body");
-                    Collider dk1BodyCollider = dk1Body.gameObject.AddComponent<BoxCollider>();
+                    Collider dk1BodyCollider = dk1Body.gameObject.GetComponent<BoxCollider>();
+                    if (dk1BodyCollider == null)
+                        dk1BodyCollider = dk1Body.gameObject.AddComponent<BoxCollider>();
 
                     Colliders = new Collider[] { dk1TrackhatCollider, dk1BodyCollider };
                     break;
 
                 case "vr_controller_vive_1_5":
-                    List<Collider> colliderList = new List<Collider>();
-
-                    Transform dk2Trackhat = PhysicalController.transform.FindChild("trackhat");
-
-                    Transform dk2TrackhatColliders = dk2Trackhat.FindChild("VivePreTrackhatColliders");
+                    Transform dk2TrackhatColliders = PhysicalController.transform.FindChild("VivePreColliders");
                     if (dk2TrackhatColliders == null)
                     {
-                        dk2TrackhatColliders = GameObject.Instantiate(Resources.Load<GameObject>("VivePreTrackhatColliders")).transform;
-                        dk2TrackhatColliders.parent = dk2Trackhat;
+                        dk2TrackhatColliders = GameObject.Instantiate(Resources.Load<GameObject>("VivePreColliders")).transform;
+                        dk2TrackhatColliders.parent = PhysicalController.transform;
                         dk2TrackhatColliders.localPosition = Vector3.zero;
                         dk2TrackhatColliders.localRotation = Quaternion.identity;
-                        dk2TrackhatColliders.localScale = Vector3.one * 0.1f;
+                        dk2TrackhatColliders.localScale = Vector3.one;
                     }
 
-
-                    Transform dk2Body = dk2Trackhat.FindChild("body collider");
-                    if (dk2Body == null)
-                    {
-                        dk2Body = new GameObject("body collider").transform;
-                        dk2Body.parent = PhysicalController.transform;
-                        dk2Body.localPosition = new Vector3(0, -0.01f, -0.083f);
-                        dk2Body.localScale = new Vector3(0.044f, 0.035f, 0.18f);
-                    }
-
-                    Collider dk2BodyCollider = dk2Body.gameObject.GetComponent<BoxCollider>();
-                    if (dk2BodyCollider == null)
-                    {
-                        dk2BodyCollider = dk2Body.gameObject.AddComponent<BoxCollider>();
-                    }
-
-                    colliderList.AddRange(dk2TrackhatColliders.GetComponents<Collider>());
-                    colliderList.Add(dk2BodyCollider);
-
-                    Colliders = colliderList.ToArray();
+                    Colliders = dk2TrackhatColliders.GetComponentsInChildren<Collider>();
                     break;
 
                 default:
                     Debug.LogError("Error. Unsupported device type: " + controllerModel);
                     break;
             }
-
-            Transform trackhat = PhysicalController.transform.FindChild("trackhat");
-            Collider trackhatCollider = trackhat.gameObject.AddComponent<BoxCollider>();
-
-            Transform body = PhysicalController.transform.FindChild("body");
-            Collider bodyCollider = body.gameObject.AddComponent<BoxCollider>();
-
-            Colliders = new Collider[] { trackhatCollider, bodyCollider };
 
             Renderer[] renderers = PhysicalController.GetComponentsInChildren<Renderer>();
             for (int index = 0; index < renderers.Length; index++)
