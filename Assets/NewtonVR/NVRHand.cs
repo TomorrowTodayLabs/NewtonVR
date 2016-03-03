@@ -383,6 +383,14 @@ namespace NewtonVR
             {
                 case "vr_controller_05_wireless_b":
                     Transform dk1Trackhat = this.transform.FindChild("trackhat");
+                    if (dk1Trackhat == null)
+                    {
+                        // Dk1 controller model has trackhat
+                    }
+                    else
+                    {
+                        dk1Trackhat.gameObject.SetActive(true);
+                    }
 
                     SphereCollider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<SphereCollider>();
                     if (dk1TrackhatCollider == null)
@@ -404,6 +412,10 @@ namespace NewtonVR
                         dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
                         dk2Trackhat.localScale = Vector3.one * 0.1f;
                         dk2Trackhat.localEulerAngles = new Vector3(325, 0, 0);
+                    }
+                    else
+                    {
+                        dk2Trackhat.gameObject.SetActive(true);
                     }
 
                     Collider dk2TrackhatCollider = dk2Trackhat.gameObject.GetComponent<SphereCollider>();
