@@ -13,7 +13,7 @@ using Valve.VR;
 [CustomEditor(typeof(SteamVR_RenderModel)), CanEditMultipleObjects]
 public class SteamVR_RenderModelEditor : Editor
 {
-	SerializedProperty script, index, modelOverride, verbose, createComponents, updateDynamically;
+	SerializedProperty script, index, modelOverride, shader, verbose, createComponents, updateDynamically;
 
 	static string[] renderModelNames;
 	int renderModelIndex;
@@ -23,6 +23,7 @@ public class SteamVR_RenderModelEditor : Editor
 		script = serializedObject.FindProperty("m_Script");
 		index = serializedObject.FindProperty("index");
 		modelOverride = serializedObject.FindProperty("modelOverride");
+		shader = serializedObject.FindProperty("shader");
 		verbose = serializedObject.FindProperty("verbose");
 		createComponents = serializedObject.FindProperty("createComponents");
 		updateDynamically = serializedObject.FindProperty("updateDynamically");
@@ -93,6 +94,7 @@ public class SteamVR_RenderModelEditor : Editor
 		}
 		GUILayout.EndHorizontal();
 
+		EditorGUILayout.PropertyField(shader);
 		EditorGUILayout.PropertyField(verbose);
 		EditorGUILayout.PropertyField(createComponents);
 		EditorGUILayout.PropertyField(updateDynamically);

@@ -45,6 +45,8 @@ namespace NewtonVR
 
         private int DeviceIndex = -1;
 
+        private bool RenderModelInitialized = false;
+
         public bool IsHovering
         {
             get
@@ -71,6 +73,8 @@ namespace NewtonVR
             EstimationSampleIndex = 0;
 
             VisibilityLocked = false;
+
+            SteamVR_Utils.Event.Listen("render_model_loaded", RenderModelLoaded);
         }
 
         private void Update()
@@ -367,9 +371,21 @@ namespace NewtonVR
             CurrentVisibility = visibility;
         }
 
+        private void RenderModelLoaded(params object[] args)
+        {
+            SteamVR_RenderModel renderModel = (SteamVR_RenderModel)args[0];
+            bool success = (bool)args[1];
+
+            if ((int)renderModel.index == DeviceIndex)
+                RenderModelInitialized = true;
+        }
+
         private IEnumerator DoInitialize()
         {
-            yield return null; //wait for children to be initialized
+            Debug.Log("DoInitialize() on " + this.name);
+            
+            while (RenderModelInitialized == false)
+                yield return null; //wait for render model to be initialized
 
             Rigidbody = this.GetComponent<Rigidbody>();
             if (Rigidbody == null)
@@ -412,6 +428,7 @@ namespace NewtonVR
                         dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
                         dk2Trackhat.localScale = Vector3.one * 0.1f;
                         dk2Trackhat.localEulerAngles = new Vector3(325, 0, 0);
+                        dk2Trackhat.gameObject.SetActive(true);
                     }
                     else
                     {
@@ -469,7 +486,7 @@ namespace NewtonVR
 
         public string GetDeviceName()
         {
-            return this.GetComponent<SteamVR_RenderModel>().renderModelName;
+            return this.GetComponentInChildren<SteamVR_RenderModel>().renderModelName;
         }
     }
     

@@ -38,10 +38,10 @@ public class SteamVR_GameView : MonoBehaviour
 
 		GL.PushMatrix();
 		GL.LoadOrtho();
-#if UNITY_5_0
-		blitMaterial.SetPass(QualitySettings.activeColorSpace == ColorSpace.Linear ? 1 : 0);
-#else
+#if !(UNITY_5_0)
 		blitMaterial.SetPass(0);
+#else
+		blitMaterial.SetPass(QualitySettings.activeColorSpace == ColorSpace.Linear ? 1 : 0);
 #endif
 		GL.Begin(GL.QUADS);
 		GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(x0, y0, 0);
@@ -64,10 +64,10 @@ public class SteamVR_GameView : MonoBehaviour
 
 			GL.PushMatrix();
 			GL.LoadOrtho();
-#if UNITY_5_0
-			overlayMaterial.SetPass(0);
-#else
+#if !(UNITY_5_0)
 			overlayMaterial.SetPass(QualitySettings.activeColorSpace == ColorSpace.Linear ? 1 : 0);
+#else
+			overlayMaterial.SetPass(0);
 #endif
 			GL.Begin(GL.QUADS);
 			GL.TexCoord2(u0, v0); GL.Vertex3(-1, -1, 0);

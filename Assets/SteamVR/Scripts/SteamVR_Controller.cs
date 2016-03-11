@@ -42,9 +42,11 @@ public class SteamVR_Controller
 		public bool calibrating { get { Update(); return pose.eTrackingResult == ETrackingResult.Calibrating_InProgress || pose.eTrackingResult == ETrackingResult.Calibrating_OutOfRange; } }
 		public bool uninitialized { get { Update(); return pose.eTrackingResult == ETrackingResult.Uninitialized; } }
 
+		// These values are only accurate for the last controller state change (e.g. trigger release), and by definition, will always lag behind
+		// the predicted visual poses that drive SteamVR_TrackedObjects since they are sync'd to the input timestamp that caused them to update.
 		public SteamVR_Utils.RigidTransform transform { get { Update(); return new SteamVR_Utils.RigidTransform(pose.mDeviceToAbsoluteTracking); } }
-		public Vector3 velocity { get { Update(); return new Vector3(pose.vVelocity.v[0], pose.vVelocity.v[1], -pose.vVelocity.v[2]); } }
-		public Vector3 angularVelocity { get { Update(); return new Vector3(-pose.vAngularVelocity.v[0], -pose.vAngularVelocity.v[1], pose.vAngularVelocity.v[2]); } }
+		public Vector3 velocity { get { Update(); return new Vector3(pose.vVelocity.v0, pose.vVelocity.v1, -pose.vVelocity.v2); } }
+		public Vector3 angularVelocity { get { Update(); return new Vector3(-pose.vAngularVelocity.v0, -pose.vAngularVelocity.v1, pose.vAngularVelocity.v2); } }
 
 		public VRControllerState_t GetState() { Update(); return state; }
 		public VRControllerState_t GetPrevState() { Update(); return prevState; }
@@ -60,10 +62,12 @@ public class SteamVR_Controller
 				prevFrameCount = Time.frameCount;
 				prevState = state;
 
-				var vr = SteamVR.instance;
-				valid = vr.hmd.GetControllerStateWithPose(SteamVR_Render.instance.trackingSpace, index, ref state, ref pose);
-
-				UpdateHairTrigger();
+				var system = OpenVR.System;
+				if (system != null)
+				{
+					valid = system.GetControllerStateWithPose(SteamVR_Render.instance.trackingSpace, index, ref state, ref pose);
+					UpdateHairTrigger();
+				}
 			}
 		}
 
@@ -87,14 +91,25 @@ public class SteamVR_Controller
 		{
 			Update();
 			var axisId = (uint)buttonId - (uint)EVRButtonId.k_EButton_Axis0;
-			return new Vector2(state.rAxis[axisId].x, state.rAxis[axisId].y);
+			switch (axisId)
+			{
+				case 0: return new Vector2(state.rAxis0.x, state.rAxis0.y);
+				case 1: return new Vector2(state.rAxis1.x, state.rAxis1.y);
+				case 2: return new Vector2(state.rAxis2.x, state.rAxis2.y);
+				case 3: return new Vector2(state.rAxis3.x, state.rAxis3.y);
+				case 4: return new Vector2(state.rAxis4.x, state.rAxis4.y);
+			}
+			return Vector2.zero;
 		}
 
 		public void TriggerHapticPulse(ushort durationMicroSec = 500, EVRButtonId buttonId = EVRButtonId.k_EButton_SteamVR_Touchpad)
 		{
-			var vr = SteamVR.instance;
-			var axisId = (uint)buttonId - (uint)EVRButtonId.k_EButton_Axis0;
-			vr.hmd.TriggerHapticPulse(index, axisId, (char)durationMicroSec);
+			var system = OpenVR.System;
+			if (system != null)
+			{
+				var axisId = (uint)buttonId - (uint)EVRButtonId.k_EButton_Axis0;
+				system.TriggerHapticPulse(index, axisId, (char)durationMicroSec);
+			}
 		}
 
 		public float hairTriggerDelta = 0.1f; // amount trigger must be pulled or released to change state
@@ -103,8 +118,7 @@ public class SteamVR_Controller
 		void UpdateHairTrigger()
 		{
 			hairTriggerPrevState = hairTriggerState;
-			const uint axisId = (uint)EVRButtonId.k_EButton_SteamVR_Trigger - (uint)EVRButtonId.k_EButton_Axis0;
-			var value = state.rAxis[axisId].x;
+			var value = state.rAxis1.x; // trigger
 			if (hairTriggerState)
 			{
 				if (value < hairTriggerLimit - hairTriggerDelta || value <= 0.0f)
@@ -160,15 +174,19 @@ public class SteamVR_Controller
 		ETrackedDeviceClass deviceClass = ETrackedDeviceClass.Controller,
 		int relativeTo = (int)OpenVR.k_unTrackedDeviceIndex_Hmd) // use -1 for absolute tracking space
 	{
+		var result = -1;
+
 		var invXform = ((uint)relativeTo < OpenVR.k_unMaxTrackedDeviceCount) ?
 			Input(relativeTo).transform.GetInverse() : SteamVR_Utils.RigidTransform.identity;
 
-		var vr = SteamVR.instance;
-		var result = -1;
+		var system = OpenVR.System;
+		if (system == null)
+			return result;
+
 		var best = -float.MaxValue;
 		for (int i = 0; i < OpenVR.k_unMaxTrackedDeviceCount; i++)
 		{
-			if (i == relativeTo || vr.hmd.GetTrackedDeviceClass((uint)i) != deviceClass)
+			if (i == relativeTo || system.GetTrackedDeviceClass((uint)i) != deviceClass)
 				continue;
 
 			var device = Input(i);

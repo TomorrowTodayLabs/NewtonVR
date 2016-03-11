@@ -21,6 +21,7 @@
 //=============================================================================
 
 using UnityEngine;
+using Valve.VR;
 
 public class SteamVR_Fade : MonoBehaviour
 {
@@ -36,9 +37,9 @@ public class SteamVR_Fade : MonoBehaviour
 
 	static public void View(Color newColor, float duration)
 	{
-		var vr = SteamVR.instance;
-		if (vr != null && vr.compositor != null)
-			vr.compositor.FadeToColor(duration, newColor.r, newColor.g, newColor.b, newColor.a, false);
+		var compositor = OpenVR.Compositor;
+		if (compositor != null)
+			compositor.FadeToColor(duration, newColor.r, newColor.g, newColor.b, newColor.a, false);
 	}
 
 #if TEST_FADE_VIEW

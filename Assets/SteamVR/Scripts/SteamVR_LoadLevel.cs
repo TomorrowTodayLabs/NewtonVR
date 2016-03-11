@@ -7,6 +7,7 @@
 using UnityEngine;
 using System.Collections;
 using Valve.VR;
+using System.IO;
 
 public class SteamVR_LoadLevel : MonoBehaviour
 {
@@ -24,8 +25,20 @@ public class SteamVR_LoadLevel : MonoBehaviour
 	// Name of level to load.
 	public string levelName;
 
+	// If loading an external application
+	public bool loadExternalApp;
+
+	// Name of external application to load
+	public string externalAppPath;
+
+	// The command-line args for the external application to load
+	public string externalAppArgs;
+
 	// If true, call LoadLevelAdditiveAsync instead of LoadLevelAsync.
 	public bool loadAdditive;
+
+	// Async load causes crashes in some apps.
+	public bool loadAsync = true;
 
 	// Optional logo texture.
 	public Texture loadingScreen;
@@ -148,12 +161,15 @@ public class SteamVR_LoadLevel : MonoBehaviour
 				RenderTexture.active = prevActive;
 
 				// Texture needs to be set every frame after it is updated since SteamVR makes a copy internally to a shared texture.
-				var vr = SteamVR.instance;
-				var texture = new Texture_t();
-				texture.handle = renderTexture.GetNativeTexturePtr();
-				texture.eType = vr.graphicsAPI;
-				texture.eColorSpace = EColorSpace.Auto;
-                vr.overlay.SetOverlayTexture(progressBarOverlayHandle, ref texture);
+				var overlay = OpenVR.Overlay;
+				if (overlay != null)
+				{
+					var texture = new Texture_t();
+					texture.handle = renderTexture.GetNativeTexturePtr();
+					texture.eType = SteamVR.instance.graphicsAPI;
+					texture.eColorSpace = EColorSpace.Auto;
+					overlay.SetOverlayTexture(progressBarOverlayHandle, ref texture);
+				}
 			}
 		}
 
@@ -204,20 +220,20 @@ public class SteamVR_LoadLevel : MonoBehaviour
 
 		alpha = Mathf.Clamp01(alpha + fadeRate * Time.deltaTime);
 
-		var vr = SteamVR.instance;
+		var overlay = OpenVR.Overlay;
+		if (overlay != null)
+		{
+			if (loadingScreenOverlayHandle != OpenVR.k_ulOverlayHandleInvalid)
+				overlay.SetOverlayAlpha(loadingScreenOverlayHandle, alpha);
 
-		if (loadingScreenOverlayHandle != OpenVR.k_ulOverlayHandleInvalid)
-			vr.overlay.SetOverlayAlpha(loadingScreenOverlayHandle, alpha);
-
-		if (progressBarOverlayHandle != OpenVR.k_ulOverlayHandleInvalid)
-			vr.overlay.SetOverlayAlpha(progressBarOverlayHandle, alpha);
+			if (progressBarOverlayHandle != OpenVR.k_ulOverlayHandleInvalid)
+				overlay.SetOverlayAlpha(progressBarOverlayHandle, alpha);
+		}
 	}
 
 	// Corourtine to handle all the steps across loading boundaries.
 	IEnumerator LoadLevel()
 	{
-		var vr = SteamVR.instance;
-
 		// Optionally rotate loading screen transform around the camera into view.
 		// We assume here that the loading screen is already facing toward the origin,
 		// and that the progress bar transform (if any) is a child and will follow along.
@@ -251,52 +267,57 @@ public class SteamVR_LoadLevel : MonoBehaviour
 			alpha = 1.0f;
 		}
 
+		var overlay = OpenVR.Overlay;
+
 		// Optionally create our loading screen overlay.
-		if (loadingScreen != null)
+		if (loadingScreen != null && overlay != null)
 		{
 			loadingScreenOverlayHandle = GetOverlayHandle("loadingScreen", loadingScreenTransform != null ? loadingScreenTransform : transform, loadingScreenWidthInMeters);
 			if (loadingScreenOverlayHandle != OpenVR.k_ulOverlayHandleInvalid)
 			{
-				vr.overlay.SetHighQualityOverlay(loadingScreenOverlayHandle);
-				vr.overlay.SetOverlayFlag(loadingScreenOverlayHandle, VROverlayFlags.Curved, false);
-				vr.overlay.SetOverlayFlag(loadingScreenOverlayHandle, VROverlayFlags.RGSS4X, true);
-
 				var texture = new Texture_t();
 				texture.handle = loadingScreen.GetNativeTexturePtr();
-				texture.eType = vr.graphicsAPI;
+				texture.eType = SteamVR.instance.graphicsAPI;
 				texture.eColorSpace = EColorSpace.Auto;
-				vr.overlay.SetOverlayTexture(loadingScreenOverlayHandle, ref texture);
+				overlay.SetOverlayTexture(loadingScreenOverlayHandle, ref texture);
 			}
 		}
 
 		bool fadedForeground = false;
 
-		// Optionally set a skybox to use as a backdrop in the compositor.
-		if (front != null)
-		{
-			SteamVR_Skybox.SetOverride(front, back, left, right, top, bottom);
+		// Fade out to compositor
+		SteamVR_Utils.Event.Send("loading_fade_out", fadeOutTime);
 
-			// Explicitly fade to the compositor since loading will cause us to stop rendering.
-			vr.compositor.FadeGrid(fadeOutTime, true);
-			yield return new WaitForSeconds(fadeOutTime);
-		}
-		else if (backgroundColor != Color.clear)
+		// Optionally set a skybox to use as a backdrop in the compositor.
+		var compositor = OpenVR.Compositor;
+		if (compositor != null)
 		{
-			// Otherwise, use the specified background color.
-			if (showGrid)
+			if (front != null)
 			{
-				// Set compositor background color immediately, and start fading to it.
-				vr.compositor.FadeToColor(0.0f, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a, true);
-				vr.compositor.FadeGrid(fadeOutTime, true);
+				SteamVR_Skybox.SetOverride(front, back, left, right, top, bottom);
+
+				// Explicitly fade to the compositor since loading will cause us to stop rendering.
+				compositor.FadeGrid(fadeOutTime, true);
 				yield return new WaitForSeconds(fadeOutTime);
 			}
-			else
+			else if (backgroundColor != Color.clear)
 			{
-				// Fade the foreground color in (which will blend on top of the scene), and then cut to the compositor.
-				vr.compositor.FadeToColor(fadeOutTime, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a, false);
-				yield return new WaitForSeconds(fadeOutTime + 0.1f);
-				vr.compositor.FadeGrid(0.0f, true);
-				fadedForeground = true;
+				// Otherwise, use the specified background color.
+				if (showGrid)
+				{
+					// Set compositor background color immediately, and start fading to it.
+					compositor.FadeToColor(0.0f, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a, true);
+					compositor.FadeGrid(fadeOutTime, true);
+					yield return new WaitForSeconds(fadeOutTime);
+				}
+				else
+				{
+					// Fade the foreground color in (which will blend on top of the scene), and then cut to the compositor.
+					compositor.FadeToColor(fadeOutTime, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a, false);
+					yield return new WaitForSeconds(fadeOutTime + 0.1f);
+					compositor.FadeGrid(0.0f, true);
+					fadedForeground = true;
+				}
 			}
 		}
 
@@ -311,9 +332,54 @@ public class SteamVR_LoadLevel : MonoBehaviour
 		transform.parent = null;
 		DontDestroyOnLoad(gameObject);
 
-		// Loading asynchronously so we can update the progress bar above.
-		async = loadAdditive ? Application.LoadLevelAdditiveAsync(levelName) : Application.LoadLevelAsync(levelName);
-		yield return async;
+		if (loadExternalApp)
+		{
+			Debug.Log("Launching external application...");
+			var applications = OpenVR.Applications;
+			if (applications == null)
+			{
+				Debug.Log("Failed to get OpenVR.Applications interface!");
+			}
+			else
+			{
+				var workingDirectory = Directory.GetCurrentDirectory();
+				Debug.Log("working directory: " + workingDirectory);
+				Debug.Log("path: " + externalAppPath);
+				Debug.Log("args: " + externalAppArgs);
+				var error = applications.LaunchInternalProcess(externalAppPath, externalAppArgs, workingDirectory);
+				Debug.Log("LaunchInternalProcessError: " + error);
+				Application.Quit();
+			}
+		}
+		else
+		{
+#if !(UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
+			var mode = loadAdditive ? UnityEngine.SceneManagement.LoadSceneMode.Additive : UnityEngine.SceneManagement.LoadSceneMode.Single;
+			if (loadAsync)
+			{
+				async = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(levelName, mode);
+				yield return async;
+			}
+			else
+			{
+				UnityEngine.SceneManagement.SceneManager.LoadScene(levelName, mode);
+			}
+#else
+			if (loadAsync)
+			{
+				async = loadAdditive ? Application.LoadLevelAdditiveAsync(levelName) : Application.LoadLevelAsync(levelName);
+				yield return async;
+			}
+			else if (loadAdditive)
+			{
+				Application.LoadLevelAdditive(levelName);
+			}
+			else
+			{
+				Application.LoadLevel(levelName);
+			}
+#endif
+		}
 
 		System.GC.Collect();
 
@@ -333,28 +399,42 @@ public class SteamVR_LoadLevel : MonoBehaviour
 			alpha = 0.0f;
 		}
 
-		// Fade out foreground color if necessary.
-		if (fadedForeground)
-		{
-			vr.compositor.FadeGrid(0.0f, false);
-			vr.compositor.FadeToColor(fadeInTime, 0.0f, 0.0f, 0.0f, 0.0f, false);
-			yield return new WaitForSeconds(fadeInTime);
-		}
-		else
-		{
-			// Fade scene back in, and reset skybox once no longer visible.
-			vr.compositor.FadeGrid(fadeInTime, false);
-			yield return new WaitForSeconds(fadeInTime);
+		// Fade out to compositor
+		SteamVR_Utils.Event.Send("loading_fade_in", fadeInTime);
 
-			if (front != null)
+		if (compositor != null)
+		{
+			// Fade out foreground color if necessary.
+			if (fadedForeground)
 			{
-				SteamVR_Skybox.ClearOverride();
+				compositor.FadeGrid(0.0f, false);
+				compositor.FadeToColor(fadeInTime, 0.0f, 0.0f, 0.0f, 0.0f, false);
+				yield return new WaitForSeconds(fadeInTime);
+			}
+			else
+			{
+				// Fade scene back in, and reset skybox once no longer visible.
+				compositor.FadeGrid(fadeInTime, false);
+				yield return new WaitForSeconds(fadeInTime);
+
+				if (front != null)
+				{
+					SteamVR_Skybox.ClearOverride();
+				}
 			}
 		}
 
 		// Finally, stick around long enough for our overlays to fully fade out.
 		while (alpha > 0.0f)
 			yield return null;
+
+		if (overlay != null)
+		{
+			if (progressBarOverlayHandle != OpenVR.k_ulOverlayHandleInvalid)
+				overlay.HideOverlay(progressBarOverlayHandle);
+			if (loadingScreenOverlayHandle != OpenVR.k_ulOverlayHandleInvalid)
+				overlay.HideOverlay(loadingScreenOverlayHandle);
+		}
 
 		Destroy(gameObject);
 
@@ -368,27 +448,30 @@ public class SteamVR_LoadLevel : MonoBehaviour
 	{
 		ulong handle = OpenVR.k_ulOverlayHandleInvalid;
 
+		var overlay = OpenVR.Overlay;
+		if (overlay == null)
+			return handle;
+
 		var key = SteamVR_Overlay.key + "." + overlayName;
 
-		var vr = SteamVR.instance;
-		var error = vr.overlay.FindOverlay(key, ref handle);
+		var error = overlay.FindOverlay(key, ref handle);
 		if (error != EVROverlayError.None)
-			error = vr.overlay.CreateOverlay(key, overlayName, ref handle);
+			error = overlay.CreateOverlay(key, overlayName, ref handle);
 		if (error == EVROverlayError.None)
 		{
-			vr.overlay.ShowOverlay(handle);
-			vr.overlay.SetOverlayAlpha(handle, alpha);
-			vr.overlay.SetOverlayWidthInMeters(handle, widthInMeters);
+			overlay.ShowOverlay(handle);
+			overlay.SetOverlayAlpha(handle, alpha);
+			overlay.SetOverlayWidthInMeters(handle, widthInMeters);
 
 			// D3D textures are upside-down in Unity to match OpenGL.
-			if (vr.graphicsAPI == EGraphicsAPIConvention.API_DirectX)
+			if (SteamVR.instance.graphicsAPI == EGraphicsAPIConvention.API_DirectX)
 			{
 				var textureBounds = new VRTextureBounds_t();
 				textureBounds.uMin = 0;
 				textureBounds.vMin = 1;
 				textureBounds.uMax = 1;
 				textureBounds.vMax = 0;
-				vr.overlay.SetOverlayTextureBounds(handle, ref textureBounds);
+				overlay.SetOverlayTextureBounds(handle, ref textureBounds);
 			}
 
 			// Convert from world space to tracking space using the top-most camera.
@@ -401,12 +484,12 @@ public class SteamVR_LoadLevel : MonoBehaviour
 				offset.pos.z /= vrcam.origin.localScale.z;
 
 				var t = offset.ToHmdMatrix34();
-				vr.overlay.SetOverlayTransformAbsolute(handle, SteamVR_Render.instance.trackingSpace, ref t);
+				overlay.SetOverlayTransformAbsolute(handle, SteamVR_Render.instance.trackingSpace, ref t);
 			}
 			else
 			{
 				var t = new SteamVR_Utils.RigidTransform(transform).ToHmdMatrix34();
-				vr.overlay.SetOverlayTransformAbsolute(handle, SteamVR_Render.instance.trackingSpace, ref t);
+				overlay.SetOverlayTransformAbsolute(handle, SteamVR_Render.instance.trackingSpace, ref t);
 			}
 		}
 
