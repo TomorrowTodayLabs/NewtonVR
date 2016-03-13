@@ -137,5 +137,9 @@ namespace NewtonVR
         {
 
         }
+        void OnDestroy()
+        {
+            AttachedHand.EndInteraction(this);
+        }
     }
 }
