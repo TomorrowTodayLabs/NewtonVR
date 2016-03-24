@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace NewtonVR
+namespace NewtonVR.Example
 {
     public class NVRExampleLeverResultRocket : MonoBehaviour
     {

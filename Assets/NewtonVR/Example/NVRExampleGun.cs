@@ -11,15 +11,23 @@ namespace NewtonVR.Example
 
         public Vector3 BulletForce = new Vector3(0, 0, 1000);
 
-        public override void UseButtonUp()
+        public void FireBullet()
         {
-            base.UseButtonUp();
-
             GameObject bullet = GameObject.Instantiate(BulletPrefab);
             bullet.transform.position = FirePoint.position;
             bullet.transform.forward = this.transform.forward;
 
             bullet.GetComponent<Rigidbody>().AddRelativeForce(BulletForce);
+        }
+
+        public override void InteractingUpdate(NVRHand hand)
+        {
+            base.InteractingUpdate(hand);
+
+            if (hand.UseButtonDown == true)
+            {
+                FireBullet();
+            }
         }
     }
 }
