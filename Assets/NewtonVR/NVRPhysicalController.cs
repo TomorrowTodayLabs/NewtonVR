@@ -80,6 +80,23 @@ namespace NewtonVR
                     Colliders = dk2TrackhatColliders.GetComponentsInChildren<Collider>();
                     break;
 
+                case "Custom":
+                    Transform customCollidersTransform = PhysicalController.transform.FindChild("VivePreColliders");
+                    if (customCollidersTransform == null)
+                    {
+                        GameObject customColliders = GameObject.Instantiate(Hand.CustomPhysicalColliders);
+                        customColliders.name = "CustomColliders";
+                        customCollidersTransform = customColliders.transform;
+
+                        customCollidersTransform.parent = PhysicalController.transform;
+                        customCollidersTransform.localPosition = Vector3.zero;
+                        customCollidersTransform.localRotation = Quaternion.identity;
+                        customCollidersTransform.localScale = Vector3.one;
+                    }
+
+                    Colliders = customCollidersTransform.GetComponentsInChildren<Collider>();
+                    break;
+
                 default:
                     Debug.LogError("Error. Unsupported device type: " + controllerModel);
                     break;

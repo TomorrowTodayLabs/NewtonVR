@@ -5,8 +5,24 @@ namespace NewtonVR
 {
     public class NVRHelpers
     {
+        private static Shader standardShader;
+        private static Shader StandardShader
+        {
+            get
+            {
+                if (standardShader == null)
+                {
+                    standardShader = Shader.Find("Standard");
+                }
+                return standardShader;
+            }
+        }
+
         public static void SetTransparent(Material material, Color? newcolor = null)
         {
+            if (material.shader != StandardShader)
+                Debug.LogWarning("Trying to set transparent mode on non-standard shader. Please use the Standard Shader instead or modify this method.");
+
             material.SetOverrideTag("RenderType", "Transparent");
             material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
             material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
@@ -27,6 +43,9 @@ namespace NewtonVR
         
         public static void SetOpaque(Material material)
         {
+            if (material.shader != StandardShader)
+                Debug.LogWarning("Trying to set opaque mode on non-standard shader. Please use the Standard Shader instead or modify this method.");
+
             material.SetOverrideTag("RenderType", "");
             material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
             material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
