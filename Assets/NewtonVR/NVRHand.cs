@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +7,17 @@ namespace NewtonVR
 {
     public class NVRHand : MonoBehaviour
     {
-        private Valve.VR.EVRButtonId HoldButton = Valve.VR.EVRButtonId.k_EButton_Grip;
+        //Custom model
+        public bool useCustomModel;
+        public Collider customModelCollider;
+
+
+        public Valve.VR.EVRButtonId HoldButton = Valve.VR.EVRButtonId.k_EButton_Grip;
         public bool HoldButtonDown = false;
         public bool HoldButtonUp = false;
         public bool HoldButtonPressed = false;
 
-        private Valve.VR.EVRButtonId UseButton = Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger;
+        public Valve.VR.EVRButtonId UseButton = Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger;
         public bool UseButtonDown = false;
         public bool UseButtonUp = false;
         public bool UseButtonPressed = false;
@@ -153,7 +158,7 @@ namespace NewtonVR
             float delta = LastDeltas.Sum();
             Vector3 distance = Vector3.zero;
 
-            for (int index = 0; index < LastPositions.Length-1; index++)
+            for (int index = 0; index < LastPositions.Length - 1; index++)
             {
                 Vector3 diff = LastPositions[index + 1] - LastPositions[index];
                 distance += diff;
@@ -169,7 +174,7 @@ namespace NewtonVR
             Vector3 unitAxis = Vector3.zero;
             Quaternion rotation = Quaternion.identity;
 
-            rotation =  LastRotations[LastRotations.Length-1] * Quaternion.Inverse(LastRotations[LastRotations.Length-2]);
+            rotation = LastRotations[LastRotations.Length - 1] * Quaternion.Inverse(LastRotations[LastRotations.Length - 2]);
 
             //Error: the incorrect rotation is sometimes returned
             rotation.ToAngleAxis(out angleDegrees, out unitAxis);
@@ -345,7 +350,7 @@ namespace NewtonVR
                     {
                         GhostRenderers[index].enabled = true;
                     }
-                    
+
                     for (int index = 0; index < GhostColliders.Length; index++)
                     {
                         GhostColliders[index].enabled = true;
@@ -383,7 +388,7 @@ namespace NewtonVR
         private IEnumerator DoInitialize()
         {
             Debug.Log("DoInitialize() on " + this.name);
-            
+
             while (RenderModelInitialized == false)
                 yield return null; //wait for render model to be initialized
 
@@ -393,63 +398,69 @@ namespace NewtonVR
             Rigidbody.isKinematic = true;
 
             Collider[] Colliders = null;
-
-            string controllerModel = GetDeviceName();
-            switch (controllerModel)
+            if (!useCustomModel)
             {
-                case "vr_controller_05_wireless_b":
-                    Transform dk1Trackhat = this.transform.FindChild("trackhat");
-                    if (dk1Trackhat == null)
-                    {
-                        // Dk1 controller model has trackhat
-                    }
-                    else
-                    {
-                        dk1Trackhat.gameObject.SetActive(true);
-                    }
+                string controllerModel = GetDeviceName();
+                switch (controllerModel)
+                {
+                    case "vr_controller_05_wireless_b":
+                        Transform dk1Trackhat = this.transform.FindChild("trackhat");
+                        if (dk1Trackhat == null)
+                        {
+                            // Dk1 controller model has trackhat
+                        }
+                        else
+                        {
+                            dk1Trackhat.gameObject.SetActive(true);
+                        }
 
-                    SphereCollider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<SphereCollider>();
-                    if (dk1TrackhatCollider == null)
-                    {
-                        dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<SphereCollider>();
-                        dk1TrackhatCollider.isTrigger = true;
-                    }
+                        SphereCollider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<SphereCollider>();
+                        if (dk1TrackhatCollider == null)
+                        {
+                            dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<SphereCollider>();
+                            dk1TrackhatCollider.isTrigger = true;
+                        }
 
-                    Colliders = new Collider[] { dk1TrackhatCollider };
-                    break;
+                        Colliders = new Collider[] { dk1TrackhatCollider };
+                        break;
 
-                case "vr_controller_vive_1_5":
+                    case "vr_controller_vive_1_5":
 
-                    Transform dk2Trackhat = this.transform.FindChild("trackhat");
-                    if (dk2Trackhat == null)
-                    {
-                        dk2Trackhat = new GameObject("trackhat").transform;
-                        dk2Trackhat.parent = this.transform;
-                        dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
-                        dk2Trackhat.localScale = Vector3.one * 0.1f;
-                        dk2Trackhat.localEulerAngles = new Vector3(325, 0, 0);
-                        dk2Trackhat.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        dk2Trackhat.gameObject.SetActive(true);
-                    }
+                        Transform dk2Trackhat = this.transform.FindChild("trackhat");
+                        if (dk2Trackhat == null)
+                        {
+                            dk2Trackhat = new GameObject("trackhat").transform;
+                            dk2Trackhat.parent = this.transform;
+                            dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
+                            dk2Trackhat.localScale = Vector3.one * 0.1f;
+                            dk2Trackhat.localEulerAngles = new Vector3(325, 0, 0);
+                            dk2Trackhat.gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            dk2Trackhat.gameObject.SetActive(true);
+                        }
 
-                    Collider dk2TrackhatCollider = dk2Trackhat.gameObject.GetComponent<SphereCollider>();
-                    if (dk2TrackhatCollider == null)
-                    {
-                        dk2TrackhatCollider = dk2Trackhat.gameObject.AddComponent<SphereCollider>();
-                        dk2TrackhatCollider.isTrigger = true;
-                    }
+                        Collider dk2TrackhatCollider = dk2Trackhat.gameObject.GetComponent<SphereCollider>();
+                        if (dk2TrackhatCollider == null)
+                        {
+                            dk2TrackhatCollider = dk2Trackhat.gameObject.AddComponent<SphereCollider>();
+                            dk2TrackhatCollider.isTrigger = true;
+                        }
 
-                    Colliders = new Collider[] { dk2TrackhatCollider };
-                    break;
+                        Colliders = new Collider[] { dk2TrackhatCollider };
+                        break;
 
-                default:
-                    Debug.LogError("Error. Unsupported device type: " + controllerModel);
-                    break;
+                    default:
+                        Debug.LogError("Error. Unsupported device type: " + controllerModel);
+                        break;
+                }
             }
-
+            else
+            {
+                customModelCollider.isTrigger = true;
+                Colliders = new Collider[] { customModelCollider };
+            }
             NVRPlayer.Instance.RegisterHand(this);
 
             if (NVRPlayer.Instance.PhysicalHands == true)
@@ -489,7 +500,7 @@ namespace NewtonVR
             return this.GetComponentInChildren<SteamVR_RenderModel>().renderModelName;
         }
     }
-    
+
 
     public enum VisibilityLevel
     {
@@ -500,7 +511,7 @@ namespace NewtonVR
 
     public enum HandState
     {
-        Uninitialized, 
+        Uninitialized,
         Idle,
         GripDownNotInteracting,
         GripDownInteracting,
