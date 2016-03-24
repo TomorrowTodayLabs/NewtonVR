@@ -53,6 +53,8 @@ namespace NewtonVR
 
         private bool RenderModelInitialized = false;
 
+        private bool isInitialized;
+        
         public bool IsHovering
         {
             get
@@ -320,8 +322,10 @@ namespace NewtonVR
 
         private void OnEnable()
         {
-            if (this.gameObject.activeInHierarchy)
+            if (this.gameObject.activeInHierarchy && !isInitialized)
+            {
                 StartCoroutine(DoInitialize());
+            }
         }
 
         private void SetDeviceIndex(int index)
