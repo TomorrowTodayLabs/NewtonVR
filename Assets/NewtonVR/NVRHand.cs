@@ -16,6 +16,18 @@ namespace NewtonVR
         public bool UseButtonDown = false;
         public bool UseButtonUp = false;
         public bool UseButtonPressed = false;
+        public float UseButtonAxis = 0f;
+
+        private Valve.VR.EVRButtonId MenuButton = Valve.VR.EVRButtonId.k_EButton_ApplicationMenu;
+        public bool MenuButtonDown = false;
+        public bool MenuButtonUp = false;
+        public bool MenuButtonPressed = false;
+
+        private Valve.VR.EVRButtonId TouchpadButton = Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad;
+        public bool TouchpadButtonDown = false;
+        public bool TouchpadButtonUp = false;
+        public bool TouchpadButtonPressed = false;
+        public Vector2 TouchpadAxis = new Vector2();
 
         public Rigidbody Rigidbody;
 
@@ -69,7 +81,7 @@ namespace NewtonVR
         }
 
 
-        private void Awake()
+        protected virtual void Awake()
         {
             CurrentlyHoveringOver = new Dictionary<NVRInteractable, Dictionary<Collider, float>>();
 
@@ -83,7 +95,7 @@ namespace NewtonVR
             SteamVR_Utils.Event.Listen("render_model_loaded", RenderModelLoaded);
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (Controller == null || CurrentHandState == HandState.Uninitialized)
                 return;
@@ -95,6 +107,16 @@ namespace NewtonVR
             UseButtonPressed = Controller.GetPress(UseButton);
             UseButtonDown = Controller.GetPressDown(UseButton);
             UseButtonUp = Controller.GetPressUp(UseButton);
+            UseButtonAxis = Controller.GetAxis(UseButton).x;
+
+            MenuButtonPressed = Controller.GetPress(MenuButton);
+            MenuButtonDown = Controller.GetPressDown(MenuButton);
+            MenuButtonUp = Controller.GetPressUp(MenuButton);
+
+            TouchpadButtonPressed = Controller.GetPress(TouchpadButton);
+            TouchpadButtonDown = Controller.GetPressDown(TouchpadButton);
+            TouchpadButtonUp = Controller.GetPressUp(TouchpadButton);
+            TouchpadAxis = Controller.GetAxis(TouchpadButton);
 
             if (HoldButtonUp)
             {
@@ -208,12 +230,13 @@ namespace NewtonVR
             return LastRotations[last] * Quaternion.Inverse(LastRotations[secondToLast]);
         }
 
-        private void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             LastPositions[EstimationSampleIndex] = this.transform.position;
             LastRotations[EstimationSampleIndex] = this.transform.rotation;
             LastDeltas[EstimationSampleIndex] = Time.fixedDeltaTime;
             EstimationSampleIndex++;
+
             if (EstimationSampleIndex >= LastPositions.Length)
                 EstimationSampleIndex = 0;
 
@@ -223,7 +246,7 @@ namespace NewtonVR
             }
         }
 
-        private void BeginInteraction(NVRInteractable interactable)
+        public virtual void BeginInteraction(NVRInteractable interactable)
         {
             if (interactable.CanAttach == true)
             {
@@ -237,7 +260,7 @@ namespace NewtonVR
             }
         }
 
-        public void EndInteraction(NVRInteractable item)
+        public virtual void EndInteraction(NVRInteractable item)
         {
             if (item != null && CurrentlyHoveringOver.ContainsKey(item) == true)
                 CurrentlyHoveringOver.Remove(item);
@@ -273,7 +296,7 @@ namespace NewtonVR
             }
         }
 
-        private void OnTriggerEnter(Collider collider)
+        protected virtual void OnTriggerEnter(Collider collider)
         {
             NVRInteractable interactable = NVRInteractables.GetInteractable(collider);
             if (interactable == null || interactable.enabled == false)
@@ -286,7 +309,7 @@ namespace NewtonVR
                 CurrentlyHoveringOver[interactable][collider] = Time.time;
         }
 
-        private void OnTriggerStay(Collider collider)
+        protected virtual void OnTriggerStay(Collider collider)
         {
             NVRInteractable interactable = NVRInteractables.GetInteractable(collider);
             if (interactable == null || interactable.enabled == false)
@@ -299,7 +322,7 @@ namespace NewtonVR
                 CurrentlyHoveringOver[interactable][collider] = Time.time;
         }
 
-        private void OnTriggerExit(Collider collider)
+        protected virtual void OnTriggerExit(Collider collider)
         {
             NVRInteractable interactable = NVRInteractables.GetInteractable(collider);
             if (interactable == null)
@@ -318,7 +341,7 @@ namespace NewtonVR
             }
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             if (this.gameObject.activeInHierarchy)
                 StartCoroutine(DoInitialize());
