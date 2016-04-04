@@ -102,6 +102,11 @@ namespace NewtonVR
             {
                 UseButtonUp();
             }
+
+            if (hand.UseButtonDown == true)
+            {
+                UseButtonDown();
+            }
         }
 
         public void ForceDetach()
@@ -129,13 +134,21 @@ namespace NewtonVR
         protected virtual void DroppedBecauseOfDistance()
         {
             AttachedHand.EndInteraction(this);
-
-            Debug.Log("Dropped");
         }
 
         public virtual void UseButtonUp()
         {
 
+        }
+
+        public virtual void UseButtonDown()
+        {
+
+        }
+
+        protected virtual void OnDestroy()
+        {
+            ForceDetach();
         }
     }
 }
