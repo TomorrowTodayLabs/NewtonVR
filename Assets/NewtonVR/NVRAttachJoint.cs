@@ -12,8 +12,9 @@ namespace NewtonVR
 
         public bool IsAttached { get { return AttachedItem != null; } }
 
-        protected float AttachRange = 0.1f;
-        protected float DropDistance = 0.1f;
+        public float PullRange = 0.1f;
+        public float AttachRange = 0.1f;
+        public float DropDistance = 0.1f;
 
         protected virtual void OnTriggerStay(Collider col)
         {

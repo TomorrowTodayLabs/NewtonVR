@@ -88,9 +88,9 @@ namespace NewtonVR
 
         public override void EndInteraction()
         {
-            this.Rigidbody.useGravity = true;
-
             base.EndInteraction();
+
+            this.Rigidbody.useGravity = true;
 
             if (PickupTransform != null)
                 Destroy(PickupTransform.gameObject);
