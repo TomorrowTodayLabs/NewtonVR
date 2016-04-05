@@ -6,13 +6,19 @@ namespace NewtonVR
     public abstract class NVRInteractable : MonoBehaviour
     {
         public Rigidbody Rigidbody;
+
         public bool CanAttach = true;
+        
+        public bool DisableKinematicOnAttach = true;
+        public bool EnableKinematicOnDetach = false;
+        public float DropDistance = 3;
+
         public NVRHand AttachedHand = null;
 
-        protected bool GravityOnInteractionEnd = false;
         protected Collider[] Colliders;
-        protected virtual float DropDistance { get { return 3f; } }
         protected Vector3 ClosestHeldPoint;
+
+        protected bool WasUsingGravity = false;
 
         public virtual bool IsAttached
         {
@@ -81,12 +87,13 @@ namespace NewtonVR
         public virtual void BeginInteraction(NVRHand hand)
         {
             AttachedHand = hand;
-            if (this.Rigidbody.useGravity == true)
+
+            if (DisableKinematicOnAttach == true)
             {
-                this.Rigidbody.useGravity = false;
-                GravityOnInteractionEnd = true;
+                Rigidbody.isKinematic = false;
             }
 
+            WasUsingGravity = Rigidbody.useGravity;
         }
 
         public virtual void InteractingUpdate(NVRHand hand)
@@ -94,6 +101,11 @@ namespace NewtonVR
             if (hand.UseButtonUp == true)
             {
                 UseButtonUp();
+            }
+
+            if (hand.UseButtonDown == true)
+            {
+                UseButtonDown();
             }
         }
 
@@ -110,23 +122,33 @@ namespace NewtonVR
         {
             AttachedHand = null;
             ClosestHeldPoint = Vector3.zero;
-            if (GravityOnInteractionEnd)
+
+            if (EnableKinematicOnDetach == true)
             {
-                this.Rigidbody.useGravity = true;
-                GravityOnInteractionEnd = false;
+                Rigidbody.isKinematic = true;
             }
+
+            Rigidbody.useGravity = WasUsingGravity;
         }
 
         protected virtual void DroppedBecauseOfDistance()
         {
             AttachedHand.EndInteraction(this);
-
-            Debug.Log("Dropped");
         }
 
         public virtual void UseButtonUp()
         {
 
+        }
+
+        public virtual void UseButtonDown()
+        {
+
+        }
+
+        protected virtual void OnDestroy()
+        {
+            ForceDetach();
         }
     }
 }

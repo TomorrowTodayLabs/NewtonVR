@@ -26,7 +26,7 @@ namespace NewtonVR
         public IEnumerator DoBlastOff()
         {
             Rigidbody rb = RocketInstance.GetComponent<Rigidbody>();
-            rb.AddRelativeForce(new Vector3(0, 30000, 0), ForceMode.Force);
+            rb.AddRelativeForce(new Vector3(0, 1000, 0), ForceMode.Force);
 
             yield return new WaitForSeconds(0.5f);
 

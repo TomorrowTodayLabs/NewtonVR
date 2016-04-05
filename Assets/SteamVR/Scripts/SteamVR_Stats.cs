@@ -5,6 +5,7 @@
 //=============================================================================
 
 using UnityEngine;
+using Valve.VR;
 
 public class SteamVR_Stats : MonoBehaviour
 {
@@ -41,19 +42,19 @@ public class SteamVR_Stats : MonoBehaviour
 
 			if (text.enabled)
 			{
-				var vr = SteamVR.instance;
-				if (vr != null)
+				var compositor = OpenVR.Compositor;
+				if (compositor != null)
 				{
-					var timing = new Valve.VR.Compositor_FrameTiming();
-					timing.size = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(Valve.VR.Compositor_FrameTiming));
-					vr.compositor.GetFrameTiming(ref timing, 0);
+					var timing = new Compositor_FrameTiming();
+					timing.m_nSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(Compositor_FrameTiming));
+					compositor.GetFrameTiming(ref timing, 0);
 
-					var update = timing.frameStart + timing.frameVSync;
+					var update = timing.m_flSystemTimeInSeconds;
 					if (update > lastUpdate)
 					{
 						var framerate = (lastUpdate > 0.0f) ? 1.0f / (update - lastUpdate) : 0.0f;
 						lastUpdate = update;
-						text.text = string.Format("framerate: {0:N0}\ndropped frames: {1}", framerate, (int)timing.droppedFrames);
+						text.text = string.Format("framerate: {0:N0}\ndropped frames: {1}", framerate, (int)timing.m_nNumDroppedFrames);
 					}
 					else
 					{

@@ -209,21 +209,20 @@ public static class SteamVR_Utils
 		{
 			var m = Matrix4x4.identity;
 
-			m[0, 0] =  pose.m[0 * 4 + 0];
-			m[1, 0] =  pose.m[1 * 4 + 0];
-			m[2, 0] = -pose.m[2 * 4 + 0];
+			m[0, 0] =  pose.m0;
+			m[0, 1] =  pose.m1;
+			m[0, 2] = -pose.m2;
+			m[0, 3] =  pose.m3;
 
-			m[0, 1] =  pose.m[0 * 4 + 1];
-			m[1, 1] =  pose.m[1 * 4 + 1];
-			m[2, 1] = -pose.m[2 * 4 + 1];
+			m[1, 0] =  pose.m4;
+			m[1, 1] =  pose.m5;
+			m[1, 2] = -pose.m6;
+			m[1, 3] =  pose.m7;
 
-			m[0, 2] = -pose.m[0 * 4 + 2];
-			m[1, 2] = -pose.m[1 * 4 + 2];
-			m[2, 2] =  pose.m[2 * 4 + 2];
-
-			m[0, 3] =  pose.m[0 * 4 + 3];
-			m[1, 3] =  pose.m[1 * 4 + 3];
-			m[2, 3] = -pose.m[2 * 4 + 3];
+			m[2, 0] = -pose.m8;
+			m[2, 1] = -pose.m9;
+			m[2, 2] =  pose.m10;
+			m[2, 3] = -pose.m11;
 
 			this.pos = m.GetPosition();
 			this.rot = m.GetRotation();
@@ -233,25 +232,25 @@ public static class SteamVR_Utils
 		{
 			var m = Matrix4x4.identity;
 
-			m[0, 0] =  pose.m[0 * 4 + 0];
-			m[1, 0] =  pose.m[1 * 4 + 0];
-			m[2, 0] = -pose.m[2 * 4 + 0];
-			m[3, 0] =  pose.m[3 * 4 + 0];
+			m[0, 0] =  pose.m0;
+			m[0, 1] =  pose.m1;
+			m[0, 2] = -pose.m2;
+			m[0, 3] =  pose.m3;
 
-			m[0, 1] =  pose.m[0 * 4 + 1];
-			m[1, 1] =  pose.m[1 * 4 + 1];
-			m[2, 1] = -pose.m[2 * 4 + 1];
-			m[3, 1] =  pose.m[3 * 4 + 1];
+			m[1, 0] =  pose.m4;
+			m[1, 1] =  pose.m5;
+			m[1, 2] = -pose.m6;
+			m[1, 3] =  pose.m7;
 
-			m[0, 2] = -pose.m[0 * 4 + 2];
-			m[1, 2] = -pose.m[1 * 4 + 2];
-			m[2, 2] =  pose.m[2 * 4 + 2];
-			m[3, 2] = -pose.m[3 * 4 + 2];
+			m[2, 0] = -pose.m8;
+			m[2, 1] = -pose.m9;
+			m[2, 2] =  pose.m10;
+			m[2, 3] = -pose.m11;
 
-			m[0, 3] =  pose.m[0 * 4 + 3];
-			m[1, 3] =  pose.m[1 * 4 + 3];
-			m[2, 3] = -pose.m[2 * 4 + 3];
-			m[3, 3] =  pose.m[3 * 4 + 3];
+			m[3, 0] =  pose.m12;
+			m[3, 1] =  pose.m13;
+			m[3, 2] = -pose.m14;
+			m[3, 3] =  pose.m15;
 
 			this.pos = m.GetPosition();
 			this.rot = m.GetRotation();
@@ -261,27 +260,26 @@ public static class SteamVR_Utils
 		{
 			var m = Matrix4x4.TRS(pos, rot, Vector3.one);
 			var pose = new HmdMatrix44_t();
-			pose.m = new float[16];
 
-			pose.m[0 * 4 + 0] =  m[0, 0];
-			pose.m[1 * 4 + 0] =  m[1, 0];
-			pose.m[2 * 4 + 0] = -m[2, 0];
-			pose.m[3 * 4 + 0] =  m[3, 0];
+			pose.m0  =  m[0, 0];
+            pose.m1  =  m[0, 1];
+			pose.m2  = -m[0, 2];
+			pose.m3  =  m[0, 3];
 
-			pose.m[0 * 4 + 1] =  m[0, 1];
-			pose.m[1 * 4 + 1] =  m[1, 1];
-			pose.m[2 * 4 + 1] = -m[2, 1];
-			pose.m[3 * 4 + 1] =  m[3, 1];
+			pose.m4  =  m[1, 0];
+			pose.m5  =  m[1, 1];
+			pose.m6  = -m[1, 2];
+			pose.m7  =  m[1, 3];
 
-			pose.m[0 * 4 + 2] = -m[0, 2];
-			pose.m[1 * 4 + 2] = -m[1, 2];
-			pose.m[2 * 4 + 2] =  m[2, 2];
-			pose.m[3 * 4 + 2] = -m[3, 2];
+			pose.m8  = -m[2, 0];
+			pose.m9  = -m[2, 1];
+			pose.m10 =  m[2, 2];
+			pose.m11 = -m[2, 3];
 
-			pose.m[0 * 4 + 3] =  m[0, 3];
-			pose.m[1 * 4 + 3] =  m[1, 3];
-			pose.m[2 * 4 + 3] = -m[2, 3];
-			pose.m[3 * 4 + 3] =  m[3, 3];
+			pose.m12 =  m[3, 0];
+			pose.m13 =  m[3, 1];
+			pose.m14 = -m[3, 2];
+			pose.m15 =  m[3, 3];
 
 			return pose;
 		}
@@ -290,23 +288,21 @@ public static class SteamVR_Utils
 		{
 			var m = Matrix4x4.TRS(pos, rot, Vector3.one);
 			var pose = new HmdMatrix34_t();
-			pose.m = new float[16];
 
-			pose.m[0 * 4 + 0] =  m[0, 0];
-			pose.m[1 * 4 + 0] =  m[1, 0];
-			pose.m[2 * 4 + 0] = -m[2, 0];
+			pose.m0  =  m[0, 0];
+            pose.m1  =  m[0, 1];
+			pose.m2  = -m[0, 2];
+			pose.m3  =  m[0, 3];
 
-			pose.m[0 * 4 + 1] =  m[0, 1];
-			pose.m[1 * 4 + 1] =  m[1, 1];
-			pose.m[2 * 4 + 1] = -m[2, 1];
+			pose.m4  =  m[1, 0];
+			pose.m5  =  m[1, 1];
+			pose.m6  = -m[1, 2];
+			pose.m7  =  m[1, 3];
 
-			pose.m[0 * 4 + 2] = -m[0, 2];
-			pose.m[1 * 4 + 2] = -m[1, 2];
-			pose.m[2 * 4 + 2] =  m[2, 2];
-
-			pose.m[0 * 4 + 3] =  m[0, 3];
-			pose.m[1 * 4 + 3] =  m[1, 3];
-			pose.m[2 * 4 + 3] = -m[2, 3];
+			pose.m8  = -m[2, 0];
+			pose.m9  = -m[2, 1];
+			pose.m10 =  m[2, 2];
+			pose.m11 = -m[2, 3];
 
 			return pose;
 		}
@@ -460,43 +456,36 @@ public static class SteamVR_Utils
 		var mesh = new Mesh();
 		mesh.vertices = vertices;
 		mesh.triangles = indices;
+        mesh.bounds = new Bounds( Vector3.zero, new Vector3( float.MaxValue, float.MaxValue, float.MaxValue ) ); // Prevent frustum culling from culling this mesh
 		return mesh;
 	}
 
-	public delegate object SystemFn(IVRSystem system, params object[] args);
+	public delegate object SystemFn(CVRSystem system, params object[] args);
 
 	public static object CallSystemFn(SystemFn fn, params object[] args)
 	{
-		object result = null;
-		if (SteamVR.active)
-		{
-			result = fn(SteamVR.instance.hmd, args);
-		}
-		else
+		var initOpenVR = (!SteamVR.active && !SteamVR.usingNativeSupport);
+		if (initOpenVR)
 		{
 			var error = EVRInitError.None;
-			var pSystem = OpenVR.Init(ref error, EVRApplicationType.VRApplication_Other);
-			if (pSystem != System.IntPtr.Zero && error == EVRInitError.None)
-			{
-				// Make sure we're using the proper version
-				pSystem = OpenVR.GetGenericInterface(OpenVR.IVRSystem_Version, ref error);
-				if (pSystem != System.IntPtr.Zero && error == EVRInitError.None)
-				{
-					var system = new CVRSystem(pSystem);
-					result = fn(system, args);
-				}
-				OpenVR.Shutdown();
-			}
+			OpenVR.Init(ref error, EVRApplicationType.VRApplication_Other);
 		}
+
+		var system = OpenVR.System;
+		var result = (system != null) ? fn(system, args) : null;
+
+		if (initOpenVR)
+			OpenVR.Shutdown();
+
 		return result;
 	}
 
 	public static void QueueEventOnRenderThread(int eventID)
 	{
-#if UNITY_5_0 || UNITY_5_1
+#if (UNITY_5_0 || UNITY_5_1)
 		GL.IssuePluginEvent(eventID);
-#else
-		GL.IssuePluginEvent(Unity.GetRenderEventFunc(), eventID);
+#elif (UNITY_5_2 || UNITY_5_3)
+		GL.IssuePluginEvent(SteamVR.Unity.GetRenderEventFunc(), eventID);
 #endif
 	}
 }

@@ -22,7 +22,7 @@ namespace NewtonVR
 
             if (IsAttached == true)
             {
-                Vector3 PositionDelta = AttachedHand.transform.position - InitialAttachPoint.position * DeltaMagic;
+                Vector3 PositionDelta = (AttachedHand.transform.position - InitialAttachPoint.position) * DeltaMagic;
 
                 this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
             }

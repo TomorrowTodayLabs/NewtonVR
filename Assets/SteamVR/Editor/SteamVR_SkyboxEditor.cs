@@ -31,6 +31,7 @@ public class SteamVR_SkyboxEditor : Editor
 
 		if (GUILayout.Button("Take snapshot"))
 		{
+#if (UNITY_5_2)
 			var sceneName = Path.GetFileNameWithoutExtension(EditorApplication.currentScene);
 			var scenePath = Path.GetDirectoryName(EditorApplication.currentScene);
 			var assetPath = scenePath +"/" + sceneName;
@@ -39,7 +40,7 @@ public class SteamVR_SkyboxEditor : Editor
 				var guid = AssetDatabase.CreateFolder(scenePath, sceneName);
 				assetPath = AssetDatabase.GUIDToAssetPath(guid);
 			}
-
+#endif
 			var directions = new Quaternion[] {
 				Quaternion.LookRotation(Vector3.forward),
 				Quaternion.LookRotation(Vector3.back),
@@ -52,6 +53,17 @@ public class SteamVR_SkyboxEditor : Editor
 			Camera tempCamera = null;
 			foreach (SteamVR_Skybox target in targets)
 			{
+#if !(UNITY_5_2)
+				var targetScene = target.gameObject.scene;
+                var sceneName = Path.GetFileNameWithoutExtension(targetScene.name);
+				var scenePath = Path.GetDirectoryName(targetScene.name);
+				var assetPath = scenePath + "/" + sceneName;
+				if (!AssetDatabase.IsValidFolder(assetPath))
+				{
+					var guid = AssetDatabase.CreateFolder(scenePath, sceneName);
+					assetPath = AssetDatabase.GUIDToAssetPath(guid);
+				}
+#endif
 				var camera = target.GetComponent<Camera>();
 				if (camera == null)
 				{
@@ -109,6 +121,12 @@ public class SteamVR_SkyboxEditor : Editor
 			AssetDatabase.Refresh();
 			foreach (SteamVR_Skybox target in targets)
 			{
+#if !(UNITY_5_2)
+				var targetScene = target.gameObject.scene;
+				var sceneName = Path.GetFileNameWithoutExtension(targetScene.name);
+				var scenePath = Path.GetDirectoryName(targetScene.name);
+				var assetPath = scenePath + "/" + sceneName;
+#endif
 				for (int i = 0; i < directions.Length; i++)
 				{
 					var assetName = string.Format(nameFormat, assetPath, target.name, i);

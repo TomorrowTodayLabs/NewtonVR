@@ -1,29 +1,53 @@
-﻿//========= Copyright 2015, Valve Corporation, All rights reserved. ===========
+﻿//========= Copyright 2016, Valve Corporation, All rights reserved. ===========
 //
-// Purpose: Enables/disables left and right controller objects based on
-// connectivity and relative positions.
+// Purpose: Enables/disables objects based on connectivity and assigned roles.
 //
 //=============================================================================
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using Valve.VR;
 
 public class SteamVR_ControllerManager : MonoBehaviour
 {
 	public GameObject left, right;
+	public GameObject[] objects; // populate with objects you want to assign to additional controllers
 
-	int leftIndex = -1, rightIndex = -1;
-	List<int> unassigned = new List<int>();
+	uint[] indices; // assigned
+	bool[] connected = new bool[OpenVR.k_unMaxTrackedDeviceCount]; // controllers only
+
+	// cached roles - may or may not be connected
+	uint leftIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
+	uint rightIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
+
+	void Awake()
+	{
+		// Add left and right entries to the head of the list so we only have to operate on the list itself.
+		var additional = (this.objects != null) ? this.objects.Length : 0;
+		var objects = new GameObject[2 + additional];
+		indices = new uint[2 + additional];
+		objects[0] = right;
+		indices[0] = OpenVR.k_unTrackedDeviceIndexInvalid;
+		objects[1] = left;
+		indices[1] = OpenVR.k_unTrackedDeviceIndexInvalid;
+		for (int i = 0; i < additional; i++)
+		{
+			objects[2 + i] = this.objects[i];
+			indices[2 + i] = OpenVR.k_unTrackedDeviceIndexInvalid;
+		}
+		this.objects = objects;
+	}
 
 	void OnEnable()
 	{
-		if (left != null)
-			left.SetActive(false);
+		for (int i = 0; i < objects.Length; i++)
+		{
+			var obj = objects[i];
+			if (obj != null)
+				obj.SetActive(false);
+		}
 
-		if (right != null)
-			right.SetActive(false);
+		OnTrackedDeviceRoleChanged();
 
 		for (int i = 0; i < SteamVR.connected.Length; i++)
 			if (SteamVR.connected[i])
@@ -31,13 +55,17 @@ public class SteamVR_ControllerManager : MonoBehaviour
 
 		SteamVR_Utils.Event.Listen("input_focus", OnInputFocus);
 		SteamVR_Utils.Event.Listen("device_connected", OnDeviceConnected);
+		SteamVR_Utils.Event.Listen("TrackedDeviceRoleChanged", OnTrackedDeviceRoleChanged);
 	}
 
 	void OnDisable()
 	{
 		SteamVR_Utils.Event.Remove("input_focus", OnInputFocus);
 		SteamVR_Utils.Event.Remove("device_connected", OnDeviceConnected);
+		SteamVR_Utils.Event.Remove("TrackedDeviceRoleChanged", OnTrackedDeviceRoleChanged);
 	}
+
+	static string[] labels = { "left", "right" };
 
 	// Hide controllers when the dashboard is up.
 	private void OnInputFocus(params object[] args)
@@ -45,17 +73,27 @@ public class SteamVR_ControllerManager : MonoBehaviour
 		bool hasFocus = (bool)args[0];
 		if (hasFocus)
 		{
-			if (left != null)
-				ShowObject(left.transform, "hidden (left)");
-			if (right != null)
-				ShowObject(right.transform, "hidden (right)");
+			for (int i = 0; i < objects.Length; i++)
+			{
+				var obj = objects[i];
+				if (obj != null)
+				{
+					var label = (i < 2) ? labels[i] : (i - 1).ToString();
+					ShowObject(obj.transform, "hidden (" + label + ")");
+				}
+			}
 		}
 		else
 		{
-			if (left != null)
-				HideObject(left.transform, "hidden (left)");
-			if (right != null)
-				HideObject(right.transform, "hidden (right)");
+			for (int i = 0; i < objects.Length; i++)
+			{
+				var obj = objects[i];
+				if (obj != null)
+				{
+					var label = (i < 2) ? labels[i] : (i - 1).ToString();
+					HideObject(obj.transform, "hidden (" + label + ")");
+				}
+			}
 		}
 	}
 
@@ -74,183 +112,126 @@ public class SteamVR_ControllerManager : MonoBehaviour
 		if (hidden.gameObject.name != name)
 			return;
 		t.parent = hidden.parent;
-		Object.Destroy(hidden.gameObject);
+		Destroy(hidden.gameObject);
 	}
 
+	private void SetTrackedDeviceIndex(int objectIndex, uint trackedDeviceIndex)
+	{
+		// First make sure no one else is already using this index.
+		if (trackedDeviceIndex != OpenVR.k_unTrackedDeviceIndexInvalid)
+		{
+			for (int i = 0; i < objects.Length; i++)
+			{
+				if (i != objectIndex && indices[i] == trackedDeviceIndex)
+				{
+					var obj = objects[i];
+					if (obj != null)
+						obj.SetActive(false);
+
+					indices[i] = OpenVR.k_unTrackedDeviceIndexInvalid;
+				}
+			}
+		}
+
+		// Only set when changed.
+		if (trackedDeviceIndex != indices[objectIndex])
+		{
+			indices[objectIndex] = trackedDeviceIndex;
+
+			var obj = objects[objectIndex];
+			if (obj != null)
+			{
+				if (trackedDeviceIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
+					obj.SetActive(false);
+				else
+				{
+					obj.SetActive(true);
+					obj.BroadcastMessage("SetDeviceIndex", (int)trackedDeviceIndex, SendMessageOptions.DontRequireReceiver);
+				}
+			}
+		}
+	}
+
+	// Keep track of assigned roles.
+	private void OnTrackedDeviceRoleChanged(params object[] args)
+	{
+		Refresh();
+	}
+
+	// Keep track of connected controller indices.
 	private void OnDeviceConnected(params object[] args)
 	{
-		var index = (int)args[0];
+		var index = (uint)(int)args[0];
+		bool changed = this.connected[index];
+		this.connected[index] = false;
 
-		if (index == leftIndex)
+		var connected = (bool)args[1];
+		if (connected)
 		{
-			if (left != null)
-				left.SetActive(false);
-
-			leftIndex = -1;
-		}
-
-		if (index == rightIndex)
-		{
-			if (right != null)
-				right.SetActive(false);
-
-			rightIndex = -1;
-		}
-
-		if (unassigned.Remove(index) && unassigned.Count == 0)
-			StopAllCoroutines();
-
-		var vr = SteamVR.instance;
-		if (vr.hmd.GetTrackedDeviceClass((uint)index) == ETrackedDeviceClass.Controller)
-		{
-			var connected = (bool)args[1];
-			if (connected)
+			var system = OpenVR.System;
+			if (system != null && system.GetTrackedDeviceClass(index) == ETrackedDeviceClass.Controller)
 			{
-				unassigned.Add(index);
-				if (unassigned.Count == 1)
-					StartCoroutine(FindControllers());
+				this.connected[index] = true;
+				changed = !changed; // if we clear and set the same index, nothing has changed
 			}
 		}
+
+		if (changed)
+			Refresh();
 	}
 
-	IEnumerator FindControllers()
+	public void Refresh()
 	{
-		while (true)
+		int objectIndex = 0;
+
+		var system = OpenVR.System;
+		if (system != null)
 		{
-			// If only have one controller to assign, wait until it starts tracking, then assign as the right controller.
-			if (leftIndex == -1 && rightIndex == -1 && unassigned.Count == 1)
+			leftIndex = system.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.LeftHand);
+			rightIndex = system.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
+		}
+
+		// If neither role has been assigned yet, try hooking up at least the right controller.
+		if (leftIndex == OpenVR.k_unTrackedDeviceIndexInvalid && rightIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
+		{
+			for (uint deviceIndex = 0; deviceIndex < connected.Length; deviceIndex++)
 			{
-				var index = unassigned[0];
-				if (SteamVR_Controller.Input(index).hasTracking)
+				if (connected[deviceIndex])
 				{
-					rightIndex = index;
-					unassigned.Remove(index);
-
-					if (right != null)
-					{
-						right.SetActive(true);
-						right.BroadcastMessage("SetDeviceIndex", rightIndex, SendMessageOptions.DontRequireReceiver);
-					}
-
-					break; // done
+					SetTrackedDeviceIndex(objectIndex++, deviceIndex);
+					break;
 				}
 			}
-			else
+		}
+		else
+		{
+			SetTrackedDeviceIndex(objectIndex++, (rightIndex < connected.Length && connected[rightIndex]) ? rightIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
+			SetTrackedDeviceIndex(objectIndex++, (leftIndex < connected.Length && connected[leftIndex]) ? leftIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
+
+			// Assign out any additional controllers only after both left and right have been assigned.
+			if (leftIndex != OpenVR.k_unTrackedDeviceIndexInvalid && rightIndex != OpenVR.k_unTrackedDeviceIndexInvalid)
 			{
-				// More than one, find leftmost and rightmost controllers and assign them.
-				var hmd = SteamVR_Controller.Input((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
-				if (hmd.hasTracking)
+				for (uint deviceIndex = 0; deviceIndex < connected.Length; deviceIndex++)
 				{
-					int minIndex = -1, maxIndex = -1;
-					float minScore = float.MaxValue, maxScore = -float.MaxValue;
+					if (objectIndex >= objects.Length)
+						break;
 
-					var invXform = hmd.transform.GetInverse();
-					if (leftIndex != -1)
+					if (!connected[deviceIndex])
+						continue;
+
+					if (deviceIndex != leftIndex && deviceIndex != rightIndex)
 					{
-						var device = SteamVR_Controller.Input(leftIndex);
-						if (device.hasTracking)
-						{
-							var score = CalcAngle(invXform * device.transform.pos);
-							if (score < minScore)
-							{
-								minScore = score;
-								minIndex = leftIndex;
-							}
-							if (score > maxScore)
-							{
-								maxScore = score;
-								maxIndex = leftIndex;
-							}
-						}
-					}
-					if (rightIndex != -1)
-					{
-						var device = SteamVR_Controller.Input(rightIndex);
-						if (device.hasTracking)
-						{
-							var score = CalcAngle(invXform * device.transform.pos);
-							if (score < minScore)
-							{
-								minScore = score;
-								minIndex = rightIndex;
-							}
-							if (score > maxScore)
-							{
-								maxScore = score;
-								maxIndex = rightIndex;
-							}
-						}
-					}
-					foreach (var index in unassigned)
-					{
-						var device = SteamVR_Controller.Input(index);
-						if (device.hasTracking)
-						{
-							var score = CalcAngle(invXform * device.transform.pos);
-							if (score < minScore)
-							{
-								minScore = score;
-								minIndex = index;
-							}
-							if (score > maxScore)
-							{
-								maxScore = score;
-								maxIndex = index;
-							}
-						}
-					}
-
-					// Identified both controllers, (re)assign them.
-					if (minIndex != maxIndex)
-					{
-						rightIndex = minIndex;
-						unassigned.Remove(rightIndex);
-
-						if (right != null)
-						{
-							right.SetActive(true);
-							right.BroadcastMessage("SetDeviceIndex", rightIndex, SendMessageOptions.DontRequireReceiver);
-						}
-
-						leftIndex = maxIndex;
-						unassigned.Remove(leftIndex);
-
-						if (left != null)
-						{
-							left.SetActive(true);
-							left.BroadcastMessage("SetDeviceIndex", leftIndex, SendMessageOptions.DontRequireReceiver);
-						}
-
-						break; // done
-					}
-					else if (minIndex != -1)
-					{
-						// Only found one, assign it if necessary, but keep looking.
-						if (minIndex != leftIndex && minIndex != rightIndex)
-						{
-							rightIndex = minIndex;
-							unassigned.Remove(rightIndex);
-
-							if (right != null)
-							{
-								right.SetActive(true);
-								right.BroadcastMessage("SetDeviceIndex", rightIndex, SendMessageOptions.DontRequireReceiver);
-							}
-						}
+						SetTrackedDeviceIndex(objectIndex++, deviceIndex);
 					}
 				}
 			}
-
-			yield return null; // try again next frame
 		}
-	}
 
-	float CalcAngle(Vector3 pos)
-	{
-		var dir = new Vector3(pos.x, 0.0f, pos.z).normalized;
-		var dot = Vector3.Dot(dir, Vector3.forward);
-		var cross = Vector3.Cross(dir, Vector3.forward);
-		return (cross.y > 0.0f) ? 2.0f - dot : dot;
+		// Reset the rest.
+		while (objectIndex < objects.Length)
+		{
+			SetTrackedDeviceIndex(objectIndex++, OpenVR.k_unTrackedDeviceIndexInvalid);
+		}
 	}
 }
 

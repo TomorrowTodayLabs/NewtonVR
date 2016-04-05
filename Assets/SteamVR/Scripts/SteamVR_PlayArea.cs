@@ -5,6 +5,7 @@
 //=============================================================================
 
 using UnityEngine;
+using UnityEngine.Rendering;
 using System.Collections;
 using Valve.VR;
 
@@ -34,29 +35,19 @@ public class SteamVR_PlayArea : MonoBehaviour
 	{
 		if (size == Size.Calibrated)
 		{
-			var error = EVRInitError.None;
-			if (!SteamVR.active)
+			var initOpenVR = (!SteamVR.active && !SteamVR.usingNativeSupport);
+			if (initOpenVR)
 			{
+				var error = EVRInitError.None;
 				OpenVR.Init(ref error, EVRApplicationType.VRApplication_Other);
-				if (error != EVRInitError.None)
-					return false;
 			}
 
-			var pChaperone = OpenVR.GetGenericInterface(OpenVR.IVRChaperone_Version, ref error);
-			if (pChaperone == System.IntPtr.Zero || error != EVRInitError.None)
-			{
-				if (!SteamVR.active)
-					OpenVR.Shutdown();
-				return false;
-			}
-
-			var chaperone = new CVRChaperone(pChaperone);
-
-			bool success = chaperone.GetPlayAreaRect( ref pRect );
+			var chaperone = OpenVR.Chaperone;
+			bool success = (chaperone != null) && chaperone.GetPlayAreaRect(ref pRect);
 			if (!success)
 				Debug.LogWarning("Failed to get Calibrated Play Area bounds!  Make sure you have tracking first, and that your space is calibrated.");
 
-			if (!SteamVR.active)
+			if (initOpenVR)
 				OpenVR.Shutdown();
 
 			return success;
@@ -67,14 +58,27 @@ public class SteamVR_PlayArea : MonoBehaviour
 			{
 				var str = size.ToString().Substring(1);
 				var arr = str.Split(new char[] {'x'}, 2);
+
 				// convert to half size in meters (from cm)
 				var x = float.Parse(arr[0]) / 200;
 				var z = float.Parse(arr[1]) / 200;
-				pRect.vCorners = new HmdVector3_t[ 4 ];
-				pRect.vCorners[ 0 ].v = new float[ 3 ] { x, 0, z };
-				pRect.vCorners[ 1 ].v = new float[ 3 ] { x, 0, -z };
-				pRect.vCorners[ 2 ].v = new float[ 3 ] { -x, 0, -z };
-				pRect.vCorners[ 3 ].v = new float[ 3 ] { -x, 0, z };
+
+				pRect.vCorners0.v0 =  x;
+				pRect.vCorners0.v1 =  0;
+				pRect.vCorners0.v2 =  z;
+
+				pRect.vCorners1.v0 =  x;
+				pRect.vCorners1.v1 =  0;
+				pRect.vCorners1.v2 = -z;
+
+				pRect.vCorners2.v0 = -x;
+				pRect.vCorners2.v1 =  0;
+				pRect.vCorners2.v2 = -z;
+
+				pRect.vCorners3.v0 = -x;
+				pRect.vCorners3.v1 =  0;
+				pRect.vCorners3.v2 =  z;
+
 				return true;
 			}
 			catch {}
@@ -89,13 +93,13 @@ public class SteamVR_PlayArea : MonoBehaviour
 		if ( !GetBounds( size, ref rect ) )
 			return;
 
-		var corners = rect.vCorners;
+		var corners = new HmdVector3_t[] { rect.vCorners0, rect.vCorners1, rect.vCorners2, rect.vCorners3 };
 
 		vertices = new Vector3[corners.Length * 2];
 		for (int i = 0; i < corners.Length; i++)
 		{
-			var v = corners[i].v;
-			vertices[i] = new Vector3(v[0], 0.01f, v[2]);
+			var c = corners[i];
+			vertices[i] = new Vector3(c.v0, 0.01f, c.v2);
 		}
 
 		if (borderThickness == 0.0f)
@@ -167,7 +171,11 @@ public class SteamVR_PlayArea : MonoBehaviour
 		renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
 		renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 		renderer.receiveShadows = false;
+#if !(UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
+		renderer.lightProbeUsage = LightProbeUsage.Off;
+#else
 		renderer.useLightProbes = false;
+#endif
 	}
 
 #if UNITY_EDITOR
@@ -262,16 +270,10 @@ public class SteamVR_PlayArea : MonoBehaviour
 	{
 		GetComponent<MeshFilter>().mesh = null; // clear existing
 
-		var vr = SteamVR.instance;
-		if (vr == null)
+		var chaperone = OpenVR.Chaperone;
+		if (chaperone == null)
 			yield break;
 
-		var error = EVRInitError.None;
-		var pChaperone = OpenVR.GetGenericInterface(OpenVR.IVRChaperone_Version, ref error);
-		if (pChaperone == System.IntPtr.Zero || error != EVRInitError.None)
-			yield break;
-
-		var chaperone = new CVRChaperone(pChaperone);
 		while (chaperone.GetCalibrationState() != ChaperoneCalibrationState.OK)
 			yield return null;
 

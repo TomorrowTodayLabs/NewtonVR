@@ -11,8 +11,9 @@ namespace NewtonVR
         public LeverPosition LastLeverPosition;
         public LeverPosition CurrentLeverPosition;
         public bool LeverEngaged = false;
+        public float EngageWaitTime = 1f;
 
-        protected virtual float DeltaMagic { get { return 1f; } }
+        protected virtual float DeltaMagic { get { return 2f; } }
         protected Transform InitialAttachPoint;
         protected HingeJoint HingeJoint;
 
@@ -47,7 +48,7 @@ namespace NewtonVR
 
             if (IsAttached == true)
             {
-                Vector3 PositionDelta = AttachedHand.transform.position - InitialAttachPoint.position * DeltaMagic;
+                Vector3 PositionDelta = (AttachedHand.transform.position - InitialAttachPoint.position) * DeltaMagic;
 
                 this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
             }
@@ -78,7 +79,7 @@ namespace NewtonVR
 
             CanAttach = false;
 
-            StartCoroutine(HoldPosition(1f));
+            StartCoroutine(HoldPosition(EngageWaitTime));
         }
 
         private IEnumerator HoldPosition(float time)
