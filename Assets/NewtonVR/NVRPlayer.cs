@@ -10,6 +10,10 @@ namespace NewtonVR
         public bool PhysicalHands = false;
 
         public NVRHead Head;
+        public NVRHand LeftHand;
+        public NVRHand RightHand;
+
+        [HideInInspector]
         public NVRHand[] Hands;
 
         private Dictionary<Collider, NVRHand> ColliderToHandMapping;
@@ -20,9 +24,19 @@ namespace NewtonVR
             NVRInteractables.Initialize();
 
             if (Head == null)
-                this.GetComponentInChildren<NVRHead>();
+            {
+                Head = this.GetComponentInChildren<NVRHead>();
+            }
+
+            if (LeftHand == null || RightHand == null)
+            {
+                Debug.LogError("[FATAL ERROR] Please set the left and right hand to a nvrhands.");
+            }
+
             if (Hands == null || Hands.Length == 0)
-                this.GetComponentsInChildren<NVRHand>();
+            {
+                Hands = new NVRHand[] { LeftHand, RightHand };
+            }
 
             ColliderToHandMapping = new Dictionary<Collider, NVRHand>();
         }
