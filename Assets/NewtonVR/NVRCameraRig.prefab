@@ -398,17 +398,11 @@ MonoBehaviour:
   HoldButtonDown: 0
   HoldButtonUp: 0
   HoldButtonPressed: 0
+  HoldButtonAxis: 0
   UseButtonDown: 0
   UseButtonUp: 0
   UseButtonPressed: 0
   UseButtonAxis: 0
-  MenuButtonDown: 0
-  MenuButtonUp: 0
-  MenuButtonPressed: 0
-  TouchpadButtonDown: 0
-  TouchpadButtonUp: 0
-  TouchpadButtonPressed: 0
-  TouchpadAxis: {x: 0, y: 0}
   Rigidbody: {fileID: 0}
   CustomModel: {fileID: 0}
   CustomPhysicalColliders: {fileID: 0}
@@ -536,6 +530,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PhysicalHands: 1
   Head: {fileID: 11413708}
+  LeftHand: {fileID: 11419036}
+  RightHand: {fileID: 11464396}
   Hands:
   - {fileID: 11419036}
   - {fileID: 11464396}
@@ -553,17 +549,11 @@ MonoBehaviour:
   HoldButtonDown: 0
   HoldButtonUp: 0
   HoldButtonPressed: 0
+  HoldButtonAxis: 0
   UseButtonDown: 0
   UseButtonUp: 0
   UseButtonPressed: 0
   UseButtonAxis: 0
-  MenuButtonDown: 0
-  MenuButtonUp: 0
-  MenuButtonPressed: 0
-  TouchpadButtonDown: 0
-  TouchpadButtonUp: 0
-  TouchpadButtonPressed: 0
-  TouchpadAxis: {x: 0, y: 0}
   Rigidbody: {fileID: 0}
   CustomModel: {fileID: 0}
   CustomPhysicalColliders: {fileID: 0}

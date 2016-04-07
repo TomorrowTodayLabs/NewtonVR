@@ -3,31 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+using Valve.VR;
+
 namespace NewtonVR
 {
     public class NVRHand : MonoBehaviour
     {
-        private Valve.VR.EVRButtonId HoldButton = Valve.VR.EVRButtonId.k_EButton_Grip;
+        private Valve.VR.EVRButtonId HoldButton = EVRButtonId.k_EButton_Grip;
         public bool HoldButtonDown = false;
         public bool HoldButtonUp = false;
         public bool HoldButtonPressed = false;
+        public float HoldButtonAxis = 0f;
 
-        private Valve.VR.EVRButtonId UseButton = Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger;
+        private Valve.VR.EVRButtonId UseButton = EVRButtonId.k_EButton_SteamVR_Trigger;
         public bool UseButtonDown = false;
         public bool UseButtonUp = false;
         public bool UseButtonPressed = false;
         public float UseButtonAxis = 0f;
 
-        private Valve.VR.EVRButtonId MenuButton = Valve.VR.EVRButtonId.k_EButton_ApplicationMenu;
-        public bool MenuButtonDown = false;
-        public bool MenuButtonUp = false;
-        public bool MenuButtonPressed = false;
-
-        private Valve.VR.EVRButtonId TouchpadButton = Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad;
-        public bool TouchpadButtonDown = false;
-        public bool TouchpadButtonUp = false;
-        public bool TouchpadButtonPressed = false;
-        public Vector2 TouchpadAxis = new Vector2();
+        public Dictionary<EVRButtonId, NVRButtonInputs> Inputs;
 
         public Rigidbody Rigidbody;
 
@@ -65,6 +59,8 @@ namespace NewtonVR
 
         private bool RenderModelInitialized = false;
 
+        private EVRButtonId[] EVRButtonIds;
+
         public bool IsHovering
         {
             get
@@ -91,6 +87,16 @@ namespace NewtonVR
             EstimationSampleIndex = 0;
 
             VisibilityLocked = false;
+            
+            Inputs = new Dictionary<EVRButtonId, NVRButtonInputs>();
+            System.Array buttonTypes = System.Enum.GetValues(typeof(EVRButtonId));
+            foreach (EVRButtonId buttonType in buttonTypes)
+            {
+                if (Inputs.ContainsKey(buttonType) == false) //for some reason there is two EVRButtonId.2 entries
+                {
+                    Inputs.Add(buttonType, new NVRButtonInputs());
+                }
+            }
 
             SteamVR_Utils.Event.Listen("render_model_loaded", RenderModelLoaded);
         }
@@ -100,23 +106,27 @@ namespace NewtonVR
             if (Controller == null || CurrentHandState == HandState.Uninitialized)
                 return;
 
-            HoldButtonPressed = Controller.GetPress(HoldButton);
-            HoldButtonDown = Controller.GetPressDown(HoldButton);
-            HoldButtonUp = Controller.GetPressUp(HoldButton);
+            foreach (var button in Inputs)
+            {
+                button.Value.Axis = Controller.GetAxis(button.Key);
+                button.Value.SingleAxis = button.Value.Axis.x;
+                button.Value.PressDown = Controller.GetPressDown(button.Key);
+                button.Value.PressUp = Controller.GetPressUp(button.Key);
+                button.Value.IsPressed = Controller.GetPress(button.Key);
+                button.Value.TouchDown = Controller.GetTouchDown(button.Key);
+                button.Value.TouchUp = Controller.GetTouchUp(button.Key);
+                button.Value.IsTouched = Controller.GetTouch(button.Key);
+            }
 
-            UseButtonPressed = Controller.GetPress(UseButton);
-            UseButtonDown = Controller.GetPressDown(UseButton);
-            UseButtonUp = Controller.GetPressUp(UseButton);
-            UseButtonAxis = Controller.GetAxis(UseButton).x;
+            HoldButtonPressed = Inputs[HoldButton].IsPressed;
+            HoldButtonDown = Inputs[HoldButton].PressDown;
+            HoldButtonUp = Inputs[HoldButton].PressUp;
+            HoldButtonAxis = Inputs[HoldButton].SingleAxis;
 
-            MenuButtonPressed = Controller.GetPress(MenuButton);
-            MenuButtonDown = Controller.GetPressDown(MenuButton);
-            MenuButtonUp = Controller.GetPressUp(MenuButton);
-
-            TouchpadButtonPressed = Controller.GetPress(TouchpadButton);
-            TouchpadButtonDown = Controller.GetPressDown(TouchpadButton);
-            TouchpadButtonUp = Controller.GetPressUp(TouchpadButton);
-            TouchpadAxis = Controller.GetAxis(TouchpadButton);
+            UseButtonPressed = Inputs[UseButton].IsPressed;
+            UseButtonDown = Inputs[UseButton].PressDown;
+            UseButtonUp = Inputs[UseButton].PressUp;
+            UseButtonAxis = Inputs[UseButton].SingleAxis;
 
             if (HoldButtonUp)
             {
