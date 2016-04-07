@@ -99,6 +99,7 @@ GameObject:
   - 114: {fileID: 11494754}
   - 114: {fileID: 11421116}
   - 92: {fileID: 9268918}
+  - 114: {fileID: 11413708}
   m_Layer: 0
   m_Name: Camera (head)
   m_TagString: MainCamera
@@ -358,6 +359,17 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 146084}
   m_Enabled: 1
+--- !u!114 &11413708
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 146084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dd93dbead6c28e42b0408c298a10966, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11416196
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -386,10 +398,14 @@ MonoBehaviour:
   HoldButtonDown: 0
   HoldButtonUp: 0
   HoldButtonPressed: 0
+  HoldButtonAxis: 0
   UseButtonDown: 0
   UseButtonUp: 0
   UseButtonPressed: 0
+  UseButtonAxis: 0
   Rigidbody: {fileID: 0}
+  CustomModel: {fileID: 0}
+  CustomPhysicalColliders: {fileID: 0}
 --- !u!114 &11421116
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -513,7 +529,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PhysicalHands: 1
-  Head: {fileID: 0}
+  Head: {fileID: 11413708}
+  LeftHand: {fileID: 11419036}
+  RightHand: {fileID: 11464396}
   Hands:
   - {fileID: 11419036}
   - {fileID: 11464396}
@@ -531,10 +549,14 @@ MonoBehaviour:
   HoldButtonDown: 0
   HoldButtonUp: 0
   HoldButtonPressed: 0
+  HoldButtonAxis: 0
   UseButtonDown: 0
   UseButtonUp: 0
   UseButtonPressed: 0
+  UseButtonAxis: 0
   Rigidbody: {fileID: 0}
+  CustomModel: {fileID: 0}
+  CustomPhysicalColliders: {fileID: 0}
 --- !u!114 &11466818
 MonoBehaviour:
   m_ObjectHideFlags: 1
