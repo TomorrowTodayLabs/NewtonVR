@@ -427,10 +427,12 @@ namespace NewtonVR
             if (CustomModel == null)
             {
                 string controllerModel = GetDeviceName();
+                SteamVR_RenderModel renderModel = this.GetComponentInChildren<SteamVR_RenderModel>();
+
                 switch (controllerModel)
                 {
                     case "vr_controller_05_wireless_b":
-                        Transform dk1Trackhat = this.transform.FindChild("trackhat");
+                        Transform dk1Trackhat = renderModel.transform.Find("trackhat");
                         if (dk1Trackhat == null)
                         {
                             // Dk1 controller model has trackhat
@@ -451,11 +453,11 @@ namespace NewtonVR
                         break;
 
                     case "vr_controller_vive_1_5":
-                        Transform dk2Trackhat = this.transform.FindChild("trackhat");
+                        Transform dk2Trackhat = renderModel.transform.FindChild("trackhat");
                         if (dk2Trackhat == null)
                         {
                             dk2Trackhat = new GameObject("trackhat").transform;
-                            dk2Trackhat.parent = this.transform;
+                            dk2Trackhat.parent = renderModel.transform;
                             dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
                             dk2Trackhat.localScale = Vector3.one * 0.1f;
                             dk2Trackhat.localEulerAngles = new Vector3(325, 0, 0);
