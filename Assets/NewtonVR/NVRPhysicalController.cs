@@ -28,12 +28,23 @@ namespace NewtonVR
             PhysicalController.name = PhysicalController.name.Replace("(Clone)", " [Physical]");
 
             SteamVR_RenderModel renderModel = PhysicalController.GetComponentInChildren<SteamVR_RenderModel>();
-            ModelParent = renderModel.transform;
+            if(renderModel != null)
+            {
+                ModelParent = renderModel.transform;
+            }
+            else
+            {
+                NVRCustomController customController = PhysicalController.GetComponentInChildren<NVRCustomController>();
+                ModelParent = customController.transform;
+            }
 
             GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
             GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRHand>());
             GameObject.DestroyImmediate(PhysicalController.GetComponent<SteamVR_TrackedObject>());
-            GameObject.DestroyImmediate(renderModel);
+            if (renderModel != null)
+            {
+                GameObject.DestroyImmediate(renderModel);
+            }
             GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
 
             Collider[] clonedColliders = PhysicalController.GetComponentsInChildren<Collider>();

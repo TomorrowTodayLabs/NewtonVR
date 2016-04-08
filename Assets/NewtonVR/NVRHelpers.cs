@@ -18,16 +18,16 @@ namespace NewtonVR
             }
         }
 
-        public static void SetTransparent(Material material, Color? newcolor = null)
+        public static void SetTransparent(Material material, string renderType, Color? newcolor = null)
         {
             if (material.shader != StandardShader)
                 Debug.LogWarning("Trying to set transparent mode on non-standard shader. Please use the Standard Shader instead or modify this method.");
 
-            material.SetOverrideTag("RenderType", "Transparent");
+            material.SetOverrideTag("RenderType", renderType);
             material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
             material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
             material.SetInt("_ZWrite", 0);
-            material.DisableKeyword("_ALPHATEST_ON");
+            //material.DisableKeyword("_ALPHATEST_ON");
             material.DisableKeyword("_ALPHABLEND_ON");
             material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
             material.SetFloat("_Metallic", 0f);
