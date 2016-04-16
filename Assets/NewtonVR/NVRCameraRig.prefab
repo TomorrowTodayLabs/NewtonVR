@@ -299,7 +299,7 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -506,17 +506,17 @@ MonoBehaviour:
   wireframeHeight: 2
   drawWireframeWhenSelectedOnly: 0
   drawInGame: 0
-  size: 0
+  size: 2
   color: {r: 0, g: 1, b: 1, a: 1}
   vertices:
-  - {x: 1.7499994, y: 0.01, z: -1.6999996}
-  - {x: -1.7499994, y: 0.01, z: -1.6999996}
-  - {x: -1.7499994, y: 0.01, z: 1.6999996}
-  - {x: 1.7499994, y: 0.01, z: 1.6999996}
-  - {x: 1.8999994, y: 0.01, z: -1.8499995}
-  - {x: -1.8999994, y: 0.01, z: -1.8499995}
-  - {x: -1.8999994, y: 0.01, z: 1.8499995}
-  - {x: 1.8999994, y: 0.01, z: 1.8499995}
+  - {x: 1.5, y: 0.01, z: 1.125}
+  - {x: 1.5, y: 0.01, z: -1.125}
+  - {x: -1.5, y: 0.01, z: -1.125}
+  - {x: -1.5, y: 0.01, z: 1.125}
+  - {x: 1.65, y: 0.01, z: 1.275}
+  - {x: 1.65, y: 0.01, z: -1.275}
+  - {x: -1.65, y: 0.01, z: -1.275}
+  - {x: -1.65, y: 0.01, z: 1.275}
 --- !u!114 &11457864
 MonoBehaviour:
   m_ObjectHideFlags: 1
