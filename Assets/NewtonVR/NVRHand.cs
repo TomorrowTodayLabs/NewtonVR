@@ -21,6 +21,12 @@ namespace NewtonVR
         public bool UseButtonPressed = false;
         public float UseButtonAxis = 0f;
 
+        private Valve.VR.EVRButtonId TouchpadButton = EVRButtonId.k_EButton_SteamVR_Touchpad;
+        public bool TouchpadButtonDown = false;
+        public bool TouchpadButtonUp = false;
+        public bool TouchpadButtonPressed = false;
+        public Vector2 TouchpadButtonAxis = new Vector2(0, 0);
+
         public Dictionary<EVRButtonId, NVRButtonInputs> Inputs;
 
         public Rigidbody Rigidbody;
@@ -127,6 +133,11 @@ namespace NewtonVR
             UseButtonDown = Inputs[UseButton].PressDown;
             UseButtonUp = Inputs[UseButton].PressUp;
             UseButtonAxis = Inputs[UseButton].SingleAxis;
+
+            TouchpadButtonPressed = Inputs[TouchpadButton].IsPressed;
+            TouchpadButtonDown = Inputs[TouchpadButton].PressDown;
+            TouchpadButtonUp = Inputs[TouchpadButton].PressUp;
+            TouchpadButtonAxis.Set(Inputs[TouchpadButton].Axis.x, Inputs[TouchpadButton].Axis.y);
 
             if (HoldButtonUp)
             {

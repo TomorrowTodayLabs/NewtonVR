@@ -22,7 +22,7 @@ namespace NewtonVR
 
         }
 
-        private IEnumerator _Teleport(NVRPlayer player, Vector3 newPositionBase)
+        private IEnumerator Teleport(NVRPlayer player, Vector3 newPositionBase)
         {
             IsTeleporting = true;
             float CurrentHeight;
@@ -37,11 +37,11 @@ namespace NewtonVR
 
         }
 
-        public void Teleport(NVRPlayer player, Vector3 newPositionBase)
+        public void TeleportPlayer(NVRPlayer player, Vector3 newPositionBase)
         {
             if(IsTeleporting == false)
             {
-                StartCoroutine(_Teleport(player, newPositionBase));
+                StartCoroutine(Teleport(player, newPositionBase));
             }
             else
             {

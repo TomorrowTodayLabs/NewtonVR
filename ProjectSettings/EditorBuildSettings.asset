@@ -7,3 +7,5 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/NewtonVR/Example/NVRExampleScene.unity
+  - enabled: 1
+    path: Assets/NewtonVR/Example/BlankScene.unity

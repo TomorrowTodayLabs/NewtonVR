@@ -39,7 +39,7 @@ namespace NewtonVR.Example
             Debug.DrawRay(FirePoint.position, FirePoint.forward, Color.red, 4.0f);
             Physics.Raycast(TeleportRay, out NewLocationInfo);
             Debug.Log(NewLocationInfo.point.ToString());
-            Teleporter.Teleport(AttachedPlayer, NewLocationInfo.point);
+            Teleporter.TeleportPlayer(AttachedPlayer, NewLocationInfo.point);
             
         }
     }

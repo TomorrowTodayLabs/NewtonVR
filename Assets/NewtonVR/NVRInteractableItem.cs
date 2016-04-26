@@ -56,7 +56,7 @@ namespace NewtonVR
 
                 Vector3 VelocityTarget = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
                 
-                this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
+                this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);    // should it be 10f * this.transform.lossyscale?
             }
         }
 

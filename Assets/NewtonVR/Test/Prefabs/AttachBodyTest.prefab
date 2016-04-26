@@ -104,7 +104,7 @@ GameObject:
   - 4: {fileID: 471604}
   - 54: {fileID: 5402328}
   m_Layer: 0
-  m_Name: Body
+  m_Name: AttachBodyTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

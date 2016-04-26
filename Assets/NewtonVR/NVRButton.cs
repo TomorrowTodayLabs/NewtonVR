@@ -10,6 +10,8 @@ namespace NewtonVR
         [Tooltip("The (worldspace) distance from the initial position you have to push the button for it to register as pushed")]
         public float DistanceToEngage = 0.075f;
 
+        public bool TurnedOn = true;
+
         [Tooltip("Is set to true when the button has been pressed down this update frame")]
         public bool ButtonDown = false;
 
