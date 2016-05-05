@@ -82,15 +82,11 @@ namespace NewtonVR
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;
-
-            this.Rigidbody.useGravity = false;
         }
 
         public override void EndInteraction()
         {
             base.EndInteraction();
-
-            this.Rigidbody.useGravity = true;
 
             if (PickupTransform != null)
                 Destroy(PickupTransform.gameObject);
