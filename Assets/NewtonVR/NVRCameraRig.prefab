@@ -406,6 +406,7 @@ MonoBehaviour:
   Rigidbody: {fileID: 0}
   CustomModel: {fileID: 0}
   CustomPhysicalColliders: {fileID: 0}
+  CurrentlyInteracting: {fileID: 0}
 --- !u!114 &11421116
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -557,6 +558,7 @@ MonoBehaviour:
   Rigidbody: {fileID: 0}
   CustomModel: {fileID: 0}
   CustomPhysicalColliders: {fileID: 0}
+  CurrentlyInteracting: {fileID: 0}
 --- !u!114 &11466818
 MonoBehaviour:
   m_ObjectHideFlags: 1

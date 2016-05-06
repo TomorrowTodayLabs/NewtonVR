@@ -41,7 +41,7 @@ namespace NewtonVR
         private SteamVR_Controller.Device Controller;
 
 
-        private NVRInteractable CurrentlyInteracting;
+        public NVRInteractable CurrentlyInteracting;
 
         private int EstimationSampleIndex;
         private Vector3[] LastPositions;

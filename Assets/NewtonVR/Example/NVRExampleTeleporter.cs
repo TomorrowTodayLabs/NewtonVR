@@ -52,10 +52,22 @@ namespace NewtonVR.Example
 
                     if (Hand.Inputs[Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger].PressDown == true)
                     {
+                        NVRInteractable LHandInteractable = NVRPlayer.Instance.LeftHand.CurrentlyInteracting;
+                        NVRInteractable RHandInteractable = NVRPlayer.Instance.RightHand.CurrentlyInteracting;
+
+
                         Vector3 offset = NVRPlayer.Instance.Head.transform.position - NVRPlayer.Instance.transform.position;
                         offset.y = 0;
 
                         NVRPlayer.Instance.transform.position = hitInfo.point - offset;
+                        if (LHandInteractable != null)
+                        {
+                            LHandInteractable.transform.position = NVRPlayer.Instance.LeftHand.transform.position;
+                        }
+                        if (RHandInteractable != null)
+                        {
+                            RHandInteractable.transform.position = NVRPlayer.Instance.RightHand.transform.position;
+                        }
                     }
                 }
                 else
