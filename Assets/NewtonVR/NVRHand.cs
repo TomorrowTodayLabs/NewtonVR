@@ -156,6 +156,14 @@ namespace NewtonVR
             }
         }
 
+        public void TriggerHapticPulse(ushort durationMicroSec = 500, EVRButtonId buttonId = EVRButtonId.k_EButton_SteamVR_Touchpad)
+        {
+            if (Controller != null)
+            {
+                Controller.TriggerHapticPulse(durationMicroSec, buttonId);
+            }
+        }
+
         private void UpdateVisibilityAndColliders()
         {
             if (HoldButtonPressed == true && IsInteracting == false)
