@@ -10,6 +10,7 @@ namespace NewtonVR
     public class NVRHand : MonoBehaviour
     {
         private Valve.VR.EVRButtonId HoldButton = EVRButtonId.k_EButton_Grip;
+        public bool HoldUsingTrigger = false;
         public bool HoldButtonDown = false;
         public bool HoldButtonUp = false;
         public bool HoldButtonPressed = false;
@@ -79,6 +80,11 @@ namespace NewtonVR
 
         protected virtual void Awake()
         {
+
+            if (HoldUsingTrigger) {
+                HoldButton = EVRButtonId.k_EButton_SteamVR_Trigger;
+            }
+
             CurrentlyHoveringOver = new Dictionary<NVRInteractable, Dictionary<Collider, float>>();
 
             LastPositions = new Vector3[EstimationSamples];
