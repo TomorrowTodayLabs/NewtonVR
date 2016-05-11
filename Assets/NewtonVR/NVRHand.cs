@@ -31,6 +31,12 @@ namespace NewtonVR
         [Tooltip("If you're using a custom model or if you just want custom physical colliders, stick the prefab for them here.")]
         public GameObject CustomPhysicalColliders;
 
+        [Tooltip("If you want to hide/fade the controllers on grab.")]
+        public bool HideOnGrab = false;
+
+        [Tooltip("Set the tag/value on the controller material. More info: http://docs.unity3d.com/ScriptReference/Material.SetOverrideTag.html")]
+        public string MaterialRenderType = "Transparent";
+
         private VisibilityLevel CurrentVisibility = VisibilityLevel.Visible;
         private bool VisibilityLocked = false;
 
@@ -171,7 +177,8 @@ namespace NewtonVR
                 if (CurrentHandState != HandState.GripDownNotInteracting && VisibilityLocked == false)
                 {
                     VisibilityLocked = true;
-                    SetVisibility(VisibilityLevel.Visible);
+                    VisibilityLevel visibilityLevel = HideOnGrab ? VisibilityLevel.Ghost : VisibilityLevel.Visible;
+                    SetVisibility(visibilityLevel);
                     CurrentHandState = HandState.GripDownNotInteracting;
                 }
             }
@@ -180,7 +187,8 @@ namespace NewtonVR
                 if (CurrentHandState != HandState.GripDownInteracting && VisibilityLocked == false)
                 {
                     VisibilityLocked = true;
-                    SetVisibility(VisibilityLevel.Ghost);
+                    VisibilityLevel visibilityLevel = HideOnGrab ? VisibilityLevel.Visible : VisibilityLevel.Ghost;
+                    SetVisibility(visibilityLevel);
                     CurrentHandState = HandState.GripDownInteracting;
                 }
             }
@@ -188,7 +196,8 @@ namespace NewtonVR
             {
                 if (CurrentHandState != HandState.Idle && VisibilityLocked == false)
                 {
-                    SetVisibility(VisibilityLevel.Ghost);
+                    VisibilityLevel visibilityLevel = HideOnGrab ? VisibilityLevel.Visible : VisibilityLevel.Ghost;
+                    SetVisibility(visibilityLevel);
                     CurrentHandState = HandState.Idle;
                 }
             }
@@ -390,7 +399,7 @@ namespace NewtonVR
 
                     for (int index = 0; index < GhostRenderers.Length; index++)
                     {
-                        GhostRenderers[index].enabled = true;
+                        GhostRenderers[index].enabled = !HideOnGrab;
                     }
                     
                     for (int index = 0; index < GhostColliders.Length; index++)
@@ -405,7 +414,7 @@ namespace NewtonVR
 
                     for (int index = 0; index < GhostRenderers.Length; index++)
                     {
-                        GhostRenderers[index].enabled = false;
+                        GhostRenderers[index].enabled = HideOnGrab;
                     }
 
                     for (int index = 0; index < GhostColliders.Length; index++)
@@ -523,7 +532,7 @@ namespace NewtonVR
                 }
 
                 PhysicalController = this.gameObject.AddComponent<NVRPhysicalController>();
-                PhysicalController.Initialize(this, false);
+                PhysicalController.Initialize(this, HideOnGrab);
 
                 Color transparentcolor = Color.white;
                 transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
@@ -531,11 +540,11 @@ namespace NewtonVR
                 GhostRenderers = this.GetComponentsInChildren<Renderer>();
                 for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
                 {
-                    NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
+                    NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, MaterialRenderType, transparentcolor);
                 }
 
                 GhostColliders = Colliders;
-                CurrentVisibility = VisibilityLevel.Ghost;
+                CurrentVisibility = HideOnGrab ? VisibilityLevel.Visible : VisibilityLevel.Ghost;
             }
 
             CurrentHandState = HandState.Idle;
