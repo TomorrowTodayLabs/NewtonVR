@@ -23,6 +23,9 @@ namespace NewtonVR
 
         public Dictionary<EVRButtonId, NVRButtonInputs> Inputs;
 
+        [SerializeField]
+        private InterationStyle CurrentInteractionStyle = InterationStyle.GripDownToInteract;
+
         public Rigidbody Rigidbody;
 
         [Tooltip("If you want to use something other than the standard SteamVR Controller models place the Prefab here. Otherwise we use steamvr models.")]
@@ -39,7 +42,6 @@ namespace NewtonVR
         private Dictionary<NVRInteractable, Dictionary<Collider, float>> CurrentlyHoveringOver;
 
         private SteamVR_Controller.Device Controller;
-
 
         public NVRInteractable CurrentlyInteracting;
 
@@ -128,21 +130,54 @@ namespace NewtonVR
             UseButtonUp = Inputs[UseButton].PressUp;
             UseButtonAxis = Inputs[UseButton].SingleAxis;
 
-            if (HoldButtonUp)
+            if (CurrentInteractionStyle == InterationStyle.GripDownToInteract)
             {
-                VisibilityLocked = false;
-            }
-
-            if (HoldButtonDown == true)
-            {
-                if (CurrentlyInteracting == null)
+                if (HoldButtonUp == true)
                 {
-                    PickupClosest();
+                    VisibilityLocked = false;
+                }
+
+                if (HoldButtonDown == true)
+                {
+                    if (CurrentlyInteracting == null)
+                    {
+                        PickupClosest();
+                    }
+                }
+                else if (HoldButtonUp == true && CurrentlyInteracting != null)
+                {
+                    EndInteraction(null);
                 }
             }
-            else if (HoldButtonUp == true && CurrentlyInteracting != null)
+            else if (CurrentInteractionStyle == InterationStyle.GripToggleToInteract)
             {
-                EndInteraction(null);
+                if (HoldButtonDown == true)
+                {
+                    if (CurrentHandState == HandState.Idle)
+                    {
+                        PickupClosest();
+                        if (IsInteracting)
+                        {
+                            CurrentHandState = HandState.GripToggleOnInteracting;
+                        }
+                        else if (NVRPlayer.Instance.PhysicalHands == true)
+                        {
+                            CurrentHandState = HandState.GripToggleOnNotInteracting;
+                        }
+                    }
+                    else if (CurrentHandState == HandState.GripToggleOnInteracting)
+                    {
+                        CurrentHandState = HandState.Idle;
+                        VisibilityLocked = false;
+                        EndInteraction(null);
+                    }
+                    else if (CurrentHandState == HandState.GripToggleOnNotInteracting)
+                    {
+                        CurrentHandState = HandState.Idle;
+                        VisibilityLocked = false;
+                    }
+                }
+
             }
 
             if (IsInteracting == true)
@@ -166,30 +201,64 @@ namespace NewtonVR
 
         private void UpdateVisibilityAndColliders()
         {
-            if (HoldButtonPressed == true && IsInteracting == false)
+            if (CurrentInteractionStyle == InterationStyle.GripDownToInteract)
             {
-                if (CurrentHandState != HandState.GripDownNotInteracting && VisibilityLocked == false)
+                if (HoldButtonPressed == true && IsInteracting == false)
                 {
-                    VisibilityLocked = true;
-                    SetVisibility(VisibilityLevel.Visible);
-                    CurrentHandState = HandState.GripDownNotInteracting;
+                    if (CurrentHandState != HandState.GripDownNotInteracting && VisibilityLocked == false)
+                    {
+                        VisibilityLocked = true;
+                        SetVisibility(VisibilityLevel.Visible);
+                        CurrentHandState = HandState.GripDownNotInteracting;
+                    }
+                }
+                else if (HoldButtonDown == true && IsInteracting == true)
+                {
+                    if (CurrentHandState != HandState.GripDownInteracting && VisibilityLocked == false)
+                    {
+                        VisibilityLocked = true;
+                        SetVisibility(VisibilityLevel.Ghost);
+                        CurrentHandState = HandState.GripDownInteracting;
+                    }
+                }
+                else if (IsInteracting == false)
+                {
+                    if (CurrentHandState != HandState.Idle && VisibilityLocked == false)
+                    {
+                        SetVisibility(VisibilityLevel.Ghost);
+                        CurrentHandState = HandState.Idle;
+                    }
                 }
             }
-            else if (HoldButtonDown == true && IsInteracting == true)
+            else if (CurrentInteractionStyle == InterationStyle.GripToggleToInteract)
             {
-                if (CurrentHandState != HandState.GripDownInteracting && VisibilityLocked == false)
+                if (CurrentHandState == HandState.Idle)
                 {
-                    VisibilityLocked = true;
-                    SetVisibility(VisibilityLevel.Ghost);
-                    CurrentHandState = HandState.GripDownInteracting;
+                    if (VisibilityLocked == false && CurrentVisibility != VisibilityLevel.Ghost)
+                    {
+                        SetVisibility(VisibilityLevel.Ghost);
+                    }
+                    else
+                    {
+                        VisibilityLocked = false;
+                    }
+
                 }
-            }
-            else if (IsInteracting == false)
-            {
-                if (CurrentHandState != HandState.Idle && VisibilityLocked == false)
+                else if (CurrentHandState == HandState.GripToggleOnInteracting)
                 {
-                    SetVisibility(VisibilityLevel.Ghost);
-                    CurrentHandState = HandState.Idle;
+                    if (VisibilityLocked == false)
+                    {
+                        VisibilityLocked = true;
+                        SetVisibility(VisibilityLevel.Ghost);
+                    }
+                }
+                else if (CurrentHandState == HandState.GripToggleOnNotInteracting)
+                {
+                    if (VisibilityLocked == false)
+                    {
+                        VisibilityLocked = true;
+                        SetVisibility(VisibilityLevel.Visible);
+                    }
                 }
             }
         }
@@ -288,9 +357,17 @@ namespace NewtonVR
                 CurrentlyInteracting.EndInteraction();
                 CurrentlyInteracting = null;
             }
+
+            if (CurrentInteractionStyle == InterationStyle.GripToggleToInteract)
+            {
+                if (CurrentHandState != HandState.Idle)
+                {
+                    CurrentHandState = HandState.Idle;
+                }
+            }
         }
 
-        private void PickupClosest()
+        private bool PickupClosest()
         {
             NVRInteractable closest = null;
             float closestDistance = float.MaxValue;
@@ -311,6 +388,11 @@ namespace NewtonVR
             if (closest != null)
             {
                 BeginInteraction(closest);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -560,7 +642,6 @@ namespace NewtonVR
         }
     }
     
-
     public enum VisibilityLevel
     {
         Invisible = 0,
@@ -574,5 +655,14 @@ namespace NewtonVR
         Idle,
         GripDownNotInteracting,
         GripDownInteracting,
+        GripToggleOnNotInteracting,
+        GripToggleOnInteracting,
+        GripToggleOff
+    }
+
+    public enum InterationStyle
+    {
+        GripDownToInteract,
+        GripToggleToInteract,
     }
 }
