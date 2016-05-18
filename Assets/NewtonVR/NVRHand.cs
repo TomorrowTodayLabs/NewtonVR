@@ -478,6 +478,7 @@ namespace NewtonVR
                         if (dk2Trackhat == null)
                         {
                             dk2Trackhat = new GameObject("trackhat").transform;
+                            dk2Trackhat.gameObject.layer = this.gameObject.layer;
                             dk2Trackhat.parent = renderModel.transform;
                             dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
                             dk2Trackhat.localScale = Vector3.one * 0.1f;
