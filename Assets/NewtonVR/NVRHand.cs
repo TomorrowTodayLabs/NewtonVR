@@ -193,13 +193,13 @@ namespace NewtonVR
         }
 
 
-        public void TriggerHapticPulse(int durationMicroSec = 500, EVRButtonId buttonId = EVRButtonId.k_EButton_SteamVR_Touchpad)
+        public void TriggerHapticPulse(ushort durationMicroSec = 500, EVRButtonId buttonId = EVRButtonId.k_EButton_SteamVR_Touchpad)
         {
             if (Controller != null)
             {
-                if (durationMicroSec < ushort.MaxValue)
+                if (durationMicroSec < 3000)
                 {
-                    Controller.TriggerHapticPulse((ushort)durationMicroSec, buttonId);
+                    Controller.TriggerHapticPulse(durationMicroSec, buttonId);
                 }
                 else
                 {
