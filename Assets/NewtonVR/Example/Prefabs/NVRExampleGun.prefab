@@ -233,8 +233,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 196754}
   m_LocalRotation: {x: 0.49999958, y: 0.4999993, z: 0.50000066, w: 0.50000054}
-  m_LocalPosition: {x: -1.57, y: 8.136, z: 4.93}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalPosition: {x: -0.157, y: 0.8136, z: 0.493}
+  m_LocalScale: {x: 0.20000002, y: 0.20000002, z: 0.20000002}
   m_Children:
   - {fileID: 431070}
   - {fileID: 414918}
@@ -567,11 +567,12 @@ MonoBehaviour:
   DisableKinematicOnAttach: 1
   EnableKinematicOnDetach: 0
   DropDistance: 3
+  EnableGravityOnDetach: 1
   AttachedHand: {fileID: 0}
   InteractionPoint: {fileID: 414918}
-  BulletPrefab: {fileID: 188422, guid: 7ec8d36e5bc41774588ca2c09777bc63, type: 2}
+  BulletPrefab: {fileID: 192818, guid: 2a0f0df5cc781d94ba3d699d90be871b, type: 2}
   FirePoint: {fileID: 422528}
-  BulletForce: {x: 0, y: 0, z: 1000}
+  BulletForce: {x: 0, y: 0, z: 500}
 --- !u!136 &13601566
 CapsuleCollider:
   m_ObjectHideFlags: 1
