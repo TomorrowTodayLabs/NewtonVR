@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -191,11 +192,35 @@ namespace NewtonVR
             }
         }
 
-        public void TriggerHapticPulse(ushort durationMicroSec = 500, EVRButtonId buttonId = EVRButtonId.k_EButton_SteamVR_Touchpad)
+
+        public void TriggerHapticPulse(int durationMicroSec = 500, EVRButtonId buttonId = EVRButtonId.k_EButton_SteamVR_Touchpad)
         {
             if (Controller != null)
             {
-                Controller.TriggerHapticPulse(durationMicroSec, buttonId);
+                if (durationMicroSec < ushort.MaxValue)
+                {
+                    Controller.TriggerHapticPulse((ushort)durationMicroSec, buttonId);
+                }
+                else
+                {
+                    Debug.LogWarning("You're trying to pulse for over 3000 microseconds, you probably don't want to do that. If you do, use NVRHand.LongHapticPulse(float seconds)");
+                }
+            }
+        }
+
+        public void LongHapticPulse(float seconds, EVRButtonId buttonId = EVRButtonId.k_EButton_SteamVR_Touchpad)
+        {
+            StartCoroutine(DoLongHapticPulse(seconds, buttonId));
+        }
+
+        private IEnumerator DoLongHapticPulse(float seconds, EVRButtonId buttonId = EVRButtonId.k_EButton_SteamVR_Touchpad)
+        {
+            float startTime = Time.time;
+            float endTime = startTime + seconds;
+            while (Time.time < endTime)
+            {
+                Controller.TriggerHapticPulse(100, buttonId);
+                yield return null;
             }
         }
 
