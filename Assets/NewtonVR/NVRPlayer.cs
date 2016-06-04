@@ -8,6 +8,7 @@ namespace NewtonVR
     {
         public static NVRPlayer Instance;
         public bool PhysicalHands = false;
+        public bool MakeControllerInvisibleOnInteraction = false;
 
         public NVRHead Head;
         public NVRHand LeftHand;
