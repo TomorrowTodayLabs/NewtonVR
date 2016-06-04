@@ -484,7 +484,8 @@ namespace NewtonVR
             if (CurrentlyInteracting == interactable)
                 CurrentlyInteracting = null;
 
-            CurrentlyHoveringOver.Remove(interactable);
+            if (CurrentlyHoveringOver != null)
+                CurrentlyHoveringOver.Remove(interactable);
         }
 
         private void SetVisibility(VisibilityLevel visibility)

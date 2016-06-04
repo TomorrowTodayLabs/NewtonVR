@@ -417,6 +417,7 @@ MonoBehaviour:
   UseButtonUp: 0
   UseButtonPressed: 0
   UseButtonAxis: 0
+  CurrentInteractionStyle: 0
   Rigidbody: {fileID: 0}
   CustomModel: {fileID: 0}
   CustomPhysicalColliders: {fileID: 0}
@@ -552,6 +553,7 @@ MonoBehaviour:
   UseButtonUp: 0
   UseButtonPressed: 0
   UseButtonAxis: 0
+  CurrentInteractionStyle: 0
   Rigidbody: {fileID: 0}
   CustomModel: {fileID: 0}
   CustomPhysicalColliders: {fileID: 0}
