@@ -10,13 +10,13 @@ namespace NewtonVR
 {
     public class NVRHand : MonoBehaviour
     {
-        private Valve.VR.EVRButtonId HoldButton = EVRButtonId.k_EButton_Grip;
+        private Valve.VR.EVRButtonId HoldButton = EVRButtonId.k_EButton_SteamVR_Trigger;
         public bool HoldButtonDown = false;
         public bool HoldButtonUp = false;
         public bool HoldButtonPressed = false;
         public float HoldButtonAxis = 0f;
 
-        private Valve.VR.EVRButtonId UseButton = EVRButtonId.k_EButton_SteamVR_Trigger;
+        private Valve.VR.EVRButtonId UseButton = EVRButtonId.k_EButton_SteamVR_Touchpad;
         public bool UseButtonDown = false;
         public bool UseButtonUp = false;
         public bool UseButtonPressed = false;
@@ -38,7 +38,7 @@ namespace NewtonVR
         private VisibilityLevel CurrentVisibility = VisibilityLevel.Visible;
         private bool VisibilityLocked = false;
 
-        private HandState CurrentHandState = HandState.Uninitialized;
+        protected HandState CurrentHandState = HandState.Uninitialized;
 
         private Dictionary<NVRInteractable, Dictionary<Collider, float>> CurrentlyHoveringOver;
 
@@ -109,27 +109,7 @@ namespace NewtonVR
             if (Controller == null || CurrentHandState == HandState.Uninitialized)
                 return;
 
-            foreach (var button in Inputs)
-            {
-                button.Value.Axis = Controller.GetAxis(button.Key);
-                button.Value.SingleAxis = button.Value.Axis.x;
-                button.Value.PressDown = Controller.GetPressDown(button.Key);
-                button.Value.PressUp = Controller.GetPressUp(button.Key);
-                button.Value.IsPressed = Controller.GetPress(button.Key);
-                button.Value.TouchDown = Controller.GetTouchDown(button.Key);
-                button.Value.TouchUp = Controller.GetTouchUp(button.Key);
-                button.Value.IsTouched = Controller.GetTouch(button.Key);
-            }
-
-            HoldButtonPressed = Inputs[HoldButton].IsPressed;
-            HoldButtonDown = Inputs[HoldButton].PressDown;
-            HoldButtonUp = Inputs[HoldButton].PressUp;
-            HoldButtonAxis = Inputs[HoldButton].SingleAxis;
-
-            UseButtonPressed = Inputs[UseButton].IsPressed;
-            UseButtonDown = Inputs[UseButton].PressDown;
-            UseButtonUp = Inputs[UseButton].PressUp;
-            UseButtonAxis = Inputs[UseButton].SingleAxis;
+            UpdateControllerState();
 
             if (CurrentInteractionStyle == InterationStyle.GripDownToInteract)
             {
@@ -187,6 +167,31 @@ namespace NewtonVR
             }
             
             UpdateVisibilityAndColliders();
+        }
+
+        protected virtual void UpdateControllerState()
+        {
+            foreach (var button in Inputs)
+            {
+                button.Value.Axis = Controller.GetAxis(button.Key);
+                button.Value.SingleAxis = button.Value.Axis.x;
+                button.Value.PressDown = Controller.GetPressDown(button.Key);
+                button.Value.PressUp = Controller.GetPressUp(button.Key);
+                button.Value.IsPressed = Controller.GetPress(button.Key);
+                button.Value.TouchDown = Controller.GetTouchDown(button.Key);
+                button.Value.TouchUp = Controller.GetTouchUp(button.Key);
+                button.Value.IsTouched = Controller.GetTouch(button.Key);
+            }
+
+            HoldButtonPressed = Inputs[HoldButton].IsPressed;
+            HoldButtonDown = Inputs[HoldButton].PressDown;
+            HoldButtonUp = Inputs[HoldButton].PressUp;
+            HoldButtonAxis = Inputs[HoldButton].SingleAxis;
+
+            UseButtonPressed = Inputs[UseButton].IsPressed;
+            UseButtonDown = Inputs[UseButton].PressDown;
+            UseButtonUp = Inputs[UseButton].PressUp;
+            UseButtonAxis = Inputs[UseButton].SingleAxis;
         }
 
 
@@ -490,7 +495,7 @@ namespace NewtonVR
                 StartCoroutine(DoInitialize());
         }
 
-        private void SetDeviceIndex(int index)
+        protected void SetDeviceIndex(int index)
         {
             DeviceIndex = index;
             Controller = SteamVR_Controller.Input(index);
