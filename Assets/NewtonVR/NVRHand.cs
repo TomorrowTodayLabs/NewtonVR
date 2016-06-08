@@ -499,6 +499,12 @@ namespace NewtonVR
         {
             DeviceIndex = index;
             Controller = SteamVR_Controller.Input(index);
+
+            // Ensure the render model gets updated to avoid any race conditions
+            // between this call and the render_model_loaded event
+            SteamVR_RenderModel renderModel = this.GetComponentInChildren<SteamVR_RenderModel>();
+            UpdateRenderModelLoadState(renderModel);
+
             StartCoroutine(DoInitialize());
         }
 
@@ -578,8 +584,14 @@ namespace NewtonVR
             SteamVR_RenderModel renderModel = (SteamVR_RenderModel)args[0];
             bool success = (bool)args[1];
 
-            if ((int)renderModel.index == DeviceIndex)
+            UpdateRenderModelLoadState(renderModel);
+        }
+
+        private void UpdateRenderModelLoadState(SteamVR_RenderModel renderModel)
+        {
+            if ((int)renderModel.index == DeviceIndex) {
                 RenderModelInitialized = true;
+            }
         }
 
         private IEnumerator DoInitialize()
