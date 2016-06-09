@@ -50,12 +50,11 @@ namespace NewtonVR
 
                 if (angle != 0)
                 {
-                    Vector3 AngularTarget = (Time.fixedDeltaTime * angle * axis) * AttachedRotationMagic;
+                    Vector3 AngularTarget = (angle * axis) / (Time.fixedDeltaTime * 100);
                     this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f);
                 }
 
-                Vector3 VelocityTarget = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
-                
+                Vector3 VelocityTarget = PositionDelta / Time.fixedDeltaTime;
                 this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
             }
         }

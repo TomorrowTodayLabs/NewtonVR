@@ -152,6 +152,7 @@ namespace NewtonVR
         protected virtual void OnDestroy()
         {
             ForceDetach();
+            NVRInteractables.Deregister(this);
         }
     }
 }
