@@ -503,7 +503,10 @@ namespace NewtonVR
             // Ensure the render model gets updated to avoid any race conditions
             // between this call and the render_model_loaded event
             SteamVR_RenderModel renderModel = this.GetComponentInChildren<SteamVR_RenderModel>();
-            UpdateRenderModelLoadState(renderModel);
+
+            if (renderModel != null) {
+                UpdateRenderModelLoadState(renderModel);
+            }
 
             StartCoroutine(DoInitialize());
         }
