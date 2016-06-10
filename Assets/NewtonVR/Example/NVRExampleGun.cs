@@ -20,6 +20,8 @@ namespace NewtonVR.Example
             bullet.transform.forward = FirePoint.forward;
 
             bullet.GetComponent<Rigidbody>().AddRelativeForce(BulletForce);
+
+            AttachedHand.TriggerHapticPulse(500);
         }
     }
 }
