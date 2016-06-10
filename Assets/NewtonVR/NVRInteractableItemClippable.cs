@@ -3,7 +3,11 @@ using System.Collections;
 
 namespace NewtonVR
 {
-    public class NVRInteractableItem : NVRInteractable
+    /// <summary>
+    /// This interactable item script clips through other colliders. If you don't want your item to respect other object's positions 
+    /// and have it go through walls/floors/etc then you can use this.
+    /// </summary>
+    public class NVRInteractableItemClippable : NVRInteractable
     {
         [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
         public Transform InteractionPoint;
@@ -23,42 +27,30 @@ namespace NewtonVR
 
             if (IsAttached == true)
             {
-                Quaternion RotationDelta;
-                Vector3 PositionDelta;
-
-                float angle;
-                Vector3 axis;
+                Vector3 TargetPosition;
+                Quaternion TargetRotation;
 
                 if (InteractionPoint != null)
                 {
-                    RotationDelta = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.rotation);
-                    PositionDelta = (AttachedHand.transform.position - InteractionPoint.position);
+                    TargetRotation = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.localRotation);
+                    TargetPosition = this.transform.position + (AttachedHand.transform.position - InteractionPoint.position);
                 }
                 else
                 {
-                    RotationDelta = PickupTransform.rotation * Quaternion.Inverse(this.transform.rotation);
-                    PositionDelta = (PickupTransform.position - this.transform.position);
+                    TargetRotation = PickupTransform.rotation;
+                    TargetPosition = PickupTransform.position;
                 }
 
-                RotationDelta.ToAngleAxis(out angle, out axis);
-
-                if (angle > 180)
-                    angle -= 360;
-
-                if (angle != 0)
-                {
-                    Vector3 AngularTarget = angle * axis;
-                    this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f);
-                }
-
-                Vector3 VelocityTarget = PositionDelta / Time.fixedDeltaTime;
-                this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
+                this.Rigidbody.MovePosition(TargetPosition);
+                this.Rigidbody.MoveRotation(TargetRotation);
             }
         }
 
         public override void BeginInteraction(NVRHand hand)
         {
             base.BeginInteraction(hand);
+
+            this.Rigidbody.isKinematic = true;
 
             PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", this.gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
@@ -70,8 +62,11 @@ namespace NewtonVR
         {
             base.EndInteraction();
 
+            this.Rigidbody.isKinematic = false;
+
             if (PickupTransform != null)
                 Destroy(PickupTransform.gameObject);
         }
+
     }
 }
