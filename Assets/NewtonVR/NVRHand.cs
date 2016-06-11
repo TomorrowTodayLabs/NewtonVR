@@ -486,8 +486,6 @@ namespace NewtonVR
 
         protected virtual void OnEnable()
         {
-            if (this.gameObject.activeInHierarchy)
-                StartCoroutine(DoInitialize());
         }
 
         private void SetDeviceIndex(int index)
@@ -502,8 +500,6 @@ namespace NewtonVR
             if (renderModel != null) {
                 UpdateRenderModelLoadState(renderModel);
             }
-
-            StartCoroutine(DoInitialize());
         }
 
         public void DeregisterInteractable(NVRInteractable interactable)
@@ -583,6 +579,8 @@ namespace NewtonVR
             bool success = (bool)args[1];
 
             UpdateRenderModelLoadState(renderModel);
+
+            StartCoroutine(DoInitialize());
         }
 
         private void UpdateRenderModelLoadState(SteamVR_RenderModel renderModel)
