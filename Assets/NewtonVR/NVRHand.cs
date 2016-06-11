@@ -697,7 +697,7 @@ namespace NewtonVR
                 Color transparentcolor = Color.white;
                 transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
 
-                GhostRenderers = this.GetComponentsInChildren<NVRGhostRenderer>();
+                GhostRenderers = this.GetComponentsInChildren<Renderer>();
                 for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
                 {
                     NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
@@ -711,7 +711,7 @@ namespace NewtonVR
                 Color transparentcolor = Color.white;
                 transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
 
-                GhostRenderers = this.GetComponentsInChildren<NVRGhostRenderer>();
+                GhostRenderers = this.GetComponentsInChildren<Renderer>();
                 for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
                 {
                     NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
