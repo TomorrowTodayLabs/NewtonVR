@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Events;
 
 using Valve.VR;
 
@@ -64,6 +65,11 @@ namespace NewtonVR
 
         private EVRButtonId[] EVRButtonIds;
 
+        /**
+         * Event triggered once DoInitialize is complete
+         */
+        private UnityEvent onInitialized;
+
         public bool IsHovering
         {
             get
@@ -100,6 +106,9 @@ namespace NewtonVR
                     Inputs.Add(buttonType, new NVRButtonInputs());
                 }
             }
+
+            // Initialize events
+            onInitialized = new UnityEvent();
 
             SteamVR_Utils.Event.Listen("render_model_loaded", RenderModelLoaded);
         }
@@ -720,6 +729,9 @@ namespace NewtonVR
             }
 
             CurrentHandState = HandState.Idle;
+
+            // Signal we are initialized
+            onInitialized.Invoke();
         }
 
         public void ForceGhost()
@@ -738,6 +750,16 @@ namespace NewtonVR
             {
                 return this.GetComponentInChildren<SteamVR_RenderModel>().renderModelName;
             }
+        }
+
+        public void AddOnInitializedListener(UnityAction callback)
+        {
+            onInitialized.AddListener(callback);
+        }
+
+        public void RemoveOnInitializedListener(UnityAction callback)
+        {
+            onInitialized.RemoveListener(callback);
         }
     }
     
