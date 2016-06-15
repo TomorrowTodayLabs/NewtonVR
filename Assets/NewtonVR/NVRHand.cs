@@ -498,6 +498,16 @@ namespace NewtonVR
             }
         }
 
+        /**
+         * Clear an object from the hover list of this hand
+         */
+        protected virtual void EndHover(NVRInteractable interactable)
+        {
+            if (CurrentlyHoveringOver.ContainsKey(interactable)) {
+                CurrentlyHoveringOver.Remove(interactable);
+            }
+        }
+
         protected virtual void OnEnable()
         {
         }
