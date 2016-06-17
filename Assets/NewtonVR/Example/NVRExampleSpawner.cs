@@ -9,14 +9,13 @@ namespace NewtonVR.Example
         public NVRButton Button;
 
         public GameObject ToCopy;
-        public Transform SpawnLocation;
 
         private void Update()
         {
             if (Button.ButtonDown)
             {
                 GameObject newGo = GameObject.Instantiate(ToCopy);
-                newGo.transform.position = SpawnLocation.position;
+                newGo.transform.position = this.transform.position + new Vector3(0, 1, 0);
                 newGo.transform.localScale = ToCopy.transform.lossyScale;
             }
         }
