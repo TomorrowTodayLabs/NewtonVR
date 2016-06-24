@@ -2,20 +2,22 @@
 using System.Collections;
 using NewtonVR;
 
-public class NVRExampleSpawner : MonoBehaviour
+namespace NewtonVR.Example
 {
-    public NVRButton Button;
-
-    public GameObject ToCopy;
-    public Transform SpawnLocation;
-
-    private void Update()
+    public class NVRExampleSpawner : MonoBehaviour
     {
-        if (Button.ButtonDown)
+        public NVRButton Button;
+
+        public GameObject ToCopy;
+
+        private void Update()
         {
-            GameObject newGo = GameObject.Instantiate(ToCopy);
-            newGo.transform.position = SpawnLocation.position;
-            newGo.transform.localScale = ToCopy.transform.lossyScale;
+            if (Button.ButtonDown)
+            {
+                GameObject newGo = GameObject.Instantiate(ToCopy);
+                newGo.transform.position = this.transform.position + new Vector3(0, 1, 0);
+                newGo.transform.localScale = ToCopy.transform.lossyScale;
+            }
         }
     }
 }

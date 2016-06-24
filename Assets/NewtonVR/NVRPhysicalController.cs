@@ -47,12 +47,6 @@ namespace NewtonVR
             PhysicalController.transform.rotation = Hand.transform.rotation;
             PhysicalController.transform.localScale = Hand.transform.localScale;
 
-            Rigidbody = PhysicalController.GetComponent<Rigidbody>();
-            Rigidbody.isKinematic = false;
-            Rigidbody.useGravity = false;
-            Rigidbody.angularDrag = 0;
-            Rigidbody.maxAngularVelocity = 100f;
-
             string controllerModel = Hand.GetDeviceName();
             switch (controllerModel)
             {
@@ -106,6 +100,10 @@ namespace NewtonVR
                     break;
             }
 
+            Rigidbody = PhysicalController.GetComponent<Rigidbody>();
+            Rigidbody.isKinematic = false;
+            Rigidbody.maxAngularVelocity = float.MaxValue;
+
             Renderer[] renderers = PhysicalController.GetComponentsInChildren<Renderer>();
             for (int index = 0; index < renderers.Length; index++)
             {
@@ -137,11 +135,13 @@ namespace NewtonVR
                 DroppedBecauseOfDistance();
             }
         }
-        
-        private void Movement()
+
+        private void UpdatePosition()
         {
-            Vector3 PositionDelta;
+            Rigidbody.maxAngularVelocity = float.MaxValue; //this doesn't seem to be respected in nvrhand's init. or physical hand's init. not sure why. if anybody knows, let us know. -Keith 6/16/2016
+
             Quaternion RotationDelta;
+            Vector3 PositionDelta;
 
             float angle;
             Vector3 axis;
@@ -156,14 +156,12 @@ namespace NewtonVR
 
             if (angle != 0)
             {
-                Vector3 AngularTarget = angle * axis * AttachedRotationMagic;
-                AngularTarget = AngularTarget * Time.fixedDeltaTime;
-                this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f);
+                Vector3 AngularTarget = angle * axis;
+                this.Rigidbody.angularVelocity = AngularTarget;
             }
 
-            Vector3 VelocityTarget = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
-
-            this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
+            Vector3 VelocityTarget = PositionDelta / Time.fixedDeltaTime;
+            this.Rigidbody.velocity = VelocityTarget;
         }
 
         protected virtual void FixedUpdate()
@@ -172,15 +170,13 @@ namespace NewtonVR
             {
                 CheckForDrop();
 
-                Movement();
+                UpdatePosition();
             }
         }
 
         protected virtual void DroppedBecauseOfDistance()
         {
             Hand.ForceGhost();
-
-            Debug.Log("Dropped");
         }
 
         public void On()
