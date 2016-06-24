@@ -210,7 +210,7 @@ namespace NewtonVR
             StartCoroutine(DoLongHapticPulse(seconds, buttonId));
         }
 
-        private IEnumerator DoLongHapticPulse(float seconds, EVRButtonId buttonId = EVRButtonId.k_EButton_Axis0)
+        private IEnumerator DoLongHapticPulse(float seconds, EVRButtonId buttonId)
         {
             float startTime = Time.time;
             float endTime = startTime + seconds;
