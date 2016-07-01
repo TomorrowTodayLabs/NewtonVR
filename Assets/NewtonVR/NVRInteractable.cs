@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace NewtonVR
 {
+    [RequireComponent (typeof (Rigidbody))]
     public abstract class NVRInteractable : MonoBehaviour
     {
         public Rigidbody Rigidbody;
