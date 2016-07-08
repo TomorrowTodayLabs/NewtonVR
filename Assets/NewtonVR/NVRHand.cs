@@ -721,6 +721,11 @@ namespace NewtonVR
                 return this.GetComponentInChildren<SteamVR_RenderModel>().renderModelName;
             }
         }
+
+        void OnDestroy()
+        {
+            SteamVR_Utils.Event.Remove("render_model_loaded", RenderModelLoaded);
+        }
     }
     
     public enum VisibilityLevel
