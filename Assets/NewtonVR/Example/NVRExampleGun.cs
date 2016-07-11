@@ -9,7 +9,7 @@ namespace NewtonVR.Example
 
         public Transform FirePoint;
 
-        public Vector3 BulletForce = new Vector3(0, 0, 500);
+        public Vector3 BulletForce = new Vector3(0, 0, 250);
 
         public override void UseButtonDown()
         {
