@@ -20,9 +20,9 @@ namespace NewtonVR
             RungAngleInterval = 360f / (float)LETTERLIST.Length;
         }
 
-        protected override void FixedUpdate()
+        public override void OnNewPosesApplied()
         {
-            base.FixedUpdate();
+            base.OnNewPosesApplied();
 
             if (IsAttached == false)
             {

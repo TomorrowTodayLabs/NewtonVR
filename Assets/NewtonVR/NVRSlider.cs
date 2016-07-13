@@ -36,15 +36,15 @@ namespace NewtonVR
             SliderPath = EndPoint.position - StartPoint.position;
         }
 
-        protected override void FixedUpdate()
+        public override void OnNewPosesApplied()
         {
-            base.FixedUpdate();
+            base.OnNewPosesApplied();
 
             if (IsAttached == true)
             {
                 Vector3 PositionDelta = (PickupTransform.position - this.transform.position);
 
-                Vector3 velocity = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
+                Vector3 velocity = PositionDelta * AttachedPositionMagic * deltaPoses;
                 this.Rigidbody.velocity = ProjectVelocityOnPath(velocity, SliderPath);
             }
 

@@ -16,10 +16,9 @@ namespace NewtonVR
             this.Rigidbody.maxAngularVelocity = 100f;
         }
 
-        protected Vector3 LastVelocityAddition;
-        protected override void FixedUpdate()
+        public override void OnNewPosesApplied()
         {
-            base.FixedUpdate();
+            base.OnNewPosesApplied();
 
             if (IsAttached == true)
             {
@@ -48,10 +47,10 @@ namespace NewtonVR
                 if (angle != 0)
                 {
                     Vector3 AngularTarget = angle * axis;
-                    this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f);
+                    this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f * (deltaPoses * 1000));
                 }
-
-                Vector3 VelocityTarget = PositionDelta / Time.fixedDeltaTime;
+                
+                Vector3 VelocityTarget = PositionDelta / deltaPoses;
                 this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
             }
         }

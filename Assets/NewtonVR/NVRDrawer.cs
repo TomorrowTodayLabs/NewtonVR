@@ -16,9 +16,9 @@ namespace NewtonVR
             this.Rigidbody.maxAngularVelocity = 100f;
         }
 
-        protected override void FixedUpdate()
+        public override void OnNewPosesApplied()
         {
-            base.FixedUpdate();
+            base.OnNewPosesApplied();
 
             if (IsAttached == true)
             {

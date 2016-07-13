@@ -102,7 +102,20 @@ namespace NewtonVR
             }
 
             SteamVR_Utils.Event.Listen("render_model_loaded", RenderModelLoaded);
+            SteamVR_Utils.Event.Listen("new_poses_applied", OnNewPosesApplied);
         }
+
+        private void OnNewPosesApplied(params object[] args)
+        {
+            if (Controller == null)
+                return;
+
+            if (CurrentlyInteracting != null)
+            {
+                CurrentlyInteracting.OnNewPosesApplied();
+            }
+        }
+
 
         protected virtual void Update()
         {
@@ -722,6 +735,12 @@ namespace NewtonVR
             {
                 return this.GetComponentInChildren<SteamVR_RenderModel>().renderModelName;
             }
+        }
+
+        private void OnDestroy()
+        {
+            SteamVR_Utils.Event.Remove("render_model_loaded", RenderModelLoaded);
+            SteamVR_Utils.Event.Remove("new_poses_applied", OnNewPosesApplied);
         }
     }
     
