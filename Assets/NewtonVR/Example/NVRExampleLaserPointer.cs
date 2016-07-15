@@ -11,6 +11,10 @@ namespace NewtonVR.Example
 
         public bool OnlyVisibleOnTrigger = true;
 
+        public LayerMask CollideWithLayers;
+        public Transform Target;
+        public Vector3 EndPosition;
+
         private LineRenderer Line;
 
         private NVRHand Hand;
@@ -46,19 +50,19 @@ namespace NewtonVR.Example
                 Line.SetWidth(LineWidth, LineWidth);
 
                 RaycastHit hitInfo;
-                bool hit = Physics.Raycast(this.transform.position, this.transform.forward, out hitInfo, 1000);
-                Vector3 endPoint;
+                bool hit = Physics.Raycast(this.transform.position, this.transform.forward, out hitInfo, 1000, CollideWithLayers);
 
                 if (hit == true)
                 {
-                    endPoint = hitInfo.point;
+                    EndPosition = hitInfo.point;
+                    Target = hitInfo.transform;
                 }
                 else
                 {
-                    endPoint = this.transform.position + (this.transform.forward * 1000f);
+                    EndPosition = this.transform.position + (this.transform.forward * 1000f);
                 }
 
-                Line.SetPositions(new Vector3[] { this.transform.position, endPoint });
+                Line.SetPositions(new Vector3[] { this.transform.position, EndPosition });
             }
         }
     }
