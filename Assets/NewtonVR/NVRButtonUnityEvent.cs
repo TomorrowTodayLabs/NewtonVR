@@ -25,16 +25,6 @@ namespace NewtonVR
 
         }
 
-        public void OnHeld()
-        {
-            Button.GetComponent<Rigidbody>().isKinematic = true;
-        }
-
-        public void OnReleased()
-        {
-            Button.GetComponent<Rigidbody>().isKinematic = false;
-        }
-
         void Update()
         {
             if (Button.ButtonDown && _repeatPressCountdown <= 0)
