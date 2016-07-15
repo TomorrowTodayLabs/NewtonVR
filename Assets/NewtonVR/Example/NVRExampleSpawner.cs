@@ -10,14 +10,11 @@ namespace NewtonVR.Example
 
         public GameObject ToCopy;
 
-        private void Update()
+        public void SpawnPrefab()
         {
-            if (Button.ButtonDown)
-            {
-                GameObject newGo = GameObject.Instantiate(ToCopy);
-                newGo.transform.position = this.transform.position + new Vector3(0, 1, 0);
-                newGo.transform.localScale = ToCopy.transform.lossyScale;
-            }
+            GameObject newGo = GameObject.Instantiate(ToCopy);
+            newGo.transform.position = this.transform.position + new Vector3(0, 1, 0);
+            newGo.transform.localScale = ToCopy.transform.lossyScale;
         }
     }
 }
