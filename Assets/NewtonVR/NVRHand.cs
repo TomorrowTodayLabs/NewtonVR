@@ -666,8 +666,9 @@ namespace NewtonVR
                         break;
                 }
             }
-            else
+            else if (RenderModelInitialized == false)
             {
+                RenderModelInitialized = true;
                 GameObject CustomModelObject = GameObject.Instantiate(CustomModel);
                 Colliders = CustomModelObject.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
 
@@ -697,8 +698,12 @@ namespace NewtonVR
                 {
                     NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
                 }
+                
+                if (Colliders != null)
+                {
+                    GhostColliders = Colliders;
+                }
 
-                GhostColliders = Colliders;
                 CurrentVisibility = VisibilityLevel.Ghost;
             }
             else
@@ -712,7 +717,11 @@ namespace NewtonVR
                     NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
                 }
 
-                GhostColliders = Colliders;
+                if (Colliders != null)
+                {
+                    GhostColliders = Colliders;
+                }
+
                 CurrentVisibility = VisibilityLevel.Ghost;
             }
 
