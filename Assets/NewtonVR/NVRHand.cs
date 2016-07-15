@@ -512,10 +512,13 @@ namespace NewtonVR
 
         public void DeregisterInteractable(NVRInteractable interactable)
         {
+            if (interactable == null) return;
+
             if (CurrentlyInteracting == interactable)
                 CurrentlyInteracting = null;
 
-            if (CurrentlyHoveringOver != null)
+            if (CurrentlyHoveringOver != null && 
+                CurrentlyHoveringOver.ContainsKey(interactable))
                 CurrentlyHoveringOver.Remove(interactable);
         }
 

@@ -64,7 +64,10 @@ namespace NewtonVR
         {
             for (int index = 0; index < Instance.Hands.Length; index++)
             {
-                Instance.Hands[index].DeregisterInteractable(interactable);
+                if (Instance.Hands[index] != null)
+                {
+                    Instance.Hands[index].DeregisterInteractable(interactable);
+                }
             }
         }
     }
