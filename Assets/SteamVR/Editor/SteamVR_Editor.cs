@@ -1,4 +1,4 @@
-﻿//========= Copyright 2014, Valve Corporation, All rights reserved. ===========
+﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: Custom inspector display for SteamVR_Camera
 //
@@ -27,11 +27,9 @@ public class SteamVR_Editor : Editor
 	void OnEnable()
 	{
 		var resourcePath = GetResourcePath();
-#if UNITY_5_0
-		logo = Resources.LoadAssetAtPath<Texture2D>(resourcePath + "logo.png");
-#else
+
 		logo = AssetDatabase.LoadAssetAtPath<Texture2D>(resourcePath + "logo.png");
-#endif
+
 		script = serializedObject.FindProperty("m_Script");
 
 		wireframe = serializedObject.FindProperty("wireframe");

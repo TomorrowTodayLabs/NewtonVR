@@ -1,11 +1,10 @@
-﻿//========= Copyright 2014, Valve Corporation, All rights reserved. ===========
+﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: Access to SteamVR system (hmd) and compositor (distort) interfaces.
 //
 //=============================================================================
 
 using UnityEngine;
-using System.Runtime.InteropServices;
 using Valve.VR;
 
 public class SteamVR : System.IDisposable
@@ -18,7 +17,12 @@ public class SteamVR : System.IDisposable
 	private static bool _enabled = true;
 	public static bool enabled
 	{
-		get { return _enabled; }
+		get
+		{
+			if (!UnityEngine.VR.VRSettings.enabled)
+				enabled = false;
+			return _enabled;
+		}
 		set
 		{
 			_enabled = value;
@@ -54,14 +58,7 @@ public class SteamVR : System.IDisposable
 
 	public static bool usingNativeSupport
 	{
-		get
-		{
-#if !(UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
-			return UnityEngine.VR.VRDevice.GetNativePtr() != System.IntPtr.Zero;
-#else
-			return false;
-#endif
-		}
+		get { return UnityEngine.VR.VRDevice.GetNativePtr() != System.IntPtr.Zero; }
 	}
 
 	static SteamVR CreateInstance()
@@ -71,18 +68,8 @@ public class SteamVR : System.IDisposable
 			var error = EVRInitError.None;
 			if (!SteamVR.usingNativeSupport)
 			{
-#if !(UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
 				Debug.Log("OpenVR initialization failed.  Ensure 'Virtual Reality Supported' is checked in Player Settings, and OpenVR is added to the list of Virtual Reality SDKs.");
 				return null;
-#else
-				OpenVR.Init(ref error);
-				if (error != EVRInitError.None)
-				{
-					ReportError(error);
-					ShutdownSystems();
-					return null;
-				}
-#endif
 			}
 
 			// Verify common interfaces are valid.
@@ -91,7 +78,6 @@ public class SteamVR : System.IDisposable
 			if (error != EVRInitError.None)
 			{
 				ReportError(error);
-				ShutdownSystems();
 				return null;
 			}
 
@@ -99,7 +85,6 @@ public class SteamVR : System.IDisposable
 			if (error != EVRInitError.None)
 			{
 				ReportError(error);
-				ShutdownSystems();
 				return null;
 			}
 		}
@@ -301,9 +286,6 @@ public class SteamVR : System.IDisposable
 		textureBounds[1].vMin = 0.5f - 0.5f * r_bottom / tanHalfFov.y;
 		textureBounds[1].vMax = 0.5f - 0.5f * r_top / tanHalfFov.y;
 
-#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
-		SteamVR.Unity.SetSubmitParams(textureBounds[0], textureBounds[1], EVRSubmitFlags.Submit_Default);
-#endif
 		// Grow the recommended size to account for the overlapping fov
 		sceneWidth = sceneWidth / Mathf.Max(textureBounds[0].uMax - textureBounds[0].uMin, textureBounds[1].uMax - textureBounds[1].uMin);
 		sceneHeight = sceneHeight / Mathf.Max(textureBounds[0].vMax - textureBounds[0].vMin, textureBounds[1].vMax - textureBounds[1].vMin);
@@ -346,15 +328,7 @@ public class SteamVR : System.IDisposable
 		SteamVR_Utils.Event.Remove("device_connected", OnDeviceConnected);
 		SteamVR_Utils.Event.Remove("new_poses", OnNewPoses);
 
-		ShutdownSystems();
 		_instance = null;
-	}
-
-	private static void ShutdownSystems()
-	{
-#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
-		OpenVR.Shutdown();
-#endif
 	}
 
 	// Use this interface to avoid accidentally creating the instance in the process of attempting to dispose of it.
@@ -363,29 +337,5 @@ public class SteamVR : System.IDisposable
 		if (_instance != null)
 			_instance.Dispose();
 	}
-
-#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
-	// Unityhooks in openvr_api.
-	public class Unity
-	{
-		public const int k_nRenderEventID_WaitGetPoses = 201510020;
-		public const int k_nRenderEventID_SubmitL = 201510021;
-		public const int k_nRenderEventID_SubmitR = 201510022;
-		public const int k_nRenderEventID_Flush = 201510023;
-		public const int k_nRenderEventID_PostPresentHandoff = 201510024;
-
-		[DllImport("openvr_api", EntryPoint = "UnityHooks_GetRenderEventFunc")]
-		public static extern System.IntPtr GetRenderEventFunc();
-
-		[DllImport("openvr_api", EntryPoint = "UnityHooks_SetSubmitParams")]
-		public static extern void SetSubmitParams(VRTextureBounds_t boundsL, VRTextureBounds_t boundsR, EVRSubmitFlags nSubmitFlags);
-
-		[DllImport("openvr_api", EntryPoint = "UnityHooks_SetColorSpace")]
-		public static extern void SetColorSpace(EColorSpace eColorSpace);
-
-		[DllImport("openvr_api", EntryPoint = "UnityHooks_EventWriteString")]
-		public static extern void EventWriteString([In, MarshalAs(UnmanagedType.LPWStr)] string sEvent);
-	}
-#endif
 }
 

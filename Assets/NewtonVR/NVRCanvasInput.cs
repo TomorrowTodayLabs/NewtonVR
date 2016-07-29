@@ -94,7 +94,7 @@ namespace NewtonVR
             }
 
             PointEvents[index].delta = Vector2.zero;
-            PointEvents[index].position = new Vector2(Screen.width / 2, Screen.height / 2);
+            PointEvents[index].position = new Vector2(Screen.width, Screen.height);
             PointEvents[index].scrollDelta = Vector2.zero;
 
             base.eventSystem.RaycastAll(PointEvents[index], m_RaycastResultCache);
