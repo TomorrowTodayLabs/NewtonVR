@@ -127,7 +127,7 @@ namespace NewtonVR
                     VisibilityLocked = false;
                 }
 
-                if (HoldButtonDown == true)
+                if (HoldButtonDown == true || HoldButtonPressed == true)
                 {
                     if (CurrentlyInteracting == null)
                     {
