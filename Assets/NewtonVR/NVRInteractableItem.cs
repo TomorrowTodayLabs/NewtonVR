@@ -9,11 +9,26 @@ namespace NewtonVR
         public Transform InteractionPoint;
         
         protected Transform PickupTransform;
+        
+        protected Vector3?[] VelocityHistory;
+        protected Vector3?[] AngularVelocityHistory;
+        protected int VelocityHistoryStep = 0;
 
         protected override void Awake()
         {
             base.Awake();
             this.Rigidbody.maxAngularVelocity = 100f;
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+
+            if (NVRPlayer.Instance.VelocityHistorySteps > 0)
+            {
+                VelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
+                AngularVelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
+            }
         }
 
         public override void OnNewPosesApplied()
@@ -52,6 +67,18 @@ namespace NewtonVR
                 
                 Vector3 VelocityTarget = PositionDelta / deltaPoses;
                 this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
+
+                if (VelocityHistory != null)
+                {
+                    VelocityHistoryStep++;
+                    if (VelocityHistoryStep >= VelocityHistory.Length)
+                    {
+                        VelocityHistoryStep = 0;
+                    }
+
+                    VelocityHistory[VelocityHistoryStep] = this.Rigidbody.velocity;
+                    AngularVelocityHistory[VelocityHistoryStep] = this.Rigidbody.angularVelocity;
+                }
             }
         }
 
@@ -70,7 +97,45 @@ namespace NewtonVR
             base.EndInteraction();
 
             if (PickupTransform != null)
+            {
                 Destroy(PickupTransform.gameObject);
+            }
+
+            if (VelocityHistory != null)
+            {
+                this.Rigidbody.velocity = GetMeanVector(VelocityHistory);
+                this.Rigidbody.angularVelocity = GetMeanVector(AngularVelocityHistory);
+
+                VelocityHistoryStep = 0;
+
+                for (int index = 0; index < VelocityHistory.Length; index++)
+                {
+                    VelocityHistory[index] = null;
+                    AngularVelocityHistory[index] = null;
+                }
+            }
+        }
+
+        private Vector3 GetMeanVector(Vector3?[] positions)
+        {
+            float x = 0f;
+            float y = 0f;
+            float z = 0f;
+
+            int count = 0;
+            for (int index = 0; index < positions.Length; index++)
+            {
+                if (positions[index] != null)
+                {
+                    x += positions[index].Value.x;
+                    y += positions[index].Value.y;
+                    z += positions[index].Value.z;
+
+                    count++;
+                }
+            }
+
+            return new Vector3(x / count, y / count, z / count);
         }
     }
 }
