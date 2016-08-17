@@ -499,15 +499,20 @@ namespace NewtonVR
 
         protected virtual void OnEnable()
         {
-            if (this.gameObject.activeInHierarchy)
-                StartCoroutine(DoInitialize());
         }
 
         private void SetDeviceIndex(int index)
         {
             DeviceIndex = index;
             Controller = SteamVR_Controller.Input(index);
-            StartCoroutine(DoInitialize());
+
+            // Ensure the render model gets updated to avoid any race conditions
+            // between this call and the render_model_loaded event
+            SteamVR_RenderModel renderModel = this.GetComponentInChildren<SteamVR_RenderModel>();
+
+            if (renderModel != null) {
+                UpdateRenderModelLoadState(renderModel);
+            }
         }
 
         public void DeregisterInteractable(NVRInteractable interactable)
@@ -586,8 +591,16 @@ namespace NewtonVR
             SteamVR_RenderModel renderModel = (SteamVR_RenderModel)args[0];
             bool success = (bool)args[1];
 
-            if ((int)renderModel.index == DeviceIndex)
+            UpdateRenderModelLoadState(renderModel);
+
+            StartCoroutine(DoInitialize());
+        }
+
+        private void UpdateRenderModelLoadState(SteamVR_RenderModel renderModel)
+        {
+            if ((int)renderModel.index == DeviceIndex) {
                 RenderModelInitialized = true;
+            }
         }
 
         private IEnumerator DoInitialize()
