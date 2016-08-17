@@ -7,9 +7,9 @@ namespace NewtonVR
     {
         [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
         public Transform InteractionPoint;
-        
+
         protected Transform PickupTransform;
-        
+
         protected Vector3?[] VelocityHistory;
         protected Vector3?[] AngularVelocityHistory;
         protected int VelocityHistoryStep = 0;
@@ -31,10 +31,8 @@ namespace NewtonVR
             }
         }
 
-        public override void OnNewPosesApplied()
+        protected virtual void FixedUpdate()
         {
-            base.OnNewPosesApplied();
-
             if (IsAttached == true)
             {
                 Quaternion RotationDelta;
@@ -64,8 +62,8 @@ namespace NewtonVR
                     Vector3 AngularTarget = angle * axis;
                     this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f * (deltaPoses * 1000));
                 }
-                
-                Vector3 VelocityTarget = PositionDelta / deltaPoses;
+
+                Vector3 VelocityTarget = PositionDelta / Time.fixedDeltaTime;
                 this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
 
                 if (VelocityHistory != null)
