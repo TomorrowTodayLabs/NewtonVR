@@ -14,6 +14,8 @@ namespace NewtonVR
         protected Vector3?[] AngularVelocityHistory;
         protected int VelocityHistoryStep = 0;
 
+        protected bool DoPhysicsStep = true;
+
         protected override void Awake()
         {
             base.Awake();
@@ -31,10 +33,19 @@ namespace NewtonVR
             }
         }
 
+        protected override void Update()
+        {
+            base.Update();
+
+            DoPhysicsStep = true;
+        }
+
         protected virtual void FixedUpdate()
         {
-            if (IsAttached == true)
+            if (IsAttached == true && DoPhysicsStep == true)
             {
+                DoPhysicsStep = false;
+
                 Quaternion RotationDelta;
                 Vector3 PositionDelta;
 
