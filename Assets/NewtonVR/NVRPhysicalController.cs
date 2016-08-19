@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using System.Linq;
+
 namespace NewtonVR
 {
     public class NVRPhysicalController : MonoBehaviour
@@ -82,14 +84,34 @@ namespace NewtonVR
                     Transform customCollidersTransform = PhysicalController.transform.FindChild("VivePreColliders");
                     if (customCollidersTransform == null)
                     {
-                        GameObject customColliders = GameObject.Instantiate(Hand.CustomPhysicalColliders);
-                        customColliders.name = "CustomColliders";
-                        customCollidersTransform = customColliders.transform;
+                        if (Hand.CustomPhysicalColliders == null)
+                        {
+                            GameObject customColliders = GameObject.Instantiate(Hand.CustomModel);
+                            customColliders.name = "CustomColliders";
+                            customCollidersTransform = customColliders.transform;
 
-                        customCollidersTransform.parent = PhysicalController.transform;
-                        customCollidersTransform.localPosition = Vector3.zero;
-                        customCollidersTransform.localRotation = Quaternion.identity;
-                        customCollidersTransform.localScale = Vector3.one;
+                            customCollidersTransform.parent = PhysicalController.transform;
+                            customCollidersTransform.localPosition = Vector3.zero;
+                            customCollidersTransform.localRotation = Quaternion.identity;
+                            customCollidersTransform.localScale = Vector3.one;
+
+                            foreach (Collider col in customColliders.GetComponentsInChildren<Collider>())
+                            {
+                                col.isTrigger = false;
+                            }
+
+                        }
+                        else
+                        {
+                            GameObject customColliders = GameObject.Instantiate(Hand.CustomPhysicalColliders);
+                            customColliders.name = "CustomColliders";
+                            customCollidersTransform = customColliders.transform;
+
+                            customCollidersTransform.parent = PhysicalController.transform;
+                            customCollidersTransform.localPosition = Vector3.zero;
+                            customCollidersTransform.localRotation = Quaternion.identity;
+                            customCollidersTransform.localScale = Vector3.one;
+                        }
                     }
 
                     Colliders = customCollidersTransform.GetComponentsInChildren<Collider>();

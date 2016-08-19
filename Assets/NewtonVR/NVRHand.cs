@@ -499,6 +499,10 @@ namespace NewtonVR
 
         protected virtual void OnEnable()
         {
+            if (CustomModel != null)
+            {
+                this.GetComponentInChildren<SteamVR_RenderModel>().enabled = false;
+            }
             if (this.gameObject.activeInHierarchy)
                 StartCoroutine(DoInitialize());
         }
@@ -668,6 +672,7 @@ namespace NewtonVR
             }
             else if (RenderModelInitialized == false)
             {
+
                 RenderModelInitialized = true;
                 GameObject CustomModelObject = GameObject.Instantiate(CustomModel);
                 Colliders = CustomModelObject.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
