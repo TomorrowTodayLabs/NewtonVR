@@ -120,7 +120,9 @@ namespace NewtonVR
          */
         void UpdateClosestGraspable()
         {
-            NVRInteractable newClosestGraspable = FindClosest();
+            //Cloest interactable, but only if we're not already interacting with something
+            NVRInteractable newClosestGraspable = ( IsInteracting ) ? null : FindClosest();
+
             if (newClosestGraspable != ClosestGraspable)
             {
                 if (ClosestGraspable != null)

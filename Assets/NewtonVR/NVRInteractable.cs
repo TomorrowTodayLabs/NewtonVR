@@ -30,7 +30,7 @@ namespace NewtonVR
                 return AttachedHand != null;
             }
         }
-        public virtual bool IsGraspTarget
+        public virtual bool IsTargetedByGrasp
         {
             get
             {
