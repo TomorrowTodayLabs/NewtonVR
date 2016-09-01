@@ -47,6 +47,8 @@ namespace NewtonVR
 
         public NVRInteractable CurrentlyInteracting;
 
+        private NVRInteractable ClosestGraspable;
+
         private int EstimationSampleIndex;
         private Vector3[] LastPositions;
         private Quaternion[] LastRotations;
@@ -113,12 +115,36 @@ namespace NewtonVR
             SteamVR_Utils.Event.Listen("render_model_loaded", RenderModelLoaded);
         }
 
+        /**
+         * Identify what object we would grasp, if a grasp happend now.
+         */
+        void UpdateClosestGraspable()
+        {
+            //Cloest interactable, but only if we're not already interacting with something
+            NVRInteractable newClosestGraspable = ( IsInteracting ) ? null : FindClosest();
+
+            if (newClosestGraspable != ClosestGraspable)
+            {
+                if (ClosestGraspable != null)
+                {
+                    GraspTargetEnd(ClosestGraspable);
+                }
+                if (newClosestGraspable != null)
+                {
+                    GraspTargetBegin(newClosestGraspable);
+                }
+                ClosestGraspable = newClosestGraspable;
+            }
+        }
+
         protected virtual void Update()
         {
             if (Controller == null || CurrentHandState == HandState.Uninitialized)
                 return;
 
             UpdateControllerState();
+
+            UpdateClosestGraspable();
 
             if (CurrentInteractionStyle == InterationStyle.GripDownToInteract)
             {
@@ -424,7 +450,20 @@ namespace NewtonVR
             }
         }
 
-        private bool PickupClosest()
+        public virtual void GraspTargetBegin(NVRInteractable interactable)
+        {
+            if (interactable.CanAttach == true)
+            {
+                interactable.GraspTargetBegin(this);
+            }
+        }
+
+        public virtual void GraspTargetEnd(NVRInteractable interactable)
+        {
+            interactable.GraspTargetEnd(this);
+        }
+
+        private NVRInteractable FindClosest()
         {
             NVRInteractable closest = null;
             float closestDistance = float.MaxValue;
@@ -441,6 +480,12 @@ namespace NewtonVR
                     closest = hovering.Key;
                 }
             }
+            return closest;
+        }
+
+        private bool PickupClosest()
+        {
+            NVRInteractable closest = FindClosest();
 
             if (closest != null)
             {

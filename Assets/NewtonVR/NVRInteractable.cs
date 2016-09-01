@@ -16,6 +16,7 @@ namespace NewtonVR
         public bool EnableGravityOnDetach = true;
 
         public NVRHand AttachedHand = null;
+        public int GraspTargetCount = 0;
 
         protected Collider[] Colliders;
         protected Vector3 ClosestHeldPoint;
@@ -27,6 +28,13 @@ namespace NewtonVR
             get
             {
                 return AttachedHand != null;
+            }
+        }
+        public virtual bool IsTargetedByGrasp
+        {
+            get
+            {
+                return (GraspTargetCount > 0);
             }
         }
 
@@ -132,6 +140,16 @@ namespace NewtonVR
             {
                 Rigidbody.useGravity = true;
             }
+        }
+
+        public virtual void GraspTargetBegin(NVRHand hand)
+        {
+            GraspTargetCount++;
+        }
+
+        public virtual void GraspTargetEnd(NVRHand hand)
+        {
+            GraspTargetCount--;
         }
 
         protected virtual void DroppedBecauseOfDistance()
