@@ -20,6 +20,9 @@ We've included SteamVR so the project compiles and will try and keep the version
 
 After you've got the project you can check out our example scene in `NewtonVR/Example/NVRExampleScene`. We've got everything scaled up by a factor of 10 because PhysX seems to work more reliably with larger colliders. The scene includes one of each of everything:
 
+### Important Note on SteamVR, NewtonVR, and pre-Unity 5.4
+SteamVR is included in both the Unity Package and source of NewtonVR, which has been created in the latest version of Unity. If you are using a pre-5.4 version of Unity, you will need the OpenVR libraries and should install SteamVR separately.
+
 ##### NVRInteractableItem
 There's some stacked boxes which have `NVRInteractableItem` components on them. There's a tiny box on top that you can use to try and push over the stack of boxes with to see an example of the mass based system. In the drawer there's a gun that has a configured `NVRInteractableItem.InteractionPoint` set to the handle. When you pick it up the system tries to rotate and position the gun in your hand, and keep it at that orientation.
 
