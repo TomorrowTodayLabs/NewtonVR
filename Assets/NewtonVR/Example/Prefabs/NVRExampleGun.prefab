@@ -131,7 +131,7 @@ GameObject:
   - 4: {fileID: 491076}
   - 54: {fileID: 5465268}
   - 114: {fileID: 11439710}
-  - 114: {fileID: 114000012278602356}
+  - 114: {fileID: 114000012638998888}
   m_Layer: 0
   m_Name: NVRExampleGun
   m_TagString: Untagged
@@ -562,7 +562,7 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 196754}
   m_IsPrefabParent: 1
---- !u!114 &114000012278602356
+--- !u!114 &114000012638998888
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -570,7 +570,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 196754}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a984eed7d0b88d4ba8c1e9f56670b87, type: 3}
+  m_Script: {fileID: 11500000, guid: 5acc68a2ecf98824ba3f8fa739c53028, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Material: 4
