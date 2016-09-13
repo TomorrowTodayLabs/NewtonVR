@@ -8,9 +8,6 @@ Items can be configured to be picked up at any point, or when grabbed can rotate
 We've created a few physical UI elements to help with basic configuration and menu type scenarios. We also give you the option to dynamically let the controllers turn into physical objects on a button press.
 <img class='gfyitem' data-id='PointlessImperturbableBorzoi' />
 
-### Compatiblity Note - Pre Unity 5.4
-In order to remain compatible with Unity, we've included the OpenVR API under the root /Plugins folder. These will be automatically deleted if you use Unity 5.4, and are not necessary if you import NewtonVR into a pre-Unity 5.4 project that already includes the latest version of SteamVR plugin.
-
 <br>
 ## Grip buttons
 A hotly debated issue is whether or not to use the grip buttons to pick things up. We feel like the benefit gained by using the grip buttons outweighs the trouble users can have with them. One of the benefits of releasing the code with this system is that if you disagree you're welcome to change the mappings. But, if you use the system with the defaults, then pressing grip button(s) will let you pick something up and releasing it will drop (or throw) the item. Using the grip buttons to hold an item frees up other buttons on the Vive controller for items that are designed to be used while held (for example holding a gun and then pressing the trigger button to fire). If your controller is *not* hovering over an interactable object, and you hit the grip button, your controller becomes a physical object that you can use to interact with the world. This allows you to press a button on a control panel for example.
