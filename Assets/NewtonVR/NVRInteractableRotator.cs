@@ -34,26 +34,14 @@ namespace NewtonVR
         {
             base.BeginInteraction(hand);
 
-            Vector3 closestPoint = Vector3.zero;
-            float shortestDistance = float.MaxValue;
-            for (int index = 0; index < Colliders.Length; index++)
-            {
-                Vector3 closest = Colliders[index].bounds.ClosestPoint(AttachedHand.transform.position);
-                float distance = Vector3.Distance(AttachedHand.transform.position, closest);
-
-                if (distance < shortestDistance)
-                {
-                    shortestDistance = distance;
-                    closestPoint = closest;
-                }
-            }
-
             InitialAttachPoint = new GameObject(string.Format("[{0}] InitialAttachPoint", this.gameObject.name)).transform;
             //InitialAttachPoint = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
             InitialAttachPoint.position = hand.transform.position;
             InitialAttachPoint.rotation = hand.transform.rotation;
             InitialAttachPoint.localScale = Vector3.one * 0.25f;
             InitialAttachPoint.parent = this.transform;
+
+            ClosestHeldPoint = (InitialAttachPoint.position - this.transform.position);
         }
 
         public override void EndInteraction()
@@ -62,6 +50,15 @@ namespace NewtonVR
 
             if (InitialAttachPoint != null)
                 Destroy(InitialAttachPoint.gameObject);
+        }
+
+        protected override void DropIfTooFar()
+        {
+            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
+            if (distance > DropDistance)
+            {
+                DroppedBecauseOfDistance();
+            }
         }
 
     }

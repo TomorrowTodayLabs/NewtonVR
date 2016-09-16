@@ -115,6 +115,15 @@ namespace NewtonVR
                 Destroy(InitialAttachPoint.gameObject);
         }
 
+        protected override void DropIfTooFar()
+        {
+            float distance = Vector3.Distance(AttachedHand.transform.position, InitialAttachPoint.position);
+            if (distance > DropDistance)
+            {
+                DroppedBecauseOfDistance();
+            }
+        }
+
         private float GetValue()
         {
             float m_diff = 0.0f;

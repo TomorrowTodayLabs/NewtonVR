@@ -18,9 +18,7 @@ namespace NewtonVR
         public NVRHand AttachedHand = null;
 
         protected Collider[] Colliders;
-        protected Vector3 ClosestHeldPoint;
-
-        
+        protected Vector3 ClosestHeldPoint;       
 
         public virtual bool IsAttached
         {
@@ -54,25 +52,7 @@ namespace NewtonVR
         {
             if (IsAttached == true)
             {
-                float shortestDistance = float.MaxValue;
-
-                for (int index = 0; index < Colliders.Length; index++)
-                {
-                    //todo: this does not do what I think it does.
-                    Vector3 closest = Colliders[index].ClosestPointOnBounds(AttachedHand.transform.position);
-                    float distance = Vector3.Distance(AttachedHand.transform.position, closest);
-
-                    if (distance < shortestDistance)
-                    {
-                        shortestDistance = distance;
-                        ClosestHeldPoint = closest;
-                    }
-                }
-
-                if (shortestDistance > DropDistance)
-                {
-                    DroppedBecauseOfDistance();
-                }
+                DropIfTooFar();
             }
 
             deltaPoses = Time.time - lastPoses;
@@ -144,6 +124,8 @@ namespace NewtonVR
                 Rigidbody.useGravity = true;
             }
         }
+
+        abstract protected void DropIfTooFar();
 
         protected virtual void DroppedBecauseOfDistance()
         {

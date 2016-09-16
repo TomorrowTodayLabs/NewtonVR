@@ -62,24 +62,12 @@ namespace NewtonVR
         {
             base.BeginInteraction(hand);
 
-            Vector3 closestPoint = Vector3.zero;
-            float shortestDistance = float.MaxValue;
-            for (int index = 0; index < Colliders.Length; index++)
-            {
-                Vector3 closest = Colliders[index].bounds.ClosestPoint(AttachedHand.transform.position);
-                float distance = Vector3.Distance(AttachedHand.transform.position, closest);
-
-                if (distance < shortestDistance)
-                {
-                    shortestDistance = distance;
-                    closestPoint = closest;
-                }
-            }
-
             PickupTransform = new GameObject(string.Format("[{0}] PickupTransform", this.gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;
+
+            ClosestHeldPoint = (PickupTransform.position - this.transform.position);
         }
 
         public override void EndInteraction()
@@ -88,6 +76,15 @@ namespace NewtonVR
 
             if (PickupTransform != null)
                 Destroy(PickupTransform.gameObject);
+        }
+
+        protected override void DropIfTooFar()
+        {
+            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
+            if (distance > DropDistance)
+            {
+                DroppedBecauseOfDistance();
+            }
         }
 
         protected Vector3 ProjectVelocityOnPath(Vector3 velocity, Vector3 path)

@@ -99,6 +99,8 @@ namespace NewtonVR
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;
+
+            ClosestHeldPoint = (PickupTransform.position - this.transform.position);
         }
 
         public override void EndInteraction()
@@ -122,6 +124,15 @@ namespace NewtonVR
                     VelocityHistory[index] = null;
                     AngularVelocityHistory[index] = null;
                 }
+            }
+        }
+
+        protected override void DropIfTooFar()
+        {
+            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
+            if (distance > DropDistance)
+            {
+                DroppedBecauseOfDistance();
             }
         }
 
