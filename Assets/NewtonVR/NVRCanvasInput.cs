@@ -37,6 +37,9 @@ namespace NewtonVR
                 Instance = this;
 
                 ControllerCamera = new GameObject("Controller UI Camera").AddComponent<Camera>();
+                ControllerCamera.transform.parent = NVRPlayer.Instance.transform;
+
+                ControllerCamera.stereoTargetEye = StereoTargetEyeMask.None;
                 ControllerCamera.clearFlags = CameraClearFlags.Nothing;
                 ControllerCamera.cullingMask = 0; // 1 << LayerMask.NameToLayer("UI"); 
 
@@ -94,7 +97,7 @@ namespace NewtonVR
             }
 
             PointEvents[index].delta = Vector2.zero;
-            PointEvents[index].position = new Vector2(Screen.width, Screen.height);
+            PointEvents[index].position = new Vector2(Screen.width / 2, Screen.height / 2);
             PointEvents[index].scrollDelta = Vector2.zero;
 
             base.eventSystem.RaycastAll(PointEvents[index], m_RaycastResultCache);
