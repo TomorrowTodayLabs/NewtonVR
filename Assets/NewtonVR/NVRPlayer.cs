@@ -29,7 +29,6 @@ namespace NewtonVR
         private void Awake()
         {
             Instance = this;
-            NVRInteractables.Initialize();
 
             if (Head == null)
             {
