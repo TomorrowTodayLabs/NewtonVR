@@ -50,7 +50,6 @@ namespace NewtonVR
         private Quaternion[] LastRotations;
         private float[] LastDeltas;
         private int EstimationSamples = 5;
-        private int RotationEstimationSamples = 10;
 
         private NVRPhysicalController PhysicalController;
 
