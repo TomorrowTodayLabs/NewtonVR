@@ -20,6 +20,17 @@
             return converted;
         }
 
+        public static IList<T> Filter<T>(this IList<T> collection, Func<T, bool> isMatch)
+        {
+            var filtered = new List<T>();
+
+            foreach (var element in collection)
+                if (isMatch(element))
+                    filtered.Add(element);
+
+            return filtered;
+        }
+
         public static T Reduce<T>(this IList<T> collection, Func<T, T, T> accumulator, T start)
         {
             var reduction = start;
