@@ -42,7 +42,7 @@ namespace NewtonVR
 
             if (Hands == null || Hands.Length == 0)
             {
-                Hands = new NVRHand[] { LeftHand, RightHand };
+                Hands = new[] { LeftHand, RightHand };
             }
 
             ColliderToHandMapping = new Dictionary<Collider, NVRHand>();
