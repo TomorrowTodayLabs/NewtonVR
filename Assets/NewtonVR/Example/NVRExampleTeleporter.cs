@@ -74,7 +74,7 @@ namespace NewtonVR.Example
                     endPoint = this.transform.position + (this.transform.forward * 1000f);
                 }
 
-                Line.SetPositions(new Vector3[] { this.transform.position, endPoint });
+                Line.SetPositions(new[] { this.transform.position, endPoint });
             }
         }
     }
