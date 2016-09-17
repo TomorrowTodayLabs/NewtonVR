@@ -520,60 +520,60 @@ namespace NewtonVR
 
         private void SetVisibility(VisibilityLevel visibility)
         {
-            if (CurrentVisibility != visibility)
+            if (CurrentVisibility == visibility)
+                return;
+
+            if (visibility == VisibilityLevel.Invisible)
             {
-                if (visibility == VisibilityLevel.Invisible)
+                if (PhysicalController != null)
                 {
-                    if (PhysicalController != null)
-                    {
-                        PhysicalController.Off();
-                    }
-
-                    for (int index = 0; index < GhostRenderers.Length; index++)
-                    {
-                        GhostRenderers[index].enabled = false;
-                    }
-
-                    for (int index = 0; index < GhostColliders.Length; index++)
-                    {
-                        GhostColliders[index].enabled = true;
-                    }
+                    PhysicalController.Off();
                 }
 
-                if (visibility == VisibilityLevel.Ghost)
+                for (int index = 0; index < GhostRenderers.Length; index++)
                 {
-                    if (PhysicalController != null)
-                    {
-                        PhysicalController.Off();
-                    }
-
-                    for (int index = 0; index < GhostRenderers.Length; index++)
-                    {
-                        GhostRenderers[index].enabled = true;
-                    }
-
-                    for (int index = 0; index < GhostColliders.Length; index++)
-                    {
-                        GhostColliders[index].enabled = true;
-                    }
+                    GhostRenderers[index].enabled = false;
                 }
 
-                if (visibility == VisibilityLevel.Visible)
+                for (int index = 0; index < GhostColliders.Length; index++)
                 {
-                    if (PhysicalController != null)
-                    {
-                        PhysicalController.On();
-                    }
+                    GhostColliders[index].enabled = true;
+                }
+            }
 
-                    for (int index = 0; index < GhostRenderers.Length; index++)
-                    {
-                        GhostRenderers[index].enabled = false;
-                    }
+            if (visibility == VisibilityLevel.Ghost)
+            {
+                if (PhysicalController != null)
+                {
+                    PhysicalController.Off();
+                }
 
-                    for (int index = 0; index < GhostColliders.Length; index++)
-                    {
-                        GhostColliders[index].enabled = false;
-                    }
+                for (int index = 0; index < GhostRenderers.Length; index++)
+                {
+                    GhostRenderers[index].enabled = true;
+                }
+
+                for (int index = 0; index < GhostColliders.Length; index++)
+                {
+                    GhostColliders[index].enabled = true;
+                }
+            }
+
+            if (visibility == VisibilityLevel.Visible)
+            {
+                if (PhysicalController != null)
+                {
+                    PhysicalController.On();
+                }
+
+                for (int index = 0; index < GhostRenderers.Length; index++)
+                {
+                    GhostRenderers[index].enabled = false;
+                }
+
+                for (int index = 0; index < GhostColliders.Length; index++)
+                {
+                    GhostColliders[index].enabled = false;
                 }
             }
 
