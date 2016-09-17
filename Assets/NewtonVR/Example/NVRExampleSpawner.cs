@@ -4,9 +4,9 @@ namespace NewtonVR.Example
 {
     public class NVRExampleSpawner : MonoBehaviour
     {
-        public NVRButton Button;
+        [SerializeField] NVRButton Button;
 
-        public GameObject ToCopy;
+        [SerializeField] GameObject ToCopy;
 
         private void Update()
         {
