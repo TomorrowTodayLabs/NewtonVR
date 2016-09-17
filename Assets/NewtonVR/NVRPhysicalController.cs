@@ -50,9 +50,8 @@ namespace NewtonVR
                                                    dk1Trackhat.gameObject.AddComponent<BoxCollider>();
 
                     Transform dk1Body = ModelParent.transform.Find("body");
-                    Collider dk1BodyCollider = dk1Body.gameObject.GetComponent<BoxCollider>();
-                    if (dk1BodyCollider == null)
-                        dk1BodyCollider = dk1Body.gameObject.AddComponent<BoxCollider>();
+                    Collider dk1BodyCollider = dk1Body.gameObject.GetComponent<BoxCollider>() ??
+                                               dk1Body.gameObject.AddComponent<BoxCollider>();
 
                     Colliders = new[] { dk1TrackhatCollider, dk1BodyCollider };
                     break;
