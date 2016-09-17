@@ -254,14 +254,7 @@ namespace NewtonVR
                         if (CurrentHandState != HandState.GripDownInteracting && VisibilityLocked == false)
                         {
                             VisibilityLocked = true;
-                            if (NVRPlayer.Instance.MakeControllerInvisibleOnInteraction)
-                            {
-                                SetVisibility(VisibilityLevel.Invisible);
-                            }
-                            else
-                            {
-                                SetVisibility(VisibilityLevel.Ghost);
-                            }
+                            SetVisibility(NVRPlayer.Instance.MakeControllerInvisibleOnInteraction ? VisibilityLevel.Invisible : VisibilityLevel.Ghost);
                             CurrentHandState = HandState.GripDownInteracting;
                         }
                     }
