@@ -408,10 +408,7 @@ namespace NewtonVR
 
             if (CurrentInteractionStyle == InterationStyle.GripToggleToInteract)
             {
-                if (CurrentHandState != HandState.Idle)
-                {
-                    CurrentHandState = HandState.Idle;
-                }
+                CurrentHandState = HandState.Idle;
             }
         }
 
