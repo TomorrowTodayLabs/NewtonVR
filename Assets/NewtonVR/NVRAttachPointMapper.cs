@@ -5,7 +5,7 @@ namespace NewtonVR
 {
     public class AttachPointMapper
     {
-        private static readonly Dictionary<Collider, NVRAttachPoint> Colliders = new Dictionary<Collider, NVRAttachPoint>();
+        private static readonly IDictionary<Collider, NVRAttachPoint> Colliders = new Dictionary<Collider, NVRAttachPoint>();
 
         public static void Register(Collider col, NVRAttachPoint point)
         {
