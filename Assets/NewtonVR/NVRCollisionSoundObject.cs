@@ -9,9 +9,6 @@ namespace NewtonVR
 
         public NVRCollisionSoundMaterials Material;
 
-        private Collider[] Colliders;
-
-
         protected virtual void Awake()
         {
             GetComponentsInChildren<Collider>(true).Iterate(a => SoundObjects[a] = this);
