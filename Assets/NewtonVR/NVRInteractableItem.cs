@@ -137,12 +137,7 @@ namespace NewtonVR
 
         private Vector3 GetMeanVector(Vector3?[] positions)
         {
-            var sum = Vector3.zero;
-            var count = 0;
-
-            positions.Iterate(option => option.Map(position => { sum += position; count++; }));
-
-            return sum / count;
+            return positions.Filter(a => a.HasValue).Map(a => a.Value).Reduce((a, b) => a + b, Vector3.zero);
         }
     }
 }
