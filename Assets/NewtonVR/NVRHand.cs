@@ -613,7 +613,7 @@ namespace NewtonVR
                             dk2TrackhatCollider.isTrigger = true;
                         }
 
-                        Colliders = new Collider[] { dk2TrackhatCollider };
+                        Colliders = new[] { dk2TrackhatCollider };
                         break;
 
                     default:
