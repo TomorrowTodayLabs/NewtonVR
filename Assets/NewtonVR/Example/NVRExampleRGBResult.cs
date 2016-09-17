@@ -5,9 +5,7 @@ namespace NewtonVR.Example
     public class NVRExampleRGBResult : MonoBehaviour
     {
         [SerializeField] NVRSlider SliderRed, SliderGreen, SliderBlue;
-
         [SerializeField] Renderer Result;
-
 
         private void Update()
         {
