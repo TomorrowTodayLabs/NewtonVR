@@ -547,15 +547,8 @@ namespace NewtonVR
                 }
             }
 
-            for (int index = 0; index < GhostRenderers.Length; index++)
-            {
-                GhostRenderers[index].enabled = visibility == VisibilityLevel.Ghost;
-            }
-
-            for (int index = 0; index < GhostColliders.Length; index++)
-            {
-                GhostColliders[index].enabled = visibility != VisibilityLevel.Visible;
-            }
+            GhostRenderers.Iterate(a => a.enabled = visibility == VisibilityLevel.Ghost);
+            GhostColliders.Iterate(a => a.enabled = visibility != VisibilityLevel.Visible);
 
             CurrentVisibility = visibility;
         }
