@@ -9,14 +9,10 @@ namespace NewtonVR
         private static Dictionary<Collider, NVRInteractable> ColliderMapping;
         private static Dictionary<NVRInteractable, Collider[]> NVRInteractableMapping;
 
-        private static bool Initialized = false;
-
         public static void Initialize()
         {
             ColliderMapping = new Dictionary<Collider, NVRInteractable>();
             NVRInteractableMapping = new Dictionary<NVRInteractable, Collider[]>();
-
-            Initialized = true;
         }
 
         public static void Register(NVRInteractable interactable, Collider[] colliders)
