@@ -137,24 +137,12 @@ namespace NewtonVR
 
         private Vector3 GetMeanVector(Vector3?[] positions)
         {
-            float x = 0f;
-            float y = 0f;
-            float z = 0f;
+            var sum = Vector3.zero;
+            var count = 0;
 
-            int count = 0;
-            for (int index = 0; index < positions.Length; index++)
-            {
-                if (positions[index] != null)
-                {
-                    x += positions[index].Value.x;
-                    y += positions[index].Value.y;
-                    z += positions[index].Value.z;
+            positions.Iterate(option => option.Map(a => { sum += a; count++; }));
 
-                    count++;
-                }
-            }
-
-            return new Vector3(x / count, y / count, z / count);
+            return sum / count;
         }
     }
 }
