@@ -16,10 +16,7 @@ namespace NewtonVR
         {
             Colliders = this.GetComponentsInChildren<Collider>(true);
 
-            for (int index = 0; index < Colliders.Length; index++)
-            {
-                SoundObjects[Colliders[index]] = this;
-            }
+            Colliders.Iterate(a => SoundObjects[a] = this);
         }
 
         protected virtual void OnDestroy()
