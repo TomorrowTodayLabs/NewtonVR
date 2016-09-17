@@ -4,11 +4,10 @@ namespace NewtonVR.Example
 {
     public class NVRExampleLaserPointer : MonoBehaviour
     {
-        public Color LineColor;
-        public float LineWidth = 0.02f;
-        public bool ForceLineVisible = true;
-
-        public bool OnlyVisibleOnTrigger = true;
+        [SerializeField] Color LineColor;
+        [SerializeField] float LineWidth = 0.02f;
+        [SerializeField] bool ForceLineVisible = true;
+        [SerializeField] bool OnlyVisibleOnTrigger = true;
 
         private LineRenderer Line;
 
