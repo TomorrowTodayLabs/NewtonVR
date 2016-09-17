@@ -529,16 +529,6 @@ namespace NewtonVR
                 {
                     PhysicalController.Off();
                 }
-
-                for (int index = 0; index < GhostRenderers.Length; index++)
-                {
-                    GhostRenderers[index].enabled = false;
-                }
-
-                for (int index = 0; index < GhostColliders.Length; index++)
-                {
-                    GhostColliders[index].enabled = true;
-                }
             }
 
             if (visibility == VisibilityLevel.Ghost)
@@ -546,16 +536,6 @@ namespace NewtonVR
                 if (PhysicalController != null)
                 {
                     PhysicalController.Off();
-                }
-
-                for (int index = 0; index < GhostRenderers.Length; index++)
-                {
-                    GhostRenderers[index].enabled = true;
-                }
-
-                for (int index = 0; index < GhostColliders.Length; index++)
-                {
-                    GhostColliders[index].enabled = true;
                 }
             }
 
@@ -565,16 +545,16 @@ namespace NewtonVR
                 {
                     PhysicalController.On();
                 }
+            }
 
-                for (int index = 0; index < GhostRenderers.Length; index++)
-                {
-                    GhostRenderers[index].enabled = false;
-                }
+            for (int index = 0; index < GhostRenderers.Length; index++)
+            {
+                GhostRenderers[index].enabled = visibility == VisibilityLevel.Ghost;
+            }
 
-                for (int index = 0; index < GhostColliders.Length; index++)
-                {
-                    GhostColliders[index].enabled = false;
-                }
+            for (int index = 0; index < GhostColliders.Length; index++)
+            {
+                GhostColliders[index].enabled = visibility != VisibilityLevel.Visible;
             }
 
             CurrentVisibility = visibility;
