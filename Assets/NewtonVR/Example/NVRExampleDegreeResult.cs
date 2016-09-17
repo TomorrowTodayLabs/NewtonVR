@@ -4,7 +4,7 @@ namespace NewtonVR.Example
 {
     public class NVRExampleDegreeResult : MonoBehaviour
     {
-        public NVRInteractableItem Knob;
+        [SerializeField] NVRInteractableItem Knob;
 
         private TextMesh Text;
 
