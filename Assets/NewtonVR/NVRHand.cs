@@ -653,33 +653,19 @@ namespace NewtonVR
                 {
                     ForceGhost();
                 }
-
-                Color transparentcolor = Color.white;
-                transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
-
-                GetComponentsInChildren<Renderer>().Iterate(a => NVRHelpers.SetTransparent(a.material, transparentcolor));
-
-                if (Colliders != null)
-                {
-                    GhostColliders = Colliders;
-                }
-
-                CurrentVisibility = VisibilityLevel.Ghost;
             }
-            else
+
+            Color transparentcolor = Color.white;
+            transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
+
+            GetComponentsInChildren<Renderer>().Iterate(a => NVRHelpers.SetTransparent(a.material, transparentcolor));
+
+            if (Colliders != null)
             {
-                Color transparentcolor = Color.white;
-                transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
-
-                GetComponentsInChildren<Renderer>().Iterate(a => NVRHelpers.SetTransparent(a.material, transparentcolor));
-
-                if (Colliders != null)
-                {
-                    GhostColliders = Colliders;
-                }
-
-                CurrentVisibility = VisibilityLevel.Ghost;
+                GhostColliders = Colliders;
             }
+
+            CurrentVisibility = VisibilityLevel.Ghost;
 
             CurrentHandState = HandState.Idle;
         }
