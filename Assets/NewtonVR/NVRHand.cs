@@ -326,7 +326,7 @@ namespace NewtonVR
         public Vector3 GetAngularVelocityEstimation()
         {
             float delta = LastDeltas.Sum();
-            float angleDegrees = 0.0f;
+            float angleDegrees;
             Vector3 unitAxis = Vector3.zero;
             Quaternion rotation = Quaternion.identity;
 
