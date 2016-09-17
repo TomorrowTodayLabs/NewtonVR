@@ -6,13 +6,11 @@ namespace NewtonVR
 {
     public class NVRInteractables : MonoBehaviour
     {
-        private static Dictionary<Collider, NVRInteractable> ColliderMapping;
-        private static Dictionary<NVRInteractable, Collider[]> NVRInteractableMapping;
+        private static Dictionary<Collider, NVRInteractable> ColliderMapping = new Dictionary<Collider, NVRInteractable>();
+        private static Dictionary<NVRInteractable, Collider[]> NVRInteractableMapping = new Dictionary<NVRInteractable, Collider[]>();
 
         public static void Initialize()
         {
-            ColliderMapping = new Dictionary<Collider, NVRInteractable>();
-            NVRInteractableMapping = new Dictionary<NVRInteractable, Collider[]>();
         }
 
         public static void Register(NVRInteractable interactable, Collider[] colliders)
