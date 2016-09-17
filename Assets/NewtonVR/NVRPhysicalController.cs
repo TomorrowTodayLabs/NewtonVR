@@ -46,9 +46,8 @@ namespace NewtonVR
             {
                 case "vr_controller_05_wireless_b":
                     Transform dk1Trackhat = ModelParent.transform.Find("trackhat");
-                    Collider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<BoxCollider>();
-                    if (dk1TrackhatCollider == null)
-                        dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<BoxCollider>();
+                    Collider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<BoxCollider>() ??
+                                                   dk1Trackhat.gameObject.AddComponent<BoxCollider>();
 
                     Transform dk1Body = ModelParent.transform.Find("body");
                     Collider dk1BodyCollider = dk1Body.gameObject.GetComponent<BoxCollider>();
