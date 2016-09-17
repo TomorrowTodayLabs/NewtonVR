@@ -332,7 +332,7 @@ namespace NewtonVR
 
             //Error: the incorrect rotation is sometimes returned
             rotation.ToAngleAxis(out angleDegrees, out unitAxis);
-            return unitAxis * ((angleDegrees * Mathf.Deg2Rad) / delta);
+            return unitAxis * angleDegrees * Mathf.Deg2Rad / delta;
         }
 
         public Vector3 GetPositionDelta()
