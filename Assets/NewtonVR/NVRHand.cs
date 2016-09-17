@@ -60,8 +60,6 @@ namespace NewtonVR
 
         private bool RenderModelInitialized = false;
 
-        private EVRButtonId[] EVRButtonIds;
-
         public bool IsHovering
         {
             get
