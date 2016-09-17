@@ -140,7 +140,7 @@ namespace NewtonVR
             var sum = Vector3.zero;
             var count = 0;
 
-            positions.Iterate(option => option.Map(a => { sum += a; count++; }));
+            positions.Iterate(option => option.Map(position => { sum += position; count++; }));
 
             return sum / count;
         }
