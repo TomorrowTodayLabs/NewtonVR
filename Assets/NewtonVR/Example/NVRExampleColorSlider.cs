@@ -4,12 +4,9 @@ namespace NewtonVR.Example
 {
     public class NVRExampleColorSlider : MonoBehaviour
     {
-        public Color From;
-        public Color To;
-
-        public Renderer Result;
-
-        public NVRSlider Slider;
+        [SerializeField] Color From, To;
+        [SerializeField] Renderer Result;
+        [SerializeField] NVRSlider Slider;
 
         private void Update()
         {
