@@ -327,7 +327,7 @@ namespace NewtonVR
         {
             float delta = LastDeltas.Sum();
             float angleDegrees;
-            Vector3 unitAxis = Vector3.zero;
+            Vector3 unitAxis;
             Quaternion rotation = Quaternion.identity;
 
             rotation =  LastRotations[LastRotations.Length-1] * Quaternion.Inverse(LastRotations[LastRotations.Length-2]);
