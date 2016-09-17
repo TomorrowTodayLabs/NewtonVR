@@ -625,13 +625,13 @@ namespace NewtonVR
             {
 
                 RenderModelInitialized = true;
-                GameObject CustomModelObject = Instantiate(CustomModel);
-                Colliders = CustomModelObject.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
+                GameObject customModelObject = Instantiate(CustomModel);
+                Colliders = customModelObject.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
 
-                CustomModelObject.transform.parent = this.transform;
-                CustomModelObject.transform.localScale = Vector3.one;
-                CustomModelObject.transform.localPosition = Vector3.zero;
-                CustomModelObject.transform.localRotation = Quaternion.identity;
+                customModelObject.transform.parent = this.transform;
+                customModelObject.transform.localScale = Vector3.one;
+                customModelObject.transform.localPosition = Vector3.zero;
+                customModelObject.transform.localRotation = Quaternion.identity;
             }
 
             NVRPlayer.Instance.RegisterHand(this);
