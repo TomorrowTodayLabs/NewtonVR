@@ -50,9 +50,7 @@ namespace NewtonVR
 
         public void RegisterHand(NVRHand hand)
         {
-            Collider[] colliders = hand.GetComponentsInChildren<Collider>();
-
-            colliders.Iterate(a =>
+            hand.GetComponentsInChildren<Collider>().Iterate(a =>
             {
                 if (ColliderToHandMapping.ContainsKey(a) == false)
                 {
