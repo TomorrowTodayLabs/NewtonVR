@@ -54,7 +54,7 @@ namespace NewtonVR
                     if (dk1BodyCollider == null)
                         dk1BodyCollider = dk1Body.gameObject.AddComponent<BoxCollider>();
 
-                    Colliders = new Collider[] { dk1TrackhatCollider, dk1BodyCollider };
+                    Colliders = new[] { dk1TrackhatCollider, dk1BodyCollider };
                     break;
 
                 case "vr_controller_vive_1_5":
