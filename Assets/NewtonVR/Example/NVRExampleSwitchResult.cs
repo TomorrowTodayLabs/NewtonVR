@@ -4,7 +4,7 @@ namespace NewtonVR.Example
 {
     public class NVRExampleSwitchResult : MonoBehaviour
     {
-        public NVRSwitch Switch;
+        [SerializeField] NVRSwitch Switch;
 
         private Light SpotLight;
 
