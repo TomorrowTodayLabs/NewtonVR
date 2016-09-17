@@ -53,9 +53,7 @@ namespace NewtonVR
             hand.GetComponentsInChildren<Collider>().Iterate(a =>
             {
                 if (ColliderToHandMapping.ContainsKey(a) == false)
-                {
                     ColliderToHandMapping.Add(a, hand);
-                }
             });
         }
 
