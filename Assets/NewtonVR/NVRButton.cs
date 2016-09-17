@@ -36,34 +36,34 @@ namespace NewtonVR
 
         private void Awake()
         {
-            InitialPosition = new GameObject(string.Format("[{0}] Initial Position", this.gameObject.name)).transform;
-            InitialPosition.parent = this.transform.parent;
+            InitialPosition = new GameObject(string.Format("[{0}] Initial Position", gameObject.name)).transform;
+            InitialPosition.parent = transform.parent;
             InitialPosition.localPosition = Vector3.zero;
             InitialPosition.localRotation = Quaternion.identity;
 
             if (Rigidbody == null)
-                Rigidbody = this.GetComponent<Rigidbody>();
+                Rigidbody = GetComponent<Rigidbody>();
 
             if (Rigidbody == null)
             {
                 Debug.LogError("There is no rigidbody attached to this button.");
             }
 
-            InitialLocalPosition = this.transform.localPosition;
+            InitialLocalPosition = transform.localPosition;
             ConstrainedPosition = InitialLocalPosition;
 
-            InitialLocalRotation = this.transform.localRotation;
-            ConstrainedRotation = this.transform.localRotation;
+            InitialLocalRotation = transform.localRotation;
+            ConstrainedRotation = transform.localRotation;
         }
 
         private void FixedUpdate()
         {
             ConstrainPosition();
 
-            CurrentDistance = Vector3.Distance(this.transform.position, InitialPosition.position);
+            CurrentDistance = Vector3.Distance(transform.position, InitialPosition.position);
 
-            Vector3 PositionDelta = InitialPosition.position - this.transform.position;
-            this.Rigidbody.velocity = PositionDelta * PositionMagic * Time.fixedDeltaTime;
+            Vector3 PositionDelta = InitialPosition.position - transform.position;
+            Rigidbody.velocity = PositionDelta * PositionMagic * Time.fixedDeltaTime;
         }
 
         private void Update()
@@ -84,9 +84,9 @@ namespace NewtonVR
 
         private void ConstrainPosition()
         {
-            ConstrainedPosition.y = this.transform.localPosition.y;
-            this.transform.localPosition = ConstrainedPosition;
-            this.transform.localRotation = ConstrainedRotation;
+            ConstrainedPosition.y = transform.localPosition.y;
+            transform.localPosition = ConstrainedPosition;
+            transform.localRotation = ConstrainedRotation;
         }
 
         private void LateUpdate()

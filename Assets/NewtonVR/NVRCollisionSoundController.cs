@@ -28,7 +28,7 @@ namespace NewtonVR
             #if NVR_FMOD
             //todo: implement fmod provider
             #else
-            Provider = this.gameObject.AddComponent<NVRCollisionSoundProviderUnity>();
+            Provider = gameObject.AddComponent<NVRCollisionSoundProviderUnity>();
             #endif
         }
 

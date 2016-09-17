@@ -23,7 +23,7 @@ namespace NewtonVR
             for (int index = 0; index < AudioPool.Length; index++)
             {
                 AudioPool[index] = Instantiate(AudioSourcePrefab).GetComponent<AudioSource>();
-                AudioPool[index].transform.parent = this.transform;
+                AudioPool[index].transform.parent = transform;
             }
 
             AudioClip[] clips = Resources.LoadAll<AudioClip>(CollisionSoundsPath);

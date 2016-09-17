@@ -10,7 +10,7 @@ namespace NewtonVR.Example
 
         private void Awake()
         {
-            Text = this.GetComponent<TextMesh>();
+            Text = GetComponent<TextMesh>();
         }
 
         private void Update()

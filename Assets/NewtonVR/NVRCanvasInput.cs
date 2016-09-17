@@ -46,7 +46,7 @@ namespace NewtonVR
                 for (int index = 0; index < Cursors.Length; index++)
                 {
                     GameObject cursor = new GameObject("Cursor for " + NVRPlayer.Instance.Hands[index].gameObject.name);
-                    cursor.transform.parent = this.transform;
+                    cursor.transform.parent = transform;
 
                     Canvas canvas = cursor.AddComponent<Canvas>();
                     cursor.AddComponent<CanvasRenderer>();
@@ -62,7 +62,7 @@ namespace NewtonVR
                     image.material = CursorMaterial;
 
                     if (CursorSprite == null)
-                        Debug.LogError("Set CursorSprite on " + this.gameObject.name + " to the sprite you want to use as your cursor.", this.gameObject);
+                        Debug.LogError("Set CursorSprite on " + gameObject.name + " to the sprite you want to use as your cursor.", gameObject);
 
                     Cursors[index] = cursor.GetComponent<RectTransform>();
                 }
@@ -72,7 +72,7 @@ namespace NewtonVR
                 CurrentDragging = new GameObject[Cursors.Length];
                 PointEvents = new PointerEventData[Cursors.Length];
 
-                Canvas[] canvases = GameObject.FindObjectsOfType<Canvas>();
+                Canvas[] canvases = FindObjectsOfType<Canvas>();
                 foreach (Canvas canvas in canvases)
                 {
                     canvas.worldCamera = ControllerCamera;
@@ -87,7 +87,7 @@ namespace NewtonVR
         {
             if (PointEvents[index] == null)
             {
-                PointEvents[index] = new PointerEventData(base.eventSystem);
+                PointEvents[index] = new PointerEventData(eventSystem);
             }
             else
             {
@@ -98,7 +98,7 @@ namespace NewtonVR
             PointEvents[index].position = new Vector2(Screen.width / 2, Screen.height / 2);
             PointEvents[index].scrollDelta = Vector2.zero;
 
-            base.eventSystem.RaycastAll(PointEvents[index], m_RaycastResultCache);
+            eventSystem.RaycastAll(PointEvents[index], m_RaycastResultCache);
             PointEvents[index].pointerCurrentRaycast = FindFirstRaycast(m_RaycastResultCache);
 
             if (PointEvents[index].pointerCurrentRaycast.gameObject != null)
@@ -139,9 +139,9 @@ namespace NewtonVR
         
         public void ClearSelection()
         {
-            if (base.eventSystem.currentSelectedGameObject)
+            if (eventSystem.currentSelectedGameObject)
             {
-                base.eventSystem.SetSelectedGameObject(null);
+                eventSystem.SetSelectedGameObject(null);
             }
         }
         
@@ -151,18 +151,18 @@ namespace NewtonVR
 
             if (ExecuteEvents.GetEventHandler<ISelectHandler>(go))
             {
-                base.eventSystem.SetSelectedGameObject(go);
+                eventSystem.SetSelectedGameObject(go);
             }
         }
         
         private bool SendUpdateEventToSelectedObject()
         {
-            if (base.eventSystem.currentSelectedGameObject == null)
+            if (eventSystem.currentSelectedGameObject == null)
                 return false;
 
             BaseEventData data = GetBaseEventData();
 
-            ExecuteEvents.Execute(base.eventSystem.currentSelectedGameObject, data, ExecuteEvents.updateSelectedHandler);
+            ExecuteEvents.Execute(eventSystem.currentSelectedGameObject, data, ExecuteEvents.updateSelectedHandler);
 
             return data.used;
         }
@@ -203,7 +203,7 @@ namespace NewtonVR
                 CurrentPoint[index] = PointEvents[index].pointerCurrentRaycast.gameObject;
 
                 // handle enter and exit events (highlight)
-                base.HandlePointerExitAndEnter(PointEvents[index], CurrentPoint[index]);
+                HandlePointerExitAndEnter(PointEvents[index], CurrentPoint[index]);
 
                 // update cursor
                 UpdateCursor(index, PointEvents[index]);

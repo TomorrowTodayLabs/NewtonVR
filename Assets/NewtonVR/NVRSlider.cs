@@ -31,7 +31,7 @@ namespace NewtonVR
                 Debug.LogError("This slider has no EndPoint.");
             }
 
-            this.transform.position = Vector3.Lerp(StartPoint.position, EndPoint.position, CurrentValue);
+            transform.position = Vector3.Lerp(StartPoint.position, EndPoint.position, CurrentValue);
             SliderPath = EndPoint.position - StartPoint.position;
         }
 
@@ -41,19 +41,19 @@ namespace NewtonVR
 
             if (IsAttached)
             {
-                Vector3 PositionDelta = (PickupTransform.position - this.transform.position);
+                Vector3 PositionDelta = (PickupTransform.position - transform.position);
 
                 Vector3 velocity = PositionDelta * AttachedPositionMagic * deltaPoses;
-                this.Rigidbody.velocity = ProjectVelocityOnPath(velocity, SliderPath);
+                Rigidbody.velocity = ProjectVelocityOnPath(velocity, SliderPath);
             }
 
-            if (this.transform.hasChanged)
+            if (transform.hasChanged)
             {
                 float totalDistance = Vector3.Distance(StartPoint.position, EndPoint.position);
-                float distance = Vector3.Distance(StartPoint.position, this.transform.position);
+                float distance = Vector3.Distance(StartPoint.position, transform.position);
                 CurrentValue = distance / totalDistance;
 
-                this.transform.hasChanged = false;
+                transform.hasChanged = false;
             }
         }
 
@@ -61,12 +61,12 @@ namespace NewtonVR
         {
             base.BeginInteraction(hand);
 
-            PickupTransform = new GameObject(string.Format("[{0}] PickupTransform", this.gameObject.name)).transform;
+            PickupTransform = new GameObject(string.Format("[{0}] PickupTransform", gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
-            PickupTransform.position = this.transform.position;
-            PickupTransform.rotation = this.transform.rotation;
+            PickupTransform.position = transform.position;
+            PickupTransform.rotation = transform.rotation;
 
-            ClosestHeldPoint = (PickupTransform.position - this.transform.position);
+            ClosestHeldPoint = (PickupTransform.position - transform.position);
         }
 
         public override void EndInteraction()
@@ -79,7 +79,7 @@ namespace NewtonVR
 
         protected override void DropIfTooFar()
         {
-            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
+            float distance = Vector3.Distance(AttachedHand.transform.position, (transform.position + ClosestHeldPoint));
             if (distance > DropDistance)
             {
                 DroppedBecauseOfDistance();

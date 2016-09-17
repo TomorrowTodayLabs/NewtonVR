@@ -33,7 +33,7 @@ namespace NewtonVR
 
             if (Head == null)
             {
-                Head = this.GetComponentInChildren<NVRHead>();
+                Head = GetComponentInChildren<NVRHead>();
             }
 
             if (LeftHand == null || RightHand == null)

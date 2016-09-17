@@ -12,7 +12,7 @@ namespace NewtonVR
         protected override void Awake()
         {
             base.Awake();
-            this.Rigidbody.maxAngularVelocity = 100f;
+            Rigidbody.maxAngularVelocity = 100f;
         }
 
         public override void OnNewPosesApplied()
@@ -23,24 +23,24 @@ namespace NewtonVR
             {
                 Vector3 PositionDelta = (AttachedHand.transform.position - InitialAttachPoint.position) * DeltaMagic;
 
-                this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
+                Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
             }
 
-            CurrentAngle = this.transform.localEulerAngles.z;
+            CurrentAngle = transform.localEulerAngles.z;
         }
 
         public override void BeginInteraction(NVRHand hand)
         {
             base.BeginInteraction(hand);
 
-            InitialAttachPoint = new GameObject("PickupTransform: " + this.gameObject.name).transform;
+            InitialAttachPoint = new GameObject("PickupTransform: " + gameObject.name).transform;
             //InitialAttachPoint = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
             InitialAttachPoint.position = hand.transform.position;
             InitialAttachPoint.rotation = hand.transform.rotation;
             InitialAttachPoint.localScale = Vector3.one * 0.25f;
-            InitialAttachPoint.parent = this.transform;
+            InitialAttachPoint.parent = transform;
 
-            ClosestHeldPoint = (InitialAttachPoint.position - this.transform.position);
+            ClosestHeldPoint = (InitialAttachPoint.position - transform.position);
         }
 
         public override void EndInteraction()
@@ -53,7 +53,7 @@ namespace NewtonVR
 
         protected override void DropIfTooFar()
         {
-            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
+            float distance = Vector3.Distance(AttachedHand.transform.position, (transform.position + ClosestHeldPoint));
             if (distance > DropDistance)
             {
                 DroppedBecauseOfDistance();

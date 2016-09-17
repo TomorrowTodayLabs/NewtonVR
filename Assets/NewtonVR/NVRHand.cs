@@ -9,13 +9,13 @@ namespace NewtonVR
 {
     public class NVRHand : MonoBehaviour
     {
-        private Valve.VR.EVRButtonId HoldButton = EVRButtonId.k_EButton_Grip;
+        private EVRButtonId HoldButton = EVRButtonId.k_EButton_Grip;
         public bool HoldButtonDown = false;
         public bool HoldButtonUp = false;
         public bool HoldButtonPressed = false;
         public float HoldButtonAxis = 0f;
 
-        private Valve.VR.EVRButtonId UseButton = EVRButtonId.k_EButton_SteamVR_Trigger;
+        private EVRButtonId UseButton = EVRButtonId.k_EButton_SteamVR_Trigger;
         public bool UseButtonDown = false;
         public bool UseButtonUp = false;
         public bool UseButtonPressed = false;
@@ -367,8 +367,8 @@ namespace NewtonVR
 
         protected virtual void FixedUpdate()
         {
-            LastPositions[EstimationSampleIndex] = this.transform.position;
-            LastRotations[EstimationSampleIndex] = this.transform.rotation;
+            LastPositions[EstimationSampleIndex] = transform.position;
+            LastRotations[EstimationSampleIndex] = transform.rotation;
             LastDeltas[EstimationSampleIndex] = Time.fixedDeltaTime;
             EstimationSampleIndex++;
 
@@ -422,7 +422,7 @@ namespace NewtonVR
                 if (hovering.Key == null)
                     continue;
 
-                float distance = Vector3.Distance(this.transform.position, hovering.Key.transform.position);
+                float distance = Vector3.Distance(transform.position, hovering.Key.transform.position);
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
@@ -492,9 +492,9 @@ namespace NewtonVR
 
             if (CustomModel != null)
             {
-                this.GetComponentInChildren<SteamVR_RenderModel>().enabled = false;
+                GetComponentInChildren<SteamVR_RenderModel>().enabled = false;
             }
-            if (this.gameObject.activeInHierarchy)
+            if (gameObject.activeInHierarchy)
                 StartCoroutine(DoInitialize());
         }
 
@@ -548,7 +548,7 @@ namespace NewtonVR
                 yield return null; //wait for render model to be initialized
             } while (RenderModelInitialized == false && CustomModel == null);
 
-            Rigidbody = this.GetComponent<Rigidbody>() ?? this.gameObject.AddComponent<Rigidbody>();
+            Rigidbody = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
             Rigidbody.isKinematic = true;
             Rigidbody.maxAngularVelocity = float.MaxValue;
             Rigidbody.useGravity = false;
@@ -558,7 +558,7 @@ namespace NewtonVR
             if (CustomModel == null)
             {
                 string controllerModel = GetDeviceName();
-                SteamVR_RenderModel renderModel = this.GetComponentInChildren<SteamVR_RenderModel>();
+                SteamVR_RenderModel renderModel = GetComponentInChildren<SteamVR_RenderModel>();
 
                 switch (controllerModel)
                 {
@@ -588,7 +588,7 @@ namespace NewtonVR
                         if (dk2Trackhat == null)
                         {
                             dk2Trackhat = new GameObject("trackhat").transform;
-                            dk2Trackhat.gameObject.layer = this.gameObject.layer;
+                            dk2Trackhat.gameObject.layer = gameObject.layer;
                             dk2Trackhat.parent = renderModel.transform;
                             dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
                             dk2Trackhat.localScale = Vector3.one * 0.1f;
@@ -621,7 +621,7 @@ namespace NewtonVR
                 GameObject customModelObject = Instantiate(CustomModel);
                 Colliders = customModelObject.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
 
-                customModelObject.transform.parent = this.transform;
+                customModelObject.transform.parent = transform;
                 customModelObject.transform.localScale = Vector3.one;
                 customModelObject.transform.localPosition = Vector3.zero;
                 customModelObject.transform.localRotation = Quaternion.identity;
@@ -639,7 +639,7 @@ namespace NewtonVR
                     PhysicalController.Kill();
                 }
 
-                PhysicalController = this.gameObject.AddComponent<NVRPhysicalController>();
+                PhysicalController = gameObject.AddComponent<NVRPhysicalController>();
                 PhysicalController.Initialize(this, initialState);
 
                 if (initialState)
@@ -672,7 +672,7 @@ namespace NewtonVR
 
         public string GetDeviceName()
         {
-            return CustomModel == null ? this.GetComponentInChildren<SteamVR_RenderModel>().renderModelName : "Custom";
+            return CustomModel == null ? GetComponentInChildren<SteamVR_RenderModel>().renderModelName : "Custom";
         }
 
         private void OnDestroy()

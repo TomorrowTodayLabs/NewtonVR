@@ -13,12 +13,12 @@ namespace NewtonVR.Example
 
         private void Awake()
         {
-            Line = this.GetComponent<LineRenderer>();
-            Hand = this.GetComponent<NVRHand>();
+            Line = GetComponent<LineRenderer>();
+            Hand = GetComponent<NVRHand>();
 
             if (Line == null)
             {
-                Line = this.gameObject.AddComponent<LineRenderer>();
+                Line = gameObject.AddComponent<LineRenderer>();
             }
 
             if (Line.sharedMaterial == null)
@@ -42,7 +42,7 @@ namespace NewtonVR.Example
                 Line.SetWidth(LineWidth, LineWidth);
 
                 RaycastHit hitInfo;
-                bool hit = Physics.Raycast(this.transform.position, this.transform.forward, out hitInfo, 1000);
+                bool hit = Physics.Raycast(transform.position, transform.forward, out hitInfo, 1000);
                 Vector3 endPoint;
 
                 if (hit)
@@ -71,10 +71,10 @@ namespace NewtonVR.Example
                 }
                 else
                 {
-                    endPoint = this.transform.position + (this.transform.forward * 1000f);
+                    endPoint = transform.position + (transform.forward * 1000f);
                 }
 
-                Line.SetPositions(new[] { this.transform.position, endPoint });
+                Line.SetPositions(new[] { transform.position, endPoint });
             }
         }
     }

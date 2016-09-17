@@ -35,7 +35,7 @@ namespace NewtonVR.Example
 
         private IEnumerator DoSpawnShip()
         {
-            RocketInstance = (GameObject)GameObject.Instantiate(RocketPrefab, this.transform.position, this.transform.rotation);
+            RocketInstance = (GameObject)Instantiate(RocketPrefab, transform.position, transform.rotation);
             RocketInstance.GetComponent<Rigidbody>().isKinematic = true;
             RocketInstance.GetComponent<NVRInteractableItem>().CanAttach = false;
 

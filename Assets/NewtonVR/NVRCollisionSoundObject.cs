@@ -33,7 +33,7 @@ namespace NewtonVR
                     return;
                 }
 
-                NVRCollisionSoundController.Play(this.Material, collision.contacts[0].point, volume);
+                NVRCollisionSoundController.Play(Material, collision.contacts[0].point, volume);
                 NVRCollisionSoundController.Play(collisionSoundObject.Material, collision.contacts[0].point, volume);
             }
         }

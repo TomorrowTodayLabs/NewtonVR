@@ -20,7 +20,7 @@ namespace NewtonVR
                 NVRAttachPoint point = AttachPointMapper.GetAttachPoint(col);
                 if (point != null && point.IsAttached == false)
                 {
-                    float distance = Vector3.Distance(point.transform.position, this.transform.position);
+                    float distance = Vector3.Distance(point.transform.position, transform.position);
 
                     if (distance < AttachRange)
                     {
@@ -28,7 +28,7 @@ namespace NewtonVR
                     }
                     else
                     {
-                        point.PullTowards(this.transform.position);
+                        point.PullTowards(transform.position);
                     }
                 }
             }
@@ -44,7 +44,7 @@ namespace NewtonVR
 
         protected virtual void FixedUpdateAttached()
         {
-            float distance = Vector3.Distance(AttachedPoint.transform.position, this.transform.position);
+            float distance = Vector3.Distance(AttachedPoint.transform.position, transform.position);
 
             if (distance > DropDistance)
             {
@@ -52,7 +52,7 @@ namespace NewtonVR
             }
             else
             {
-                AttachedPoint.PullTowards(this.transform.position);
+                AttachedPoint.PullTowards(transform.position);
             }
         }
 

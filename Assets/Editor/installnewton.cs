@@ -12,7 +12,7 @@ public class installnewton : EditorWindow
     static void Init()
     {
         // Get existing open window or if none, make a new one:
-        installnewton window = (installnewton)EditorWindow.GetWindow(typeof(installnewton));
+        installnewton window = (installnewton)GetWindow(typeof(installnewton));
         window.Show();
     }
 

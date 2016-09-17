@@ -10,7 +10,7 @@ namespace NewtonVR.Example
 
         private void Awake()
         {
-            SpotLight = this.GetComponent<Light>();
+            SpotLight = GetComponent<Light>();
         }
 
         private void Update()

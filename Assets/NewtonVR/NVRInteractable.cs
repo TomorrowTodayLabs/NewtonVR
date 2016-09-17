@@ -30,14 +30,14 @@ namespace NewtonVR
         protected virtual void Awake()
         {   
             if (Rigidbody == null)
-                Rigidbody = this.GetComponent<Rigidbody>();
+                Rigidbody = GetComponent<Rigidbody>();
 
             if (Rigidbody == null)
             {
                 Debug.LogError("There is no rigidbody attached to this interactable.");
             }
 
-            Colliders = this.GetComponentsInChildren<Collider>();
+            Colliders = GetComponentsInChildren<Collider>();
         }
 
         protected virtual void Start()
@@ -65,12 +65,12 @@ namespace NewtonVR
         //Remove items that go too high or too low.
         protected virtual void Update()
         {
-            if (this.transform.position.y > 10000 || this.transform.position.y < -10000)
+            if (transform.position.y > 10000 || transform.position.y < -10000)
             {
                 if (AttachedHand != null)
                     AttachedHand.EndInteraction(this);
 
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
         }
 

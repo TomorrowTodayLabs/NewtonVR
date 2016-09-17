@@ -22,22 +22,22 @@ namespace NewtonVR
         {
             Hand = trackingHand;
 
-            PhysicalController = GameObject.Instantiate(Hand.gameObject);
+            PhysicalController = Instantiate(Hand.gameObject);
             PhysicalController.name = PhysicalController.name.Replace("(Clone)", " [Physical]");
 
             SteamVR_RenderModel renderModel = PhysicalController.GetComponentInChildren<SteamVR_RenderModel>();
             ModelParent = renderModel.transform;
 
-            GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
-            GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRHand>());
-            GameObject.DestroyImmediate(PhysicalController.GetComponent<SteamVR_TrackedObject>());
-            GameObject.DestroyImmediate(renderModel);
-            GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
+            DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
+            DestroyImmediate(PhysicalController.GetComponent<NVRHand>());
+            DestroyImmediate(PhysicalController.GetComponent<SteamVR_TrackedObject>());
+            DestroyImmediate(renderModel);
+            DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
 
             Collider[] clonedColliders = PhysicalController.GetComponentsInChildren<Collider>();
             for (int index = 0; index < clonedColliders.Length; index++)
             {
-                GameObject.DestroyImmediate(clonedColliders[index]);
+                DestroyImmediate(clonedColliders[index]);
             }
 
             PhysicalController.transform.parent = Hand.transform.parent;
@@ -66,7 +66,7 @@ namespace NewtonVR
                     Transform dk2TrackhatColliders = ModelParent.transform.FindChild("VivePreColliders");
                     if (dk2TrackhatColliders == null)
                     {
-                        dk2TrackhatColliders = GameObject.Instantiate(Resources.Load<GameObject>("VivePreColliders")).transform;
+                        dk2TrackhatColliders = Instantiate(Resources.Load<GameObject>("VivePreColliders")).transform;
                         dk2TrackhatColliders.parent = ModelParent.transform;
                         dk2TrackhatColliders.localPosition = Vector3.zero;
                         dk2TrackhatColliders.localRotation = Quaternion.identity;
@@ -82,7 +82,7 @@ namespace NewtonVR
                     {
                         if (Hand.CustomPhysicalColliders == null)
                         {
-                            GameObject customColliders = GameObject.Instantiate(Hand.CustomModel);
+                            GameObject customColliders = Instantiate(Hand.CustomModel);
                             customColliders.name = "CustomColliders";
                             customCollidersTransform = customColliders.transform;
 
@@ -99,7 +99,7 @@ namespace NewtonVR
                         }
                         else
                         {
-                            GameObject customColliders = GameObject.Instantiate(Hand.CustomPhysicalColliders);
+                            GameObject customColliders = Instantiate(Hand.CustomPhysicalColliders);
                             customColliders.name = "CustomColliders";
                             customCollidersTransform = customColliders.transform;
 
@@ -146,7 +146,7 @@ namespace NewtonVR
 
         private void CheckForDrop()
         {
-            float distance = Vector3.Distance(Hand.transform.position, this.transform.position);
+            float distance = Vector3.Distance(Hand.transform.position, transform.position);
 
             if (distance > DropDistance)
             {
@@ -175,11 +175,11 @@ namespace NewtonVR
             if (angle != 0)
             {
                 Vector3 AngularTarget = angle * axis;
-                this.Rigidbody.angularVelocity = AngularTarget;
+                Rigidbody.angularVelocity = AngularTarget;
             }
 
             Vector3 VelocityTarget = PositionDelta / Time.fixedDeltaTime;
-            this.Rigidbody.velocity = VelocityTarget;
+            Rigidbody.velocity = VelocityTarget;
         }
 
         protected virtual void FixedUpdate()
