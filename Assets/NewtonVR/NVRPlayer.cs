@@ -52,13 +52,13 @@ namespace NewtonVR
         {
             Collider[] colliders = hand.GetComponentsInChildren<Collider>();
 
-            for (int index = 0; index < colliders.Length; index++)
+            colliders.Iterate(a =>
             {
-                if (ColliderToHandMapping.ContainsKey(colliders[index]) == false)
+                if (ColliderToHandMapping.ContainsKey(a) == false)
                 {
-                    ColliderToHandMapping.Add(colliders[index], hand);
+                    ColliderToHandMapping.Add(a, hand);
                 }
-            }
+            });
         }
 
         public NVRHand GetHand(Collider collider)
