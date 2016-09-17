@@ -4,9 +4,7 @@ namespace NewtonVR.Example
 {
     public class NVRExampleRGBResult : MonoBehaviour
     {
-        public NVRSlider SliderRed;
-        public NVRSlider SliderGreen;
-        public NVRSlider SliderBlue;
+        public NVRSlider SliderRed, SliderGreen, SliderBlue;
 
         public Renderer Result;
 
