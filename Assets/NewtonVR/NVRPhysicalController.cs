@@ -117,10 +117,8 @@ namespace NewtonVR
             Rigidbody.maxAngularVelocity = float.MaxValue;
 
             Renderer[] renderers = PhysicalController.GetComponentsInChildren<Renderer>();
-            for (int index = 0; index < renderers.Length; index++)
-            {
-                NVRHelpers.SetOpaque(renderers[index].material);
-            }
+            renderers.Iterate(a => NVRHelpers.SetOpaque(a.material));
+  
 
             if (initialState == false)
             {
