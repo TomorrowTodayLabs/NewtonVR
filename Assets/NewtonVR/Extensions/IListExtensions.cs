@@ -10,11 +10,11 @@
                 action(collection[i]);
         }
 
-        public static T Reduce<T>(this IList<T> collection, Func<T, T, T> monoid, T start)
+        public static T Reduce<T>(this IList<T> collection, Func<T, T, T> accumulator, T start)
         {
             var reduction = start;
 
-            collection.Iterate(element => monoid(reduction, element));
+            collection.Iterate(element => accumulator(reduction, element));
 
             return reduction;
         }
