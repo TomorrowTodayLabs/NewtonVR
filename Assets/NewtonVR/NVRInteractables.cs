@@ -17,10 +17,7 @@ namespace NewtonVR
         {
             NVRInteractableMapping.Add(interactable, colliders);
 
-            for (int index = 0; index < colliders.Length; index++)
-            {
-                ColliderMapping.Add(colliders[index], interactable);
-            }
+            colliders.Iterate(a => ColliderMapping.Add(a, interactable));
         }
 
         public static void Deregister(NVRInteractable interactable)
