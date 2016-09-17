@@ -5,8 +5,8 @@ namespace NewtonVR.Example
 {
     public class NVRExampleLeverResultRocket : MonoBehaviour
     {
-        public GameObject RocketPrefab;
-        public NVRLever Control;
+        [SerializeField] GameObject RocketPrefab;
+        [SerializeField] NVRLever Control;
 
         private GameObject RocketInstance;
         
