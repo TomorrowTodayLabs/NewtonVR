@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace NewtonVR
 {
@@ -23,14 +21,7 @@ namespace NewtonVR
         public static System.Type typeCache;
         public static System.Type TypeCache
         {
-            get
-            {
-                if (typeCache == null)
-                {
-                    typeCache = typeof(NVRCollisionSoundMaterials);
-                }
-                return typeCache;
-            }
+            get { return typeCache ?? (typeCache = typeof(NVRCollisionSoundMaterials)); }
         }
 
         private static NVRCollisionSoundMaterials[] list;
@@ -54,7 +45,7 @@ namespace NewtonVR
             materialString = materialString.ToLower();
             bool defined = System.Enum.IsDefined(TypeCache, materialString);
 
-            if (defined == true)
+            if (defined)
                 return (NVRCollisionSoundMaterials)System.Enum.Parse(TypeCache, materialString);
             else
                 return null;

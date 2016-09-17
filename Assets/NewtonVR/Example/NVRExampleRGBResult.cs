@@ -1,16 +1,11 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace NewtonVR.Example
 {
     public class NVRExampleRGBResult : MonoBehaviour
     {
-        public NVRSlider SliderRed;
-        public NVRSlider SliderGreen;
-        public NVRSlider SliderBlue;
-
-        public Renderer Result;
-
+        [SerializeField] NVRSlider SliderRed, SliderGreen, SliderBlue;
+        [SerializeField] Renderer Result;
 
         private void Update()
         {

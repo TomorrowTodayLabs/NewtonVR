@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace NewtonVR.Example
 {
     public class NVRExampleLetterResult : MonoBehaviour
     {
-        public NVRLetterSpinner LetterSpinner;
+        [SerializeField] NVRLetterSpinner LetterSpinner;
 
         private TextMesh Text;
 
         private void Awake()
         {
-            Text = this.GetComponent<TextMesh>();
+            Text = GetComponent<TextMesh>();
         }
 
         private void Update()

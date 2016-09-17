@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace NewtonVR
 {
@@ -19,7 +18,7 @@ namespace NewtonVR
         protected override void Awake()
         {
             base.Awake();
-            this.Rigidbody.maxAngularVelocity = 100f;
+            Rigidbody.maxAngularVelocity = 100f;
         }
 
         protected override void Start()
@@ -42,7 +41,7 @@ namespace NewtonVR
 
         protected virtual void FixedUpdate()
         {
-            if (IsAttached == true && DoPhysicsStep == true)
+            if (IsAttached && DoPhysicsStep)
             {
                 DoPhysicsStep = false;
 
@@ -59,8 +58,8 @@ namespace NewtonVR
                 }
                 else
                 {
-                    RotationDelta = PickupTransform.rotation * Quaternion.Inverse(this.transform.rotation);
-                    PositionDelta = (PickupTransform.position - this.transform.position);
+                    RotationDelta = PickupTransform.rotation * Quaternion.Inverse(transform.rotation);
+                    PositionDelta = (PickupTransform.position - transform.position);
                 }
 
                 RotationDelta.ToAngleAxis(out angle, out axis);
@@ -71,11 +70,11 @@ namespace NewtonVR
                 if (angle != 0)
                 {
                     Vector3 AngularTarget = angle * axis;
-                    this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f * (deltaPoses * 1000));
+                    Rigidbody.angularVelocity = Vector3.MoveTowards(Rigidbody.angularVelocity, AngularTarget, 10f * (deltaPoses * 1000));
                 }
 
                 Vector3 VelocityTarget = PositionDelta / Time.fixedDeltaTime;
-                this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
+                Rigidbody.velocity = Vector3.MoveTowards(Rigidbody.velocity, VelocityTarget, 10f);
 
                 if (VelocityHistory != null)
                 {
@@ -85,8 +84,8 @@ namespace NewtonVR
                         VelocityHistoryStep = 0;
                     }
 
-                    VelocityHistory[VelocityHistoryStep] = this.Rigidbody.velocity;
-                    AngularVelocityHistory[VelocityHistoryStep] = this.Rigidbody.angularVelocity;
+                    VelocityHistory[VelocityHistoryStep] = Rigidbody.velocity;
+                    AngularVelocityHistory[VelocityHistoryStep] = Rigidbody.angularVelocity;
                 }
             }
         }
@@ -95,12 +94,12 @@ namespace NewtonVR
         {
             base.BeginInteraction(hand);
 
-            PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", this.gameObject.name)).transform;
+            PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
-            PickupTransform.position = this.transform.position;
-            PickupTransform.rotation = this.transform.rotation;
+            PickupTransform.position = transform.position;
+            PickupTransform.rotation = transform.rotation;
 
-            ClosestHeldPoint = (PickupTransform.position - this.transform.position);
+            ClosestHeldPoint = (PickupTransform.position - transform.position);
         }
 
         public override void EndInteraction()
@@ -114,22 +113,19 @@ namespace NewtonVR
 
             if (VelocityHistory != null)
             {
-                this.Rigidbody.velocity = GetMeanVector(VelocityHistory);
-                this.Rigidbody.angularVelocity = GetMeanVector(AngularVelocityHistory);
+                Rigidbody.velocity = GetMeanVector(VelocityHistory);
+                Rigidbody.angularVelocity = GetMeanVector(AngularVelocityHistory);
 
                 VelocityHistoryStep = 0;
 
-                for (int index = 0; index < VelocityHistory.Length; index++)
-                {
-                    VelocityHistory[index] = null;
-                    AngularVelocityHistory[index] = null;
-                }
+                VelocityHistory = VelocityHistory.Map<Vector3?, Vector3?>(_ => null);
+                AngularVelocityHistory = AngularVelocityHistory.Map<Vector3?, Vector3?>(_ => null);
             }
         }
 
         protected override void DropIfTooFar()
         {
-            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
+            float distance = Vector3.Distance(AttachedHand.transform.position, (transform.position + ClosestHeldPoint));
             if (distance > DropDistance)
             {
                 DroppedBecauseOfDistance();
@@ -138,24 +134,7 @@ namespace NewtonVR
 
         private Vector3 GetMeanVector(Vector3?[] positions)
         {
-            float x = 0f;
-            float y = 0f;
-            float z = 0f;
-
-            int count = 0;
-            for (int index = 0; index < positions.Length; index++)
-            {
-                if (positions[index] != null)
-                {
-                    x += positions[index].Value.x;
-                    y += positions[index].Value.y;
-                    z += positions[index].Value.z;
-
-                    count++;
-                }
-            }
-
-            return new Vector3(x / count, y / count, z / count);
+            return positions.Filter(a => a.HasValue).Map(a => a.Value).Reduce((a, b) => a + b, Vector3.zero);
         }
     }
 }

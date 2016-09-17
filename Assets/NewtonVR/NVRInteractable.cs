@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace NewtonVR
 {
@@ -31,14 +30,14 @@ namespace NewtonVR
         protected virtual void Awake()
         {   
             if (Rigidbody == null)
-                Rigidbody = this.GetComponent<Rigidbody>();
+                Rigidbody = GetComponent<Rigidbody>();
 
             if (Rigidbody == null)
             {
                 Debug.LogError("There is no rigidbody attached to this interactable.");
             }
 
-            Colliders = this.GetComponentsInChildren<Collider>();
+            Colliders = GetComponentsInChildren<Collider>();
         }
 
         protected virtual void Start()
@@ -50,7 +49,7 @@ namespace NewtonVR
         protected float deltaPoses;
         public virtual void OnNewPosesApplied()
         {
-            if (IsAttached == true)
+            if (IsAttached)
             {
                 DropIfTooFar();
             }
@@ -66,12 +65,12 @@ namespace NewtonVR
         //Remove items that go too high or too low.
         protected virtual void Update()
         {
-            if (this.transform.position.y > 10000 || this.transform.position.y < -10000)
+            if (transform.position.y > 10000 || transform.position.y < -10000)
             {
                 if (AttachedHand != null)
                     AttachedHand.EndInteraction(this);
 
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
         }
 
@@ -79,7 +78,7 @@ namespace NewtonVR
         {
             AttachedHand = hand;
 
-            if (DisableKinematicOnAttach == true)
+            if (DisableKinematicOnAttach)
             {
                 Rigidbody.isKinematic = false;
             }
@@ -89,12 +88,12 @@ namespace NewtonVR
 
         public virtual void InteractingUpdate(NVRHand hand)
         {
-            if (hand.UseButtonUp == true)
+            if (hand.UseButtonUp)
             {
                 UseButtonUp();
             }
 
-            if (hand.UseButtonDown == true)
+            if (hand.UseButtonDown)
             {
                 UseButtonDown();
             }
@@ -114,18 +113,18 @@ namespace NewtonVR
             AttachedHand = null;
             ClosestHeldPoint = Vector3.zero;
 
-            if (EnableKinematicOnDetach == true)
+            if (EnableKinematicOnDetach)
             {
                 Rigidbody.isKinematic = true;
             }
 
-            if (EnableGravityOnDetach == true)
+            if (EnableGravityOnDetach)
             {
                 Rigidbody.useGravity = true;
             }
         }
 
-        abstract protected void DropIfTooFar();
+        protected abstract void DropIfTooFar();
 
         protected virtual void DroppedBecauseOfDistance()
         {

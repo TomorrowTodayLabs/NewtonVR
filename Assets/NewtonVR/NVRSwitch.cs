@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace NewtonVR
 {
@@ -20,13 +19,13 @@ namespace NewtonVR
 
         private void Awake()
         {
-            Rigidbody = this.GetComponent<Rigidbody>();
+            Rigidbody = GetComponent<Rigidbody>();
             SetRotation(CurrentState);
         }
 
         private void FixedUpdate()
         {
-            float angle = this.transform.localEulerAngles.z;
+            float angle = transform.localEulerAngles.z;
             if (angle > 180)
                 angle -= 360;
 
@@ -34,7 +33,7 @@ namespace NewtonVR
             {
                 if (angle < -0.2f)
                 {
-                    Rigidbody.AddForceAtPosition(-this.transform.right * ForceMagic, OnButton.position);
+                    Rigidbody.AddForceAtPosition(-transform.right * ForceMagic, OnButton.position);
                 }
                 else if ((angle > -0.2f && angle < -0.1f) || angle > 0.1f)
                 {
@@ -45,7 +44,7 @@ namespace NewtonVR
             {
                 if (angle > -14.8f)
                 {
-                    Rigidbody.AddForceAtPosition(-this.transform.right * ForceMagic, OffButton.position);
+                    Rigidbody.AddForceAtPosition(-transform.right * ForceMagic, OffButton.position);
                 }
                 else if ((angle < -14.8f && angle > -14.9f) || angle < -15.1)
                 {
@@ -63,15 +62,15 @@ namespace NewtonVR
         private void SetRotation(bool forState)
         {
             FixedState = forState;
-            if (FixedState == true)
+            if (FixedState)
             {
-                this.transform.localEulerAngles = Vector3.zero;
+                transform.localEulerAngles = Vector3.zero;
                 OnButtonRenderer.material.color = Color.yellow;
                 OffButtonRenderer.material.color = Color.white;
             }
             else
             {
-                this.transform.localEulerAngles = new Vector3(0, 0, -15);
+                transform.localEulerAngles = new Vector3(0, 0, -15);
                 OnButtonRenderer.material.color = Color.white;
                 OffButtonRenderer.material.color = Color.red;
             }

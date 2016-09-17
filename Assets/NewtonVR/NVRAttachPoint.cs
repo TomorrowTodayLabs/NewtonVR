@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using NewtonVR;
 
 namespace NewtonVR
 {
@@ -21,13 +18,13 @@ namespace NewtonVR
         {
             IsAttached = false;
 
-            Item = FindNVRItem(this.gameObject);
+            Item = FindNVRItem(gameObject);
             if (Item == null)
             {
-                Debug.LogError("No NVRInteractableItem found on this object. " + this.gameObject.name, this.gameObject);
+                Debug.LogError("No NVRInteractableItem found on this object. " + gameObject.name, gameObject);
             }
 
-            AttachPointMapper.Register(this.GetComponent<Collider>(), this);
+            AttachPointMapper.Register(GetComponent<Collider>(), this);
         }
 
         protected virtual void Start()
@@ -50,7 +47,7 @@ namespace NewtonVR
 
         public virtual void Attached(NVRAttachJoint joint)
         {
-            Vector3 TargetPosition = joint.transform.position + (Item.transform.position - this.transform.position);
+            Vector3 TargetPosition = joint.transform.position + (Item.transform.position - transform.position);
             Rigidbody.MovePosition(TargetPosition);
 
             Rigidbody.velocity = Vector3.zero;
@@ -67,8 +64,8 @@ namespace NewtonVR
 
         public virtual void PullTowards(Vector3 jointPosition)
         {
-            Vector3 delta = jointPosition - this.transform.position;
-            Rigidbody.AddForceAtPosition(delta * PositionMagic, this.transform.position, ForceMode.VelocityChange);
+            Vector3 delta = jointPosition - transform.position;
+            Rigidbody.AddForceAtPosition(delta * PositionMagic, transform.position, ForceMode.VelocityChange);
         }
     }
 }

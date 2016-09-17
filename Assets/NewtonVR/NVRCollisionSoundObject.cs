@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace NewtonVR
@@ -10,27 +9,14 @@ namespace NewtonVR
 
         public NVRCollisionSoundMaterials Material;
 
-        private Collider[] Colliders;
-
-
         protected virtual void Awake()
         {
-            Colliders = this.GetComponentsInChildren<Collider>(true);
-
-            for (int index = 0; index < Colliders.Length; index++)
-            {
-                SoundObjects[Colliders[index]] = this;
-            }
+            GetComponentsInChildren<Collider>(true).Iterate(a => SoundObjects[a] = this);
         }
 
         protected virtual void OnDestroy()
         {
-            Colliders = this.GetComponentsInChildren<Collider>(true);
-
-            for (int index = 0; index < Colliders.Length; index++)
-            {
-                SoundObjects.Remove(Colliders[index]);
-            }
+            GetComponentsInChildren<Collider>(true).Iterate(a => SoundObjects.Remove(a));
         }
 
         protected virtual void OnCollisionEnter(Collision collision)
@@ -47,7 +33,7 @@ namespace NewtonVR
                     return;
                 }
 
-                NVRCollisionSoundController.Play(this.Material, collision.contacts[0].point, volume);
+                NVRCollisionSoundController.Play(Material, collision.contacts[0].point, volume);
                 NVRCollisionSoundController.Play(collisionSoundObject.Material, collision.contacts[0].point, volume);
             }
         }

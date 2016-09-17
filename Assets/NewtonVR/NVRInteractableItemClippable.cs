@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace NewtonVR
 {
@@ -17,14 +16,14 @@ namespace NewtonVR
         protected override void Awake()
         {
             base.Awake();
-            this.Rigidbody.maxAngularVelocity = 100f;
+            Rigidbody.maxAngularVelocity = 100f;
         }
 
         public override void OnNewPosesApplied()
         {
             base.OnNewPosesApplied();
 
-            if (IsAttached == true)
+            if (IsAttached)
             {
                 Vector3 TargetPosition;
                 Quaternion TargetRotation;
@@ -32,7 +31,7 @@ namespace NewtonVR
                 if (InteractionPoint != null)
                 {
                     TargetRotation = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.localRotation);
-                    TargetPosition = this.transform.position + (AttachedHand.transform.position - InteractionPoint.position);
+                    TargetPosition = transform.position + (AttachedHand.transform.position - InteractionPoint.position);
                 }
                 else
                 {
@@ -40,8 +39,8 @@ namespace NewtonVR
                     TargetPosition = PickupTransform.position;
                 }
 
-                this.Rigidbody.MovePosition(TargetPosition);
-                this.Rigidbody.MoveRotation(TargetRotation);
+                Rigidbody.MovePosition(TargetPosition);
+                Rigidbody.MoveRotation(TargetRotation);
             }
         }
 
@@ -49,21 +48,21 @@ namespace NewtonVR
         {
             base.BeginInteraction(hand);
 
-            this.Rigidbody.isKinematic = true;
+            Rigidbody.isKinematic = true;
 
-            PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", this.gameObject.name)).transform;
+            PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
-            PickupTransform.position = this.transform.position;
-            PickupTransform.rotation = this.transform.rotation;
+            PickupTransform.position = transform.position;
+            PickupTransform.rotation = transform.rotation;
 
-            ClosestHeldPoint = (PickupTransform.position - this.transform.position);
+            ClosestHeldPoint = (PickupTransform.position - transform.position);
         }
 
         public override void EndInteraction()
         {
             base.EndInteraction();
 
-            this.Rigidbody.isKinematic = false;
+            Rigidbody.isKinematic = false;
 
             if (PickupTransform != null)
                 Destroy(PickupTransform.gameObject);
@@ -71,7 +70,7 @@ namespace NewtonVR
 
         protected override void DropIfTooFar()
         {
-            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
+            float distance = Vector3.Distance(AttachedHand.transform.position, (transform.position + ClosestHeldPoint));
             if (distance > DropDistance)
             {
                 DroppedBecauseOfDistance();

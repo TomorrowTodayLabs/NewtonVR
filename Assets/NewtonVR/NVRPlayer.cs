@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace NewtonVR
@@ -30,11 +29,10 @@ namespace NewtonVR
         private void Awake()
         {
             Instance = this;
-            NVRInteractables.Initialize();
 
             if (Head == null)
             {
-                Head = this.GetComponentInChildren<NVRHead>();
+                Head = GetComponentInChildren<NVRHead>();
             }
 
             if (LeftHand == null || RightHand == null)
@@ -44,7 +42,7 @@ namespace NewtonVR
 
             if (Hands == null || Hands.Length == 0)
             {
-                Hands = new NVRHand[] { LeftHand, RightHand };
+                Hands = new[] { LeftHand, RightHand };
             }
 
             ColliderToHandMapping = new Dictionary<Collider, NVRHand>();
@@ -52,15 +50,11 @@ namespace NewtonVR
 
         public void RegisterHand(NVRHand hand)
         {
-            Collider[] colliders = hand.GetComponentsInChildren<Collider>();
-
-            for (int index = 0; index < colliders.Length; index++)
+            hand.GetComponentsInChildren<Collider>().Iterate(a =>
             {
-                if (ColliderToHandMapping.ContainsKey(colliders[index]) == false)
-                {
-                    ColliderToHandMapping.Add(colliders[index], hand);
-                }
-            }
+                if (ColliderToHandMapping.ContainsKey(a) == false)
+                    ColliderToHandMapping.Add(a, hand);
+            });
         }
 
         public NVRHand GetHand(Collider collider)
@@ -70,15 +64,12 @@ namespace NewtonVR
 
         public static void DeregisterInteractable(NVRInteractable interactable)
         {
-            for (int index = 0; index < Instance.Hands.Length; index++)
-            {
-                Instance.Hands[index].DeregisterInteractable(interactable);
-            }
+            Instance.Hands.Iterate(a => a.DeregisterInteractable(interactable));
         }
 
         private void Update()
         {
-            if (DEBUGDropFrames == true)
+            if (DEBUGDropFrames)
             {
                 System.Threading.Thread.Sleep(DEBUGSleepPerFrame);
             }

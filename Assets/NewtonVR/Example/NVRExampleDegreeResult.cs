@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace NewtonVR.Example
 {
     public class NVRExampleDegreeResult : MonoBehaviour
     {
-        public NVRInteractableItem Knob;
+        [SerializeField] NVRInteractableItem Knob;
 
         private TextMesh Text;
 
         private void Awake()
         {
-            Text = this.GetComponent<TextMesh>();
+            Text = GetComponent<TextMesh>();
         }
 
         private void Update()
