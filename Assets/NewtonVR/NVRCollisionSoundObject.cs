@@ -21,10 +21,7 @@ namespace NewtonVR
         {
             Colliders = this.GetComponentsInChildren<Collider>(true);
 
-            for (int index = 0; index < Colliders.Length; index++)
-            {
-                SoundObjects.Remove(Colliders[index]);
-            }
+            Colliders.Iterate(a => SoundObjects.Remove(a));
         }
 
         protected virtual void OnCollisionEnter(Collision collision)
