@@ -64,10 +64,7 @@ namespace NewtonVR
 
         public static void DeregisterInteractable(NVRInteractable interactable)
         {
-            for (int index = 0; index < Instance.Hands.Length; index++)
-            {
-                Instance.Hands[index].DeregisterInteractable(interactable);
-            }
+            Instance.Hands.Iterate(a => a.DeregisterInteractable(interactable));
         }
 
         private void Update()
