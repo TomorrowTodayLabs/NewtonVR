@@ -14,9 +14,7 @@ namespace NewtonVR
 
         protected virtual void Awake()
         {
-            Colliders = this.GetComponentsInChildren<Collider>(true);
-
-            Colliders.Iterate(a => SoundObjects[a] = this);
+            GetComponentsInChildren<Collider>(true).Iterate(a => SoundObjects[a] = this);
         }
 
         protected virtual void OnDestroy()
