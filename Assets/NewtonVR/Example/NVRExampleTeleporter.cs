@@ -4,8 +4,8 @@ namespace NewtonVR.Example
 {
     public class NVRExampleTeleporter : MonoBehaviour
     {
-        public Color LineColor;
-        public float LineWidth = 0.02f;
+        [SerializeField] Color LineColor;
+        [SerializeField] float LineWidth = 0.02f;
 
         private LineRenderer Line;
 
