@@ -638,18 +638,18 @@ namespace NewtonVR
 
             if (NVRPlayer.Instance.PhysicalHands)
             {
-                bool InitialState = false;
+                bool initialState = false;
 
                 if (PhysicalController != null)
                 {
-                    InitialState = PhysicalController.State;
+                    initialState = PhysicalController.State;
                     PhysicalController.Kill();
                 }
 
                 PhysicalController = this.gameObject.AddComponent<NVRPhysicalController>();
-                PhysicalController.Initialize(this, InitialState);
+                PhysicalController.Initialize(this, initialState);
 
-                if (InitialState)
+                if (initialState)
                 {
                     ForceGhost();
                 }
