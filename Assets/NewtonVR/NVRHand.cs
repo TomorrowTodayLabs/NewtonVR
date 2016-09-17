@@ -675,14 +675,7 @@ namespace NewtonVR
 
         public string GetDeviceName()
         {
-            if (CustomModel != null)
-            {
-                return "Custom";
-            }
-            else
-            {
-                return this.GetComponentInChildren<SteamVR_RenderModel>().renderModelName;
-            }
+            return CustomModel != null ? "Custom" : this.GetComponentInChildren<SteamVR_RenderModel>().renderModelName;
         }
 
         private void OnDestroy()
