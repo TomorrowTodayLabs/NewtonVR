@@ -28,9 +28,10 @@ namespace NewtonVR
 
             AudioClip[] clips = Resources.LoadAll<AudioClip>(CollisionSoundsPath);
             Clips = new Dictionary<NVRCollisionSoundMaterials, List<AudioClip>>();
-            for (int index = 0; index < clips.Length; index++)
+
+            clips.Iterate(clip =>
             {
-                string name = clips[index].name;
+                string name = clip.name;
                 int dividerIndex = name.IndexOf("__");
                 if (dividerIndex >= 0)
                     name = name.Substring(0, dividerIndex);
@@ -40,13 +41,13 @@ namespace NewtonVR
                 {
                     if (Clips.ContainsKey(material.Value) == false || Clips[material.Value] == null)
                         Clips[material.Value] = new List<AudioClip>();
-                    Clips[material.Value].Add(clips[index]);
+                    Clips[material.Value].Add(clip);
                 }
                 else
                 {
-                    Debug.LogWarning("[NewtonVR] CollisionSound: Found clip for material that is not in enumeration (NVRCollisionSoundMaterials): " + clips[index].name);
+                    Debug.LogWarning("[NewtonVR] CollisionSound: Found clip for material that is not in enumeration (NVRCollisionSoundMaterials): " + clip.name);
                 }
-            }
+            });
         }
 
         public override void Play(NVRCollisionSoundMaterials material, Vector3 position, float impactVolume)
