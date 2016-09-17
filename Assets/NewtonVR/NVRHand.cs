@@ -625,7 +625,7 @@ namespace NewtonVR
             {
 
                 RenderModelInitialized = true;
-                GameObject CustomModelObject = GameObject.Instantiate(CustomModel);
+                GameObject CustomModelObject = Instantiate(CustomModel);
                 Colliders = CustomModelObject.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
 
                 CustomModelObject.transform.parent = this.transform;
