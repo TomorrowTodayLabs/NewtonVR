@@ -14,7 +14,7 @@
         {
             var reduction = start;
 
-            collection.Iterate(element => accumulator(reduction, element));
+            collection.Iterate(element => reduction = accumulator(reduction, element));
 
             return reduction;
         }
