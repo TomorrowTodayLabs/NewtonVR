@@ -658,11 +658,8 @@ namespace NewtonVR
                 transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
 
                 GhostRenderers = this.GetComponentsInChildren<Renderer>();
-                for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
-                {
-                    NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
-                }
-                
+                GhostRenderers.Iterate(a => NVRHelpers.SetTransparent(a.material, transparentcolor));
+
                 if (Colliders != null)
                 {
                     GhostColliders = Colliders;
