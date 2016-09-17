@@ -552,9 +552,7 @@ namespace NewtonVR
                 yield return null; //wait for render model to be initialized
             } while (RenderModelInitialized == false && CustomModel == null);
 
-            Rigidbody = this.GetComponent<Rigidbody>();
-            if (Rigidbody == null)
-                Rigidbody = this.gameObject.AddComponent<Rigidbody>();
+            Rigidbody = this.GetComponent<Rigidbody>() ?? this.gameObject.AddComponent<Rigidbody>();
             Rigidbody.isKinematic = true;
             Rigidbody.maxAngularVelocity = float.MaxValue;
             Rigidbody.useGravity = false;
