@@ -4,8 +4,8 @@ using UnityEditor;
 public class installnewton : EditorWindow
 {
     static int secs = 10;
-    static double startVal = 0;
-    static double progress = 0;
+    static double startVal;
+    static double progress;
 
     static string FoobarToText(float foobar)
     {
