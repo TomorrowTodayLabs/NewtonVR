@@ -21,14 +21,7 @@ namespace NewtonVR
         public static System.Type typeCache;
         public static System.Type TypeCache
         {
-            get
-            {
-                if (typeCache == null)
-                {
-                    typeCache = typeof(NVRCollisionSoundMaterials);
-                }
-                return typeCache;
-            }
+            get { return typeCache ?? (typeCache = typeof(NVRCollisionSoundMaterials)); }
         }
 
         private static NVRCollisionSoundMaterials[] list;
