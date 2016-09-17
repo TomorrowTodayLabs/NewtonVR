@@ -41,7 +41,7 @@ namespace NewtonVR
 
         protected virtual void FixedUpdate()
         {
-            if (IsAttached == true && DoPhysicsStep == true)
+            if (IsAttached && DoPhysicsStep)
             {
                 DoPhysicsStep = false;
 

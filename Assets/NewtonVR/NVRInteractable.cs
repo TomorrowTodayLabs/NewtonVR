@@ -49,7 +49,7 @@ namespace NewtonVR
         protected float deltaPoses;
         public virtual void OnNewPosesApplied()
         {
-            if (IsAttached == true)
+            if (IsAttached)
             {
                 DropIfTooFar();
             }
@@ -78,7 +78,7 @@ namespace NewtonVR
         {
             AttachedHand = hand;
 
-            if (DisableKinematicOnAttach == true)
+            if (DisableKinematicOnAttach)
             {
                 Rigidbody.isKinematic = false;
             }
@@ -88,12 +88,12 @@ namespace NewtonVR
 
         public virtual void InteractingUpdate(NVRHand hand)
         {
-            if (hand.UseButtonUp == true)
+            if (hand.UseButtonUp)
             {
                 UseButtonUp();
             }
 
-            if (hand.UseButtonDown == true)
+            if (hand.UseButtonDown)
             {
                 UseButtonDown();
             }
@@ -113,12 +113,12 @@ namespace NewtonVR
             AttachedHand = null;
             ClosestHeldPoint = Vector3.zero;
 
-            if (EnableKinematicOnDetach == true)
+            if (EnableKinematicOnDetach)
             {
                 Rigidbody.isKinematic = true;
             }
 
-            if (EnableGravityOnDetach == true)
+            if (EnableGravityOnDetach)
             {
                 Rigidbody.useGravity = true;
             }

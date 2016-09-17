@@ -23,7 +23,7 @@ namespace NewtonVR
         {
             base.OnNewPosesApplied();
 
-            if (IsAttached == true)
+            if (IsAttached)
             {
                 Vector3 TargetPosition;
                 Quaternion TargetRotation;

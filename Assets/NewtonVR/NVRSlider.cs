@@ -39,7 +39,7 @@ namespace NewtonVR
         {
             base.OnNewPosesApplied();
 
-            if (IsAttached == true)
+            if (IsAttached)
             {
                 Vector3 PositionDelta = (PickupTransform.position - this.transform.position);
 
@@ -47,7 +47,7 @@ namespace NewtonVR
                 this.Rigidbody.velocity = ProjectVelocityOnPath(velocity, SliderPath);
             }
 
-            if (this.transform.hasChanged == true)
+            if (this.transform.hasChanged)
             {
                 float totalDistance = Vector3.Distance(StartPoint.position, EndPoint.position);
                 float distance = Vector3.Distance(StartPoint.position, this.transform.position);

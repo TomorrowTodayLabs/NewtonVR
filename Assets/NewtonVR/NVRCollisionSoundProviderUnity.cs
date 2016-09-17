@@ -54,7 +54,7 @@ namespace NewtonVR
             if (material == NVRCollisionSoundMaterials.none)
                 return;
 
-            if (NVRCollisionSoundController.Instance.PitchModulationEnabled == true)
+            if (NVRCollisionSoundController.Instance.PitchModulationEnabled)
             {
                 AudioPool[CurrentPoolIndex].pitch = Random.Range(1 - NVRCollisionSoundController.Instance.PitchModulationRange, 1 + NVRCollisionSoundController.Instance.PitchModulationRange);
             }

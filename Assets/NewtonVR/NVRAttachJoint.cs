@@ -36,7 +36,7 @@ namespace NewtonVR
 
         protected virtual void FixedUpdate()
         {
-            if (IsAttached == true)
+            if (IsAttached)
             {
                 FixedUpdateAttached();
             }

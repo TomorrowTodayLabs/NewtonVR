@@ -187,7 +187,7 @@ namespace NewtonVR
             {
                 if (NVRPlayer.Instance.Hands[index].gameObject.activeInHierarchy == false)
                 {
-                    if (Cursors[index].gameObject.activeInHierarchy == true)
+                    if (Cursors[index].gameObject.activeInHierarchy)
                     {
                         Cursors[index].gameObject.SetActive(false);
                     }

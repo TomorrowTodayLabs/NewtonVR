@@ -146,26 +146,26 @@ namespace NewtonVR
 
             if (CurrentInteractionStyle == InterationStyle.GripDownToInteract)
             {
-                if (HoldButtonUp == true)
+                if (HoldButtonUp)
                 {
                     VisibilityLocked = false;
                 }
 
-                if (HoldButtonDown == true)
+                if (HoldButtonDown)
                 {
                     if (CurrentlyInteracting == null)
                     {
                         PickupClosest();
                     }
                 }
-                else if (HoldButtonUp == true && CurrentlyInteracting != null)
+                else if (HoldButtonUp && CurrentlyInteracting != null)
                 {
                     EndInteraction(null);
                 }
             }
             else if (CurrentInteractionStyle == InterationStyle.GripToggleToInteract)
             {
-                if (HoldButtonDown == true)
+                if (HoldButtonDown)
                 {
                     if (CurrentHandState == HandState.Idle)
                     {
@@ -174,7 +174,7 @@ namespace NewtonVR
                         {
                             CurrentHandState = HandState.GripToggleOnInteracting;
                         }
-                        else if (NVRPlayer.Instance.PhysicalHands == true)
+                        else if (NVRPlayer.Instance.PhysicalHands)
                         {
                             CurrentHandState = HandState.GripToggleOnNotInteracting;
                         }
@@ -194,7 +194,7 @@ namespace NewtonVR
 
             }
 
-            if (IsInteracting == true)
+            if (IsInteracting)
             {
                 CurrentlyInteracting.InteractingUpdate(this);
             }
@@ -236,11 +236,11 @@ namespace NewtonVR
 
         private void UpdateVisibilityAndColliders()
         {
-            if (NVRPlayer.Instance.PhysicalHands == true)
+            if (NVRPlayer.Instance.PhysicalHands)
             {
                 if (CurrentInteractionStyle == InterationStyle.GripDownToInteract)
                 {
-                    if (HoldButtonPressed == true && IsInteracting == false)
+                    if (HoldButtonPressed && IsInteracting == false)
                     {
                         if (CurrentHandState != HandState.GripDownNotInteracting && VisibilityLocked == false)
                         {
@@ -249,12 +249,12 @@ namespace NewtonVR
                             CurrentHandState = HandState.GripDownNotInteracting;
                         }
                     }
-                    else if (HoldButtonDown == true && IsInteracting == true)
+                    else if (HoldButtonDown && IsInteracting)
                     {
                         if (CurrentHandState != HandState.GripDownInteracting && VisibilityLocked == false)
                         {
                             VisibilityLocked = true;
-                            if (NVRPlayer.Instance.MakeControllerInvisibleOnInteraction == true)
+                            if (NVRPlayer.Instance.MakeControllerInvisibleOnInteraction)
                             {
                                 SetVisibility(VisibilityLevel.Invisible);
                             }
@@ -306,9 +306,9 @@ namespace NewtonVR
                     }
                 }
             }
-            else if (NVRPlayer.Instance.PhysicalHands == false && NVRPlayer.Instance.MakeControllerInvisibleOnInteraction == true)
+            else if (NVRPlayer.Instance.PhysicalHands == false && NVRPlayer.Instance.MakeControllerInvisibleOnInteraction)
             {
-                if (IsInteracting == true)
+                if (IsInteracting)
                 {
                     SetVisibility(VisibilityLevel.Invisible);
                 }
@@ -383,7 +383,7 @@ namespace NewtonVR
             if (EstimationSampleIndex >= LastPositions.Length)
                 EstimationSampleIndex = 0;
 
-            if (Controller != null && IsInteracting == false && IsHovering == true)
+            if (Controller != null && IsInteracting == false && IsHovering)
             {
                 Controller.TriggerHapticPulse(100);
             }
@@ -391,7 +391,7 @@ namespace NewtonVR
 
         public virtual void BeginInteraction(NVRInteractable interactable)
         {
-            if (interactable.CanAttach == true)
+            if (interactable.CanAttach)
             {
                 if (interactable.AttachedHand != null)
                 {
@@ -405,7 +405,7 @@ namespace NewtonVR
 
         public virtual void EndInteraction(NVRInteractable item)
         {
-            if (item != null && CurrentlyHoveringOver.ContainsKey(item) == true)
+            if (item != null && CurrentlyHoveringOver.ContainsKey(item))
                 CurrentlyHoveringOver.Remove(item);
 
             if (CurrentlyInteracting != null)
@@ -484,9 +484,9 @@ namespace NewtonVR
             if (interactable == null)
                 return;
 
-            if (CurrentlyHoveringOver.ContainsKey(interactable) == true)
+            if (CurrentlyHoveringOver.ContainsKey(interactable))
             {
-                if (CurrentlyHoveringOver[interactable].ContainsKey(collider) == true)
+                if (CurrentlyHoveringOver[interactable].ContainsKey(collider))
                 {
                     CurrentlyHoveringOver[interactable].Remove(collider);
                     if (CurrentlyHoveringOver[interactable].Count == 0)
@@ -687,13 +687,13 @@ namespace NewtonVR
 
             NVRPlayer.Instance.RegisterHand(this);
 
-            if (NVRPlayer.Instance.PhysicalHands == true)
+            if (NVRPlayer.Instance.PhysicalHands)
             {
                 bool InitialState = false;
 
                 if (PhysicalController != null)
                 {
-                    if (PhysicalController.State == true)
+                    if (PhysicalController.State)
                     {
                         InitialState = true;
                     }
@@ -707,7 +707,7 @@ namespace NewtonVR
                 PhysicalController = this.gameObject.AddComponent<NVRPhysicalController>();
                 PhysicalController.Initialize(this, InitialState);
 
-                if (InitialState == true)
+                if (InitialState)
                 {
                     ForceGhost();
                 }

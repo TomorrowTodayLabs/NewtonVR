@@ -52,7 +52,7 @@ namespace NewtonVR
             materialString = materialString.ToLower();
             bool defined = System.Enum.IsDefined(TypeCache, materialString);
 
-            if (defined == true)
+            if (defined)
                 return (NVRCollisionSoundMaterials)System.Enum.Parse(TypeCache, materialString);
             else
                 return null;

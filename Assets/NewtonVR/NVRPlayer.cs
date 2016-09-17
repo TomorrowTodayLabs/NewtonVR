@@ -77,7 +77,7 @@ namespace NewtonVR
 
         private void Update()
         {
-            if (DEBUGDropFrames == true)
+            if (DEBUGDropFrames)
             {
                 System.Threading.Thread.Sleep(DEBUGSleepPerFrame);
             }

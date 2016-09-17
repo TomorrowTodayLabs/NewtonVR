@@ -45,7 +45,7 @@ namespace NewtonVR
         {
             base.OnNewPosesApplied();
 
-            if (IsAttached == true)
+            if (IsAttached)
             {
                 Vector3 PositionDelta = (AttachedHand.transform.position - InitialAttachPoint.position) * DeltaMagic;
 

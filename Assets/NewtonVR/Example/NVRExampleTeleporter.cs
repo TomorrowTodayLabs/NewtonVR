@@ -35,7 +35,7 @@ namespace NewtonVR.Example
         {
             Line.enabled = (Hand != null && Hand.Inputs[Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger].SingleAxis > 0.01f);
 
-            if (Line.enabled == true)
+            if (Line.enabled)
             {
                 Line.material.SetColor("_Color", LineColor);
                 Line.SetColors(LineColor, LineColor);
@@ -45,11 +45,11 @@ namespace NewtonVR.Example
                 bool hit = Physics.Raycast(this.transform.position, this.transform.forward, out hitInfo, 1000);
                 Vector3 endPoint;
 
-                if (hit == true)
+                if (hit)
                 {
                     endPoint = hitInfo.point;
 
-                    if (Hand.Inputs[Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger].PressDown == true)
+                    if (Hand.Inputs[Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger].PressDown)
                     {
                         NVRInteractable LHandInteractable = NVRPlayer.Instance.LeftHand.CurrentlyInteracting;
                         NVRInteractable RHandInteractable = NVRPlayer.Instance.RightHand.CurrentlyInteracting;

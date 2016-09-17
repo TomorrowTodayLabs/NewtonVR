@@ -184,7 +184,7 @@ namespace NewtonVR
 
         protected virtual void FixedUpdate()
         {
-            if (State == true)
+            if (State)
             {
                 CheckForDrop();
 

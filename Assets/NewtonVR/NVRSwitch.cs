@@ -62,7 +62,7 @@ namespace NewtonVR
         private void SetRotation(bool forState)
         {
             FixedState = forState;
-            if (FixedState == true)
+            if (FixedState)
             {
                 this.transform.localEulerAngles = Vector3.zero;
                 OnButtonRenderer.material.color = Color.yellow;

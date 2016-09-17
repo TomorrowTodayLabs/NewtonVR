@@ -71,12 +71,12 @@ namespace NewtonVR
             ButtonWasPushed = ButtonIsPushed;
             ButtonIsPushed = CurrentDistance > DistanceToEngage;
 
-            if (ButtonWasPushed == false && ButtonIsPushed == true)
+            if (ButtonWasPushed == false && ButtonIsPushed)
                 ButtonDown = true;
             else
                 ButtonDown = false;
 
-            if (ButtonWasPushed == true && ButtonIsPushed == false)
+            if (ButtonWasPushed && ButtonIsPushed == false)
                 ButtonUp = true;
             else
                 ButtonUp = false;
