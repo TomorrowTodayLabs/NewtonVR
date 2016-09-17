@@ -642,14 +642,7 @@ namespace NewtonVR
 
                 if (PhysicalController != null)
                 {
-                    if (PhysicalController.State)
-                    {
-                        InitialState = true;
-                    }
-                    else
-                    {
-                        InitialState = false;
-                    }
+                    InitialState = PhysicalController.State;
                     PhysicalController.Kill();
                 }
 
