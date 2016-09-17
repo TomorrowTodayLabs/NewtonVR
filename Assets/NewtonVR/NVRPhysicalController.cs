@@ -35,11 +35,8 @@ namespace NewtonVR
             DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
 
             Collider[] clonedColliders = PhysicalController.GetComponentsInChildren<Collider>();
-            for (int index = 0; index < clonedColliders.Length; index++)
-            {
-                DestroyImmediate(clonedColliders[index]);
-            }
-
+            clonedColliders.Iterate(DestroyImmediate);
+ 
             PhysicalController.transform.parent = Hand.transform.parent;
             PhysicalController.transform.position = Hand.transform.position;
             PhysicalController.transform.rotation = Hand.transform.rotation;
