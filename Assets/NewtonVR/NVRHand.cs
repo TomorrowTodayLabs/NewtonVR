@@ -540,7 +540,6 @@ namespace NewtonVR
         private void RenderModelLoaded(params object[] args)
         {
             SteamVR_RenderModel renderModel = (SteamVR_RenderModel)args[0];
-            bool success = (bool)args[1];
 
             if ((int)renderModel.index == DeviceIndex)
                 RenderModelInitialized = true;
