@@ -124,7 +124,7 @@ namespace NewtonVR
             }
         }
 
-        abstract protected void DropIfTooFar();
+        protected abstract void DropIfTooFar();
 
         protected virtual void DroppedBecauseOfDistance()
         {
