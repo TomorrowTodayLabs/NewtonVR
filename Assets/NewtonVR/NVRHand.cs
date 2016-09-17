@@ -523,25 +523,19 @@ namespace NewtonVR
             if (CurrentVisibility == visibility)
                 return;
 
-            if (visibility == VisibilityLevel.Invisible)
+            if (PhysicalController != null)
             {
-                if (PhysicalController != null)
+                if (visibility == VisibilityLevel.Invisible)
                 {
                     PhysicalController.Off();
                 }
-            }
 
-            if (visibility == VisibilityLevel.Ghost)
-            {
-                if (PhysicalController != null)
+                if (visibility == VisibilityLevel.Ghost)
                 {
                     PhysicalController.Off();
                 }
-            }
 
-            if (visibility == VisibilityLevel.Visible)
-            {
-                if (PhysicalController != null)
+                if (visibility == VisibilityLevel.Visible)
                 {
                     PhysicalController.On();
                 }
