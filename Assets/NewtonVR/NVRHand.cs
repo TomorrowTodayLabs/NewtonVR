@@ -525,20 +525,10 @@ namespace NewtonVR
 
             if (PhysicalController != null)
             {
-                if (visibility == VisibilityLevel.Invisible)
-                {
-                    PhysicalController.Off();
-                }
-
-                if (visibility == VisibilityLevel.Ghost)
-                {
-                    PhysicalController.Off();
-                }
-
                 if (visibility == VisibilityLevel.Visible)
-                {
                     PhysicalController.On();
-                }
+                else
+                    PhysicalController.Off();
             }
 
             GhostRenderers.Iterate(a => a.enabled = visibility == VisibilityLevel.Ghost);
