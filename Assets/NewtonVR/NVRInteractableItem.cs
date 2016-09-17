@@ -118,11 +118,8 @@ namespace NewtonVR
 
                 VelocityHistoryStep = 0;
 
-                for (int index = 0; index < VelocityHistory.Length; index++)
-                {
-                    VelocityHistory[index] = null;
-                    AngularVelocityHistory[index] = null;
-                }
+                VelocityHistory = VelocityHistory.Map<Vector3?, Vector3?>(_ => null);
+                AngularVelocityHistory = AngularVelocityHistory.Map<Vector3?, Vector3?>(_ => null);
             }
         }
 
