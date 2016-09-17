@@ -22,7 +22,7 @@ namespace NewtonVR
 
             for (int index = 0; index < AudioPool.Length; index++)
             {
-                AudioPool[index] = GameObject.Instantiate<GameObject>(AudioSourcePrefab).GetComponent<AudioSource>();
+                AudioPool[index] = Instantiate(AudioSourcePrefab).GetComponent<AudioSource>();
                 AudioPool[index].transform.parent = this.transform;
             }
 
