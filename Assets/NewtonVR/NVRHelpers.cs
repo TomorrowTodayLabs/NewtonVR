@@ -7,14 +7,7 @@ namespace NewtonVR
         private static Shader standardShader;
         private static Shader StandardShader
         {
-            get
-            {
-                if (standardShader == null)
-                {
-                    standardShader = Shader.Find("Standard");
-                }
-                return standardShader;
-            }
+            get { return standardShader ?? (standardShader = Shader.Find("Standard")); }
         }
 
         public static void SetTransparent(Material material, Color? newcolor = null)
