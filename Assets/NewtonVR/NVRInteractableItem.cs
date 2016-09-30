@@ -56,8 +56,16 @@ namespace NewtonVR
 
                 Vector3 VelocityTarget = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
                 
-                this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
+                UpdateRigidBodyVelocity(VelocityTarget);
             }
+        }
+
+        /**
+         * Created to allow derived classes to constrain grabbed motion.
+         */
+        protected virtual void UpdateRigidBodyVelocity(Vector3 argVelocityTarget)
+        {
+            this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, argVelocityTarget, 10f);
         }
 
         public override void BeginInteraction(NVRHand hand)
