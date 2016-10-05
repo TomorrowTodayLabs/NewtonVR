@@ -16,6 +16,12 @@ namespace NewtonVR
             this.Rigidbody.maxAngularVelocity = 100f;
         }
 
+        protected override void Update()
+        {
+            base.Update();
+            CurrentAngle = Quaternion.Angle(Quaternion.identity, this.transform.rotation);
+        }
+
         public override void OnNewPosesApplied()
         {
             base.OnNewPosesApplied();
