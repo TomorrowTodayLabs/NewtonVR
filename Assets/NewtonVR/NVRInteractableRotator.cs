@@ -27,7 +27,7 @@ namespace NewtonVR
                 this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
             }
 
-            CurrentAngle = this.transform.localEulerAngles.z;
+            CurrentAngle = Quaternion.Angle(Quaternion.identity, this.transform.rotation);
         }
 
         public override void BeginInteraction(NVRHand hand)
