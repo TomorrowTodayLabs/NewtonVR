@@ -16,6 +16,12 @@ namespace NewtonVR
             this.Rigidbody.maxAngularVelocity = 100f;
         }
 
+        protected override void Update()
+        {
+            base.Update();
+            CurrentAngle = Quaternion.Angle(Quaternion.identity, this.transform.rotation);
+        }
+
         public override void OnNewPosesApplied()
         {
             base.OnNewPosesApplied();
@@ -27,7 +33,7 @@ namespace NewtonVR
                 this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
             }
 
-            CurrentAngle = this.transform.localEulerAngles.z;
+            CurrentAngle = Quaternion.Angle(Quaternion.identity, this.transform.rotation);
         }
 
         public override void BeginInteraction(NVRHand hand)
