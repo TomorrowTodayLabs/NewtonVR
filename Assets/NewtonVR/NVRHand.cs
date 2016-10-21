@@ -25,7 +25,7 @@ namespace NewtonVR
         public Dictionary<EVRButtonId, NVRButtonInputs> Inputs;
 
         [SerializeField]
-        private InterationStyle CurrentInteractionStyle = InterationStyle.GripDownToInteract;
+        private InteractionStyle CurrentInteractionStyle = InteractionStyle.GripDownToInteract;
 
         public Rigidbody Rigidbody;
 
@@ -145,7 +145,7 @@ namespace NewtonVR
             UseButtonUp = Inputs[UseButton].PressUp;
             UseButtonAxis = Inputs[UseButton].SingleAxis;
 
-            if (CurrentInteractionStyle == InterationStyle.GripDownToInteract)
+            if (CurrentInteractionStyle == InteractionStyle.GripDownToInteract)
             {
                 if (HoldButtonUp == true)
                 {
@@ -164,7 +164,7 @@ namespace NewtonVR
                     EndInteraction(null);
                 }
             }
-            else if (CurrentInteractionStyle == InterationStyle.GripToggleToInteract)
+            else if (CurrentInteractionStyle == InteractionStyle.GripToggleToInteract)
             {
                 if (HoldButtonDown == true)
                 {
@@ -239,7 +239,7 @@ namespace NewtonVR
         {
             if (NVRPlayer.Instance.PhysicalHands == true)
             {
-                if (CurrentInteractionStyle == InterationStyle.GripDownToInteract)
+                if (CurrentInteractionStyle == InteractionStyle.GripDownToInteract)
                 {
                     if (HoldButtonPressed == true && IsInteracting == false)
                     {
@@ -275,7 +275,7 @@ namespace NewtonVR
                         }
                     }
                 }
-                else if (CurrentInteractionStyle == InterationStyle.GripToggleToInteract)
+                else if (CurrentInteractionStyle == InteractionStyle.GripToggleToInteract)
                 {
                     if (CurrentHandState == HandState.Idle)
                     {
@@ -415,7 +415,7 @@ namespace NewtonVR
                 CurrentlyInteracting = null;
             }
 
-            if (CurrentInteractionStyle == InterationStyle.GripToggleToInteract)
+            if (CurrentInteractionStyle == InteractionStyle.GripToggleToInteract)
             {
                 if (CurrentHandState != HandState.Idle)
                 {
@@ -810,7 +810,7 @@ namespace NewtonVR
         GripToggleOff
     }
 
-    public enum InterationStyle
+    public enum InteractionStyle
     {
         GripDownToInteract,
         GripToggleToInteract,
