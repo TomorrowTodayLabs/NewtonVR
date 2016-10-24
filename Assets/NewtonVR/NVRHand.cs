@@ -4,25 +4,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Valve.VR;
-
 namespace NewtonVR
 {
     public class NVRHand : MonoBehaviour
     {
-        private Valve.VR.EVRButtonId HoldButton = EVRButtonId.k_EButton_Grip;
         public bool HoldButtonDown = false;
         public bool HoldButtonUp = false;
         public bool HoldButtonPressed = false;
         public float HoldButtonAxis = 0f;
 
-        private Valve.VR.EVRButtonId UseButton = EVRButtonId.k_EButton_SteamVR_Trigger;
         public bool UseButtonDown = false;
         public bool UseButtonUp = false;
         public bool UseButtonPressed = false;
         public float UseButtonAxis = 0f;
 
-        public Dictionary<EVRButtonId, NVRButtonInputs> Inputs;
+        NVRViveInputProxy inputProxy;
+
+        public Dictionary<NVRButtonID, NVRButtonInputs> Inputs;
 
         [SerializeField]
         private InteractionStyle CurrentInteractionStyle = InteractionStyle.GripDownToInteract;
@@ -42,8 +40,6 @@ namespace NewtonVR
 
         private Dictionary<NVRInteractable, Dictionary<Collider, float>> CurrentlyHoveringOver;
 
-        private SteamVR_Controller.Device Controller;
-
         public NVRInteractable CurrentlyInteracting;
 
         private int EstimationSampleIndex;
@@ -57,12 +53,6 @@ namespace NewtonVR
 
         private Collider[] GhostColliders;
         private Renderer[] GhostRenderers;
-
-        private int DeviceIndex = -1;
-
-        private bool RenderModelInitialized = false;
-
-        private EVRButtonId[] EVRButtonIds;
 
         public bool IsHovering
         {
@@ -82,7 +72,11 @@ namespace NewtonVR
 
         protected virtual void Awake()
         {
-            
+            inputProxy = this.GetComponent<NVRViveInputProxy>();
+            if (inputProxy == null)
+            {
+                inputProxy = this.gameObject.AddComponent<NVRViveInputProxy>();
+            }
             CurrentlyHoveringOver = new Dictionary<NVRInteractable, Dictionary<Collider, float>>();
 
             LastPositions = new Vector3[EstimationSamples];
@@ -92,9 +86,9 @@ namespace NewtonVR
 
             VisibilityLocked = false;
             
-            Inputs = new Dictionary<EVRButtonId, NVRButtonInputs>();
-            System.Array buttonTypes = System.Enum.GetValues(typeof(EVRButtonId));
-            foreach (EVRButtonId buttonType in buttonTypes)
+            Inputs = new Dictionary<NVRButtonID, NVRButtonInputs>();
+            System.Array buttonTypes = System.Enum.GetValues(typeof(NVRButtonID));
+            foreach (NVRButtonID buttonType in buttonTypes)
             {
                 if (Inputs.ContainsKey(buttonType) == false) //for some reason there is two EVRButtonId.2 entries
                 {
@@ -102,15 +96,11 @@ namespace NewtonVR
                 }
             }
 
-            SteamVR_Utils.Event.Listen("render_model_loaded", RenderModelLoaded);
-            SteamVR_Utils.Event.Listen("new_poses_applied", OnNewPosesApplied);
+            inputProxy.OnNewPoses += OnNewPosesApplied;
         }
 
-        private void OnNewPosesApplied(params object[] args)
+        private void OnNewPosesApplied()
         {
-            if (Controller == null)
-                return;
-
             if (CurrentlyInteracting != null)
             {
                 CurrentlyInteracting.OnNewPosesApplied();
@@ -120,30 +110,23 @@ namespace NewtonVR
 
         protected virtual void Update()
         {
-            if (Controller == null || CurrentHandState == HandState.Uninitialized)
+            if (!inputProxy.isReady() || CurrentHandState == HandState.Uninitialized)
                 return;
 
-            foreach (var button in Inputs)
+            foreach (var button in Inputs.Keys.ToList<NVRButtonID>())
             {
-                button.Value.Axis = Controller.GetAxis(button.Key);
-                button.Value.SingleAxis = button.Value.Axis.x;
-                button.Value.PressDown = Controller.GetPressDown(button.Key);
-                button.Value.PressUp = Controller.GetPressUp(button.Key);
-                button.Value.IsPressed = Controller.GetPress(button.Key);
-                button.Value.TouchDown = Controller.GetTouchDown(button.Key);
-                button.Value.TouchUp = Controller.GetTouchUp(button.Key);
-                button.Value.IsTouched = Controller.GetTouch(button.Key);
+                Inputs[button] = inputProxy.getButtonState(button);
             }
 
-            HoldButtonPressed = Inputs[HoldButton].IsPressed;
-            HoldButtonDown = Inputs[HoldButton].PressDown;
-            HoldButtonUp = Inputs[HoldButton].PressUp;
-            HoldButtonAxis = Inputs[HoldButton].SingleAxis;
+            HoldButtonPressed = Inputs[NVRButtonID.HoldButton].IsPressed;
+            HoldButtonDown    = Inputs[NVRButtonID.HoldButton].PressDown;
+            HoldButtonUp      = Inputs[NVRButtonID.HoldButton].PressUp;
+            HoldButtonAxis    = Inputs[NVRButtonID.HoldButton].SingleAxis;
 
-            UseButtonPressed = Inputs[UseButton].IsPressed;
-            UseButtonDown = Inputs[UseButton].PressDown;
-            UseButtonUp = Inputs[UseButton].PressUp;
-            UseButtonAxis = Inputs[UseButton].SingleAxis;
+            UseButtonPressed  = Inputs[NVRButtonID.UseButton].IsPressed;
+            UseButtonDown     = Inputs[NVRButtonID.UseButton].PressDown;
+            UseButtonUp       = Inputs[NVRButtonID.UseButton].PressUp;
+            UseButtonAxis     = Inputs[NVRButtonID.UseButton].SingleAxis;
 
             if (CurrentInteractionStyle == InteractionStyle.GripDownToInteract)
             {
@@ -204,35 +187,14 @@ namespace NewtonVR
         }
 
 
-        public void TriggerHapticPulse(ushort durationMicroSec = 500, EVRButtonId buttonId = EVRButtonId.k_EButton_Axis0)
+        public void TriggerHapticPulse(ushort durationMicroSec = 500)
         {
-            if (Controller != null)
-            {
-                if (durationMicroSec < 3000)
-                {
-                    Controller.TriggerHapticPulse(durationMicroSec, buttonId);
-                }
-                else
-                {
-                    Debug.LogWarning("You're trying to pulse for over 3000 microseconds, you probably don't want to do that. If you do, use NVRHand.LongHapticPulse(float seconds)");
-                }
-            }
+            inputProxy.TriggerHapticPulse(durationMicroSec);
         }
 
-        public void LongHapticPulse(float seconds, EVRButtonId buttonId = EVRButtonId.k_EButton_Axis0)
+        public void LongHapticPulse(float seconds)
         {
-            StartCoroutine(DoLongHapticPulse(seconds, buttonId));
-        }
-
-        private IEnumerator DoLongHapticPulse(float seconds, EVRButtonId buttonId)
-        {
-            float startTime = Time.time;
-            float endTime = startTime + seconds;
-            while (Time.time < endTime)
-            {
-                Controller.TriggerHapticPulse(100, buttonId);
-                yield return null;
-            }
+            inputProxy.LongHapticPulse(seconds);
         }
 
         private void UpdateVisibilityAndColliders()
@@ -384,9 +346,9 @@ namespace NewtonVR
             if (EstimationSampleIndex >= LastPositions.Length)
                 EstimationSampleIndex = 0;
 
-            if (Controller != null && IsInteracting == false && IsHovering == true)
+            if (inputProxy.isReady() && IsInteracting == false && IsHovering == true)
             {
-                Controller.TriggerHapticPulse(100);
+                inputProxy.TriggerHapticPulse(100);
             }
         }
 
@@ -510,11 +472,102 @@ namespace NewtonVR
                 StartCoroutine(DoInitialize());
         }
 
-        private void SetDeviceIndex(int index)
+        private IEnumerator DoInitialize()
         {
-            DeviceIndex = index;
-            Controller = SteamVR_Controller.Input(index);
-            StartCoroutine(DoInitialize());
+            Debug.Log(this.gameObject.name + "Hand DoInitialize");
+            do
+            {
+                Debug.Log("Waiting for InputProxy to be ready...");
+                yield return null; //wait for input proxy be initialized
+            } while (!inputProxy.isReady());
+            Debug.Log(this.gameObject.name + "Hand OMG");
+            Rigidbody = this.GetComponent<Rigidbody>();
+            if (Rigidbody == null)
+                Rigidbody = this.gameObject.AddComponent<Rigidbody>();
+            Rigidbody.isKinematic = true;
+            Rigidbody.maxAngularVelocity = float.MaxValue;
+            Rigidbody.useGravity = false;
+
+            Collider[] Colliders = inputProxy.GetDeviceColliders();
+
+            if (CustomModel != null)
+            {
+                GameObject CustomModelObject = GameObject.Instantiate(CustomModel);
+                Colliders = CustomModelObject.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
+
+                CustomModelObject.transform.parent = this.transform;
+                CustomModelObject.transform.localScale = Vector3.one;
+                CustomModelObject.transform.localPosition = Vector3.zero;
+                CustomModelObject.transform.localRotation = Quaternion.identity;
+            }
+            else if (Colliders == null)
+            {
+                Colliders = this.GetComponentsInChildren<Collider>();
+            }
+
+            NVRPlayer.Instance.RegisterHand(this);
+
+            if (NVRPlayer.Instance.PhysicalHands == true)
+            {
+                bool InitialState = false;
+
+                if (PhysicalController != null)
+                {
+                    if (PhysicalController.State == true)
+                    {
+                        InitialState = true;
+                    }
+                    else
+                    {
+                        InitialState = false;
+                    }
+                    PhysicalController.Kill();
+                }
+
+                PhysicalController = this.gameObject.AddComponent<NVRPhysicalController>();
+                PhysicalController.Initialize(this, InitialState);
+
+                if (InitialState == true)
+                {
+                    ForceGhost();
+                }
+
+                Color transparentcolor = Color.white;
+                transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
+
+                GhostRenderers = this.GetComponentsInChildren<Renderer>();
+                for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
+                {
+                    NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
+                }
+
+                if (Colliders != null)
+                {
+                    GhostColliders = Colliders;
+                }
+
+                CurrentVisibility = VisibilityLevel.Ghost;
+            }
+            else
+            {
+                Color transparentcolor = Color.white;
+                transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
+
+                GhostRenderers = this.GetComponentsInChildren<Renderer>();
+                for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
+                {
+                    NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
+                }
+
+                if (Colliders != null)
+                {
+                    GhostColliders = Colliders;
+                }
+
+                CurrentVisibility = VisibilityLevel.Ghost;
+            }
+
+            CurrentHandState = HandState.Idle;
         }
 
         public void DeregisterInteractable(NVRInteractable interactable)
@@ -588,169 +641,6 @@ namespace NewtonVR
             CurrentVisibility = visibility;
         }
 
-        private void RenderModelLoaded(params object[] args)
-        {
-            SteamVR_RenderModel renderModel = (SteamVR_RenderModel)args[0];
-            bool success = (bool)args[1];
-
-            if ((int)renderModel.index == DeviceIndex)
-                RenderModelInitialized = true;
-        }
-
-        private IEnumerator DoInitialize()
-        {
-            do
-            {
-                yield return null; //wait for render model to be initialized
-            } while (RenderModelInitialized == false && CustomModel == null);
-
-            Rigidbody = this.GetComponent<Rigidbody>();
-            if (Rigidbody == null)
-                Rigidbody = this.gameObject.AddComponent<Rigidbody>();
-            Rigidbody.isKinematic = true;
-            Rigidbody.maxAngularVelocity = float.MaxValue;
-            Rigidbody.useGravity = false;
-
-            Collider[] Colliders = null;
-
-            if (CustomModel == null)
-            {
-                string controllerModel = GetDeviceName();
-                SteamVR_RenderModel renderModel = this.GetComponentInChildren<SteamVR_RenderModel>();
-
-                switch (controllerModel)
-                {
-                    case "vr_controller_05_wireless_b":
-                        Transform dk1Trackhat = renderModel.transform.Find("trackhat");
-                        if (dk1Trackhat == null)
-                        {
-                            // Dk1 controller model has trackhat
-                        }
-                        else
-                        {
-                            dk1Trackhat.gameObject.SetActive(true);
-                        }
-
-                        SphereCollider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<SphereCollider>();
-                        if (dk1TrackhatCollider == null)
-                        {
-                            dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<SphereCollider>();
-                            dk1TrackhatCollider.isTrigger = true;
-                        }
-
-                        Colliders = new Collider[] { dk1TrackhatCollider };
-                        break;
-
-                    case "vr_controller_vive_1_5":
-                        Transform dk2Trackhat = renderModel.transform.FindChild("trackhat");
-                        if (dk2Trackhat == null)
-                        {
-                            dk2Trackhat = new GameObject("trackhat").transform;
-                            dk2Trackhat.gameObject.layer = this.gameObject.layer;
-                            dk2Trackhat.parent = renderModel.transform;
-                            dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
-                            dk2Trackhat.localScale = Vector3.one * 0.1f;
-                            dk2Trackhat.localEulerAngles = new Vector3(325, 0, 0);
-                            dk2Trackhat.gameObject.SetActive(true);
-                        }
-                        else
-                        {
-                            dk2Trackhat.gameObject.SetActive(true);
-                        }
-
-                        Collider dk2TrackhatCollider = dk2Trackhat.gameObject.GetComponent<SphereCollider>();
-                        if (dk2TrackhatCollider == null)
-                        {
-                            dk2TrackhatCollider = dk2Trackhat.gameObject.AddComponent<SphereCollider>();
-                            dk2TrackhatCollider.isTrigger = true;
-                        }
-
-                        Colliders = new Collider[] { dk2TrackhatCollider };
-                        break;
-
-                    default:
-                        Debug.LogError("Error. Unsupported device type: " + controllerModel);
-                        break;
-                }
-            }
-            else if (RenderModelInitialized == false)
-            {
-
-                RenderModelInitialized = true;
-                GameObject CustomModelObject = GameObject.Instantiate(CustomModel);
-                Colliders = CustomModelObject.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
-
-                CustomModelObject.transform.parent = this.transform;
-                CustomModelObject.transform.localScale = Vector3.one;
-                CustomModelObject.transform.localPosition = Vector3.zero;
-                CustomModelObject.transform.localRotation = Quaternion.identity;
-            }
-
-            NVRPlayer.Instance.RegisterHand(this);
-
-            if (NVRPlayer.Instance.PhysicalHands == true)
-            {
-                bool InitialState = false;
-
-                if (PhysicalController != null)
-                {
-                    if (PhysicalController.State == true)
-                    {
-                        InitialState = true;
-                    }
-                    else
-                    {
-                        InitialState = false;
-                    }
-                    PhysicalController.Kill();
-                }
-
-                PhysicalController = this.gameObject.AddComponent<NVRPhysicalController>();
-                PhysicalController.Initialize(this, InitialState);
-
-                if (InitialState == true)
-                {
-                    ForceGhost();
-                }
-
-                Color transparentcolor = Color.white;
-                transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
-
-                GhostRenderers = this.GetComponentsInChildren<Renderer>();
-                for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
-                {
-                    NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
-                }
-                
-                if (Colliders != null)
-                {
-                    GhostColliders = Colliders;
-                }
-
-                CurrentVisibility = VisibilityLevel.Ghost;
-            }
-            else
-            {
-                Color transparentcolor = Color.white;
-                transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
-
-                GhostRenderers = this.GetComponentsInChildren<Renderer>();
-                for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
-                {
-                    NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
-                }
-
-                if (Colliders != null)
-                {
-                    GhostColliders = Colliders;
-                }
-
-                CurrentVisibility = VisibilityLevel.Ghost;
-            }
-
-            CurrentHandState = HandState.Idle;
-        }
-
         public void ForceGhost()
         {
             SetVisibility(VisibilityLevel.Ghost);
@@ -759,36 +649,22 @@ namespace NewtonVR
 
         public string GetDeviceName()
         {
-            if (CustomModel != null)
-            {
-                return "Custom";
-            }
-            else
-            {
-                return this.GetComponentInChildren<SteamVR_RenderModel>().renderModelName;
-            }
-        }
-
-        private void OnDestroy()
-        {
-            SteamVR_Utils.Event.Remove("render_model_loaded", RenderModelLoaded);
-            SteamVR_Utils.Event.Remove("new_poses_applied", OnNewPosesApplied);
+            return inputProxy.GetDeviceName();
         }
 
         public void GetDeviceVelocity(out Vector3 velocity, out Vector3 angularVelocity)
         {
-            velocity = Controller.velocity;
-            angularVelocity = Controller.angularVelocity;
+            inputProxy.GetDeviceVelocity(out velocity, out angularVelocity);
         }
 
         public Vector3 GetDeviceVelocity()
         {
-            return Controller.velocity;
+            return inputProxy.GetDeviceVelocity();
         }
 
         public Vector3 GetDeviceAngularVelocity()
         {
-            return Controller.angularVelocity;
+            return inputProxy.GetDeviceAngularVelocity();
         }
     }
     

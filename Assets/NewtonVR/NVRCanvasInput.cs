@@ -290,12 +290,12 @@ namespace NewtonVR
 
         private bool ButtonDown(int index)
         {
-            return NVRPlayer.Instance.Hands[index].Inputs[Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger].PressDown;
+            return NVRPlayer.Instance.Hands[index].Inputs[NVRButtonID.UseButton].PressDown;
         }
 
         private bool ButtonUp(int index)
         {
-            return NVRPlayer.Instance.Hands[index].Inputs[Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger].PressUp;
+            return NVRPlayer.Instance.Hands[index].Inputs[NVRButtonID.UseButton].PressUp;
         }
     }
 }

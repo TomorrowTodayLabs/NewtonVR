@@ -24,6 +24,7 @@ namespace NewtonVR
 
         public void Initialize(NVRHand trackingHand, bool initialState)
         {
+            Debug.Log(this.gameObject.name + " PHYSICAL Controller Init");
             Hand = trackingHand;
 
             PhysicalController = GameObject.Instantiate(Hand.gameObject);
