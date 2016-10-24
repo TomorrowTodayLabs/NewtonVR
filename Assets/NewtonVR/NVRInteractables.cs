@@ -32,7 +32,7 @@ namespace NewtonVR
 
         public static void Deregister(NVRInteractable interactable)
         {
-            NVRPlayer.DeregisterInteractable(interactable);
+            //NVRPlayer.DeregisterInteractable(interactable);
 
             ColliderMapping = ColliderMapping.Where(mapping => mapping.Value != interactable).ToDictionary(mapping => mapping.Key, mapping => mapping.Value);
             NVRInteractableMapping.Remove(interactable);

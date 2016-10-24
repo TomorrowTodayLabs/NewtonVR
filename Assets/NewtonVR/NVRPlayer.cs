@@ -6,7 +6,7 @@ namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public static NVRPlayer Instance;
+        //public static NVRPlayer Instance;
         public bool PhysicalHands = false;
         public bool MakeControllerInvisibleOnInteraction = false;
         public int VelocityHistorySteps = 3;
@@ -29,7 +29,7 @@ namespace NewtonVR
 
         private void Awake()
         {
-            Instance = this;
+            //Instance = this;
             NVRInteractables.Initialize();
 
             if (Head == null)
@@ -48,6 +48,9 @@ namespace NewtonVR
             }
 
             ColliderToHandMapping = new Dictionary<Collider, NVRHand>();
+
+            LeftHand.player = this;
+            RightHand.player = this;
         }
 
         public void RegisterHand(NVRHand hand)
@@ -68,11 +71,11 @@ namespace NewtonVR
             return ColliderToHandMapping[collider];
         }
 
-        public static void DeregisterInteractable(NVRInteractable interactable)
+        public void DeregisterInteractable(NVRInteractable interactable)
         {
-            for (int index = 0; index < Instance.Hands.Length; index++)
+            for (int index = 0; index < Hands.Length; index++)
             {
-                Instance.Hands[index].DeregisterInteractable(interactable);
+                Hands[index].DeregisterInteractable(interactable);
             }
         }
 

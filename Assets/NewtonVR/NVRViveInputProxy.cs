@@ -62,8 +62,6 @@ public class NVRViveInputProxy : NVRHandInputProxy {
 
     void OnAwake()
     {
-        Debug.Log(this.gameObject.name + " ViveController awake");
-        
     }
 
     protected virtual void OnEnable()
@@ -77,7 +75,6 @@ public class NVRViveInputProxy : NVRHandInputProxy {
         Debug.Log("<NVRViveInputProxy> :: SetDeviceIndex(" + index + ")");
         DeviceIndex = index;
         Controller = SteamVR_Controller.Input(index);
-     //   StartCoroutine(DoInitialize());
     }
 
     private void RenderModelLoaded(params object[] args)
@@ -93,7 +90,6 @@ public class NVRViveInputProxy : NVRHandInputProxy {
 
     private IEnumerator DoInitialize()
     {
-
         Debug.Log(this.gameObject.name + "DoInitialize " + _initCalled++);
         if (!CustomModel && !RenderModelInitialized && modelObj == null)
         {
@@ -107,7 +103,6 @@ public class NVRViveInputProxy : NVRHandInputProxy {
             yield return null; //wait for render model to be initialized
         } while (RenderModelInitialized == false && !CustomModel);
 
-        Debug.Log(this.gameObject.name + "OMG Initializing");
         if (!CustomModel)
         {
             string controllerModel = GetDeviceName();

@@ -27,27 +27,29 @@ namespace NewtonVR
         private bool Initialized = false;
         
         private Camera ControllerCamera;
+        private NVRPlayer player;
 
         protected override void Start()
         {
             base.Start();
+            player = GetComponent<NVRPlayer>();
 
             if (Initialized == false)
             {
                 Instance = this;
 
                 ControllerCamera = new GameObject("Controller UI Camera").AddComponent<Camera>();
-                ControllerCamera.transform.parent = NVRPlayer.Instance.transform;
+                ControllerCamera.transform.parent = player.transform;
 
                 ControllerCamera.stereoTargetEye = StereoTargetEyeMask.None;
                 ControllerCamera.clearFlags = CameraClearFlags.Nothing;
                 ControllerCamera.cullingMask = 0; // 1 << LayerMask.NameToLayer("UI"); 
 
-                Cursors = new RectTransform[NVRPlayer.Instance.Hands.Length];
+                Cursors = new RectTransform[player.Hands.Length];
 
                 for (int index = 0; index < Cursors.Length; index++)
                 {
-                    GameObject cursor = new GameObject("Cursor for " + NVRPlayer.Instance.Hands[index].gameObject.name);
+                    GameObject cursor = new GameObject("Cursor for " + player.Hands[index].gameObject.name);
                     cursor.transform.parent = this.transform;
 
                     Canvas canvas = cursor.AddComponent<Canvas>();
@@ -171,8 +173,8 @@ namespace NewtonVR
 
         private void UpdateCameraPosition(int index)
         {
-            ControllerCamera.transform.position = NVRPlayer.Instance.Hands[index].transform.position;
-            ControllerCamera.transform.forward = NVRPlayer.Instance.Hands[index].transform.forward;
+            ControllerCamera.transform.position = player.Hands[index].transform.position;
+            ControllerCamera.transform.forward = player.Hands[index].transform.forward;
         }
 
         // Process is called by UI system to process events
@@ -187,7 +189,7 @@ namespace NewtonVR
             // see if there is a UI element that is currently being looked at
             for (int index = 0; index < Cursors.Length; index++)
             {
-                if (NVRPlayer.Instance.Hands[index].gameObject.activeInHierarchy == false)
+                if (player.Hands[index].gameObject.activeInHierarchy == false)
                 {
                     if (Cursors[index].gameObject.activeInHierarchy == true)
                     {
@@ -210,7 +212,7 @@ namespace NewtonVR
                 // update cursor
                 UpdateCursor(index, PointEvents[index]);
 
-                if (NVRPlayer.Instance.Hands[index] != null)
+                if (player.Hands[index] != null)
                 {
                     if (ButtonDown(index))
                     {
@@ -290,12 +292,12 @@ namespace NewtonVR
 
         private bool ButtonDown(int index)
         {
-            return NVRPlayer.Instance.Hands[index].Inputs[NVRButtonID.UseButton].PressDown;
+            return player.Hands[index].Inputs[NVRButtonID.UseButton].PressDown;
         }
 
         private bool ButtonUp(int index)
         {
-            return NVRPlayer.Instance.Hands[index].Inputs[NVRButtonID.UseButton].PressUp;
+            return player.Hands[index].Inputs[NVRButtonID.UseButton].PressUp;
         }
     }
 }

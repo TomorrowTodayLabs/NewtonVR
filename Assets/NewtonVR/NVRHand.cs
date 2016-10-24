@@ -8,10 +8,16 @@ namespace NewtonVR
 {
     public class NVRHand : MonoBehaviour
     {
+        public NVRPlayer player = null;
+
+        [Space]
+
         public bool HoldButtonDown = false;
         public bool HoldButtonUp = false;
         public bool HoldButtonPressed = false;
         public float HoldButtonAxis = 0f;
+
+        [Space]
 
         public bool UseButtonDown = false;
         public bool UseButtonUp = false;
@@ -68,7 +74,6 @@ namespace NewtonVR
                 return CurrentlyInteracting != null;
             }
         }
-
 
         protected virtual void Awake()
         {
@@ -158,7 +163,7 @@ namespace NewtonVR
                         {
                             CurrentHandState = HandState.GripToggleOnInteracting;
                         }
-                        else if (NVRPlayer.Instance.PhysicalHands == true)
+                        else if (player.PhysicalHands == true)
                         {
                             CurrentHandState = HandState.GripToggleOnNotInteracting;
                         }
@@ -186,7 +191,6 @@ namespace NewtonVR
             UpdateVisibilityAndColliders();
         }
 
-
         public void TriggerHapticPulse(ushort durationMicroSec = 500)
         {
             inputProxy.TriggerHapticPulse(durationMicroSec);
@@ -199,7 +203,7 @@ namespace NewtonVR
 
         private void UpdateVisibilityAndColliders()
         {
-            if (NVRPlayer.Instance.PhysicalHands == true)
+            if (player.PhysicalHands == true)
             {
                 if (CurrentInteractionStyle == InteractionStyle.GripDownToInteract)
                 {
@@ -217,7 +221,7 @@ namespace NewtonVR
                         if (CurrentHandState != HandState.GripDownInteracting && VisibilityLocked == false)
                         {
                             VisibilityLocked = true;
-                            if (NVRPlayer.Instance.MakeControllerInvisibleOnInteraction == true)
+                            if (player.MakeControllerInvisibleOnInteraction == true)
                             {
                                 SetVisibility(VisibilityLevel.Invisible);
                             }
@@ -269,7 +273,7 @@ namespace NewtonVR
                     }
                 }
             }
-            else if (NVRPlayer.Instance.PhysicalHands == false && NVRPlayer.Instance.MakeControllerInvisibleOnInteraction == true)
+            else if (player.PhysicalHands == false && player.MakeControllerInvisibleOnInteraction == true)
             {
                 if (IsInteracting == true)
                 {
@@ -505,9 +509,9 @@ namespace NewtonVR
                 Colliders = this.GetComponentsInChildren<Collider>();
             }
 
-            NVRPlayer.Instance.RegisterHand(this);
+            player.RegisterHand(this);
 
-            if (NVRPlayer.Instance.PhysicalHands == true)
+            if (player.PhysicalHands == true)
             {
                 bool InitialState = false;
 
