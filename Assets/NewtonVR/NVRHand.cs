@@ -25,6 +25,7 @@ namespace NewtonVR
         public float UseButtonAxis = 0f;
 
         NVRViveInputProxy inputProxy;
+        public NVRDriver Driver; /// TODO: make this private?
 
         public Dictionary<NVRButtonID, NVRButtonInputs> Inputs;
 
