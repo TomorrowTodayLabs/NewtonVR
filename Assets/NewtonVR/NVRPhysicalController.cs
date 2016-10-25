@@ -27,6 +27,7 @@ namespace NewtonVR
             Debug.Log(this.gameObject.name + " PHYSICAL Controller Init");
             Hand = trackingHand;
 
+            Hand.gameObject.SetActive(false);
             PhysicalController = GameObject.Instantiate(Hand.gameObject);
             PhysicalController.name = PhysicalController.name.Replace("(Clone)", " [Physical]");
 
@@ -38,6 +39,9 @@ namespace NewtonVR
             GameObject.DestroyImmediate(PhysicalController.GetComponent<SteamVR_TrackedObject>());
             GameObject.DestroyImmediate(renderModel);
             GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
+
+            Hand.gameObject.SetActive(true);
+            PhysicalController.gameObject.SetActive(true);
 
             Collider[] clonedColliders = PhysicalController.GetComponentsInChildren<Collider>();
             for (int index = 0; index < clonedColliders.Length; index++)
@@ -141,6 +145,12 @@ namespace NewtonVR
             {
                 On();
             }
+        }
+
+        public void SetColliders(Collider[] newColliders)
+        {
+            Colliders = new Collider[newColliders.Length];
+            newColliders.CopyTo(Colliders, 0);
         }
 
         public void Kill()

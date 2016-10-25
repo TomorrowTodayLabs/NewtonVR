@@ -24,7 +24,6 @@ namespace NewtonVR
         public bool UseButtonPressed = false;
         public float UseButtonAxis = 0f;
 
-        NVRViveInputProxy inputProxy;
         public NVRDriver Driver; /// TODO: make this private?
 
         public Dictionary<NVRButtonID, NVRButtonInputs> Inputs;
@@ -78,11 +77,6 @@ namespace NewtonVR
 
         protected virtual void Awake()
         {
-            inputProxy = this.GetComponent<NVRViveInputProxy>();
-            if (inputProxy == null)
-            {
-                inputProxy = this.gameObject.AddComponent<NVRViveInputProxy>();
-            }
             CurrentlyHoveringOver = new Dictionary<NVRInteractable, Dictionary<Collider, float>>();
 
             LastPositions = new Vector3[EstimationSamples];
@@ -96,13 +90,13 @@ namespace NewtonVR
             System.Array buttonTypes = System.Enum.GetValues(typeof(NVRButtonID));
             foreach (NVRButtonID buttonType in buttonTypes)
             {
-                if (Inputs.ContainsKey(buttonType) == false) //for some reason there is two EVRButtonId.2 entries
+                if (Inputs.ContainsKey(buttonType) == false)
                 {
                     Inputs.Add(buttonType, new NVRButtonInputs());
                 }
             }
 
-            inputProxy.OnNewPoses += OnNewPosesApplied;
+            Driver.OnNewPoses += OnNewPosesApplied;
         }
 
         private void OnNewPosesApplied()
@@ -113,16 +107,10 @@ namespace NewtonVR
             }
         }
 
-
         protected virtual void Update()
         {
-            if (!inputProxy.isReady() || CurrentHandState == HandState.Uninitialized)
+            if (CurrentHandState == HandState.Uninitialized)
                 return;
-
-            foreach (var button in Inputs.Keys.ToList<NVRButtonID>())
-            {
-                Inputs[button] = inputProxy.getButtonState(button);
-            }
 
             HoldButtonPressed = Inputs[NVRButtonID.HoldButton].IsPressed;
             HoldButtonDown    = Inputs[NVRButtonID.HoldButton].PressDown;
@@ -194,12 +182,23 @@ namespace NewtonVR
 
         public void TriggerHapticPulse(ushort durationMicroSec = 500)
         {
-            inputProxy.TriggerHapticPulse(durationMicroSec);
+            Driver.TriggerHapticPulse(durationMicroSec);
         }
 
         public void LongHapticPulse(float seconds)
         {
-            inputProxy.LongHapticPulse(seconds);
+            Driver.LongHapticPulse(seconds);
+        }
+
+        public void SetColliders(Collider[] newColliders)
+        {
+            GhostColliders = new Collider[newColliders.Length];
+            newColliders.CopyTo(GhostColliders, 0);
+
+            if (PhysicalController != null)
+            {
+                PhysicalController.SetColliders(newColliders);
+            }
         }
 
         private void UpdateVisibilityAndColliders()
@@ -351,9 +350,9 @@ namespace NewtonVR
             if (EstimationSampleIndex >= LastPositions.Length)
                 EstimationSampleIndex = 0;
 
-            if (inputProxy.isReady() && IsInteracting == false && IsHovering == true)
+            if (IsInteracting == false && IsHovering == true)
             {
-                inputProxy.TriggerHapticPulse(100);
+                Driver.TriggerHapticPulse(100);
             }
         }
 
@@ -473,19 +472,11 @@ namespace NewtonVR
             {
                 this.GetComponentInChildren<SteamVR_RenderModel>().enabled = false;
             }
-            if (this.gameObject.activeInHierarchy)
-                StartCoroutine(DoInitialize());
         }
 
-        private IEnumerator DoInitialize()
+        public void DoInitialize()
         {
             Debug.Log(this.gameObject.name + "Hand DoInitialize");
-            do
-            {
-                Debug.Log("Waiting for InputProxy to be ready...");
-                yield return null; //wait for input proxy be initialized
-            } while (!inputProxy.isReady());
-            Debug.Log(this.gameObject.name + "Hand OMG");
             Rigidbody = this.GetComponent<Rigidbody>();
             if (Rigidbody == null)
                 Rigidbody = this.gameObject.AddComponent<Rigidbody>();
@@ -493,7 +484,7 @@ namespace NewtonVR
             Rigidbody.maxAngularVelocity = float.MaxValue;
             Rigidbody.useGravity = false;
 
-            Collider[] Colliders = inputProxy.GetDeviceColliders();
+            Collider[] Colliders = null;
 
             if (CustomModel != null)
             {
@@ -505,7 +496,7 @@ namespace NewtonVR
                 CustomModelObject.transform.localPosition = Vector3.zero;
                 CustomModelObject.transform.localRotation = Quaternion.identity;
             }
-            else if (Colliders == null)
+            else if (GhostColliders == null)
             {
                 Colliders = this.GetComponentsInChildren<Collider>();
             }
@@ -654,23 +645,23 @@ namespace NewtonVR
 
         public string GetDeviceName()
         {
-            return inputProxy.GetDeviceName();
+            return Driver.GetDeviceName(this);
         }
 
-        public void GetDeviceVelocity(out Vector3 velocity, out Vector3 angularVelocity)
-        {
-            inputProxy.GetDeviceVelocity(out velocity, out angularVelocity);
-        }
+        //public void GetDeviceVelocity(out Vector3 velocity, out Vector3 angularVelocity)
+        //{
+        //    inputProxy.GetDeviceVelocity(out velocity, out angularVelocity);
+        //}
 
-        public Vector3 GetDeviceVelocity()
-        {
-            return inputProxy.GetDeviceVelocity();
-        }
+        //public Vector3 GetDeviceVelocity()
+        //{
+        //    return inputProxy.GetDeviceVelocity();
+        //}
 
-        public Vector3 GetDeviceAngularVelocity()
-        {
-            return inputProxy.GetDeviceAngularVelocity();
-        }
+        //public Vector3 GetDeviceAngularVelocity()
+        //{
+        //    return inputProxy.GetDeviceAngularVelocity();
+        //}
     }
     
     public enum VisibilityLevel

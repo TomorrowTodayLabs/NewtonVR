@@ -15,5 +15,11 @@ public abstract class NVRDriver : MonoBehaviour {
     public delegate void NewPosesEvent();
     public NewPosesEvent OnNewPoses;
 
+    public abstract NVRButtonInputs GetButtonState(NVRHand hand, NVRButtonID button);
 
+    public abstract void TriggerHapticPulse(ushort durationMicroSec);
+    public abstract void LongHapticPulse(float seconds);
+
+    public abstract string GetDeviceName(NVRHand hand);
+    public abstract string GetDeviceName(NVRHead head);
 }
