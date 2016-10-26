@@ -41,12 +41,6 @@ public class NVRViveDriver : NVRDriver
         SteamVR_Utils.Event.Remove("new_poses_applied", OnNewPosesApplied);
     }
 
-    void OnDestroy()
-    {
-        SteamVR_Utils.Event.Remove("render_model_loaded", RenderModelLoaded);
-        SteamVR_Utils.Event.Remove("new_poses_applied", OnNewPosesApplied);
-    }
-
     private void OnNewPosesApplied(params object[] args)
     {
         OnNewPoses();
