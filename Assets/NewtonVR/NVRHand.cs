@@ -467,11 +467,6 @@ namespace NewtonVR
         protected virtual void OnEnable()
         {
             VisibilityLocked = false;
-
-            if (CustomModel != null)
-            {
-                this.GetComponentInChildren<SteamVR_RenderModel>().enabled = false;
-            }
         }
 
         public void DoInitialize()
@@ -489,7 +484,11 @@ namespace NewtonVR
             if (CustomModel != null)
             {
                 GameObject CustomModelObject = GameObject.Instantiate(CustomModel);
-                Colliders = CustomModelObject.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
+                Colliders = CustomModelObject.GetComponentsInChildren<Collider>();
+                foreach (var collider in Colliders)
+                {
+                    collider.isTrigger = true;
+                }
 
                 CustomModelObject.transform.parent = this.transform;
                 CustomModelObject.transform.localScale = Vector3.one;
@@ -647,21 +646,6 @@ namespace NewtonVR
         {
             return Driver.GetDeviceName(this);
         }
-
-        //public void GetDeviceVelocity(out Vector3 velocity, out Vector3 angularVelocity)
-        //{
-        //    inputProxy.GetDeviceVelocity(out velocity, out angularVelocity);
-        //}
-
-        //public Vector3 GetDeviceVelocity()
-        //{
-        //    return inputProxy.GetDeviceVelocity();
-        //}
-
-        //public Vector3 GetDeviceAngularVelocity()
-        //{
-        //    return inputProxy.GetDeviceAngularVelocity();
-        //}
     }
     
     public enum VisibilityLevel

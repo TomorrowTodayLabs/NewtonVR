@@ -31,13 +31,9 @@ namespace NewtonVR
             PhysicalController = GameObject.Instantiate(Hand.gameObject);
             PhysicalController.name = PhysicalController.name.Replace("(Clone)", " [Physical]");
 
-            SteamVR_RenderModel renderModel = PhysicalController.GetComponentInChildren<SteamVR_RenderModel>();
-            ModelParent = renderModel.transform;
-
             GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
             GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRHand>());
             GameObject.DestroyImmediate(PhysicalController.GetComponent<SteamVR_TrackedObject>());
-            GameObject.DestroyImmediate(renderModel);
             GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
 
             Hand.gameObject.SetActive(true);
@@ -57,34 +53,6 @@ namespace NewtonVR
             string controllerModel = Hand.GetDeviceName();
             switch (controllerModel)
             {
-                case "vr_controller_05_wireless_b":
-                    Transform dk1Trackhat = ModelParent.transform.Find("trackhat");
-                    Collider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<BoxCollider>();
-                    if (dk1TrackhatCollider == null)
-                        dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<BoxCollider>();
-
-                    Transform dk1Body = ModelParent.transform.Find("body");
-                    Collider dk1BodyCollider = dk1Body.gameObject.GetComponent<BoxCollider>();
-                    if (dk1BodyCollider == null)
-                        dk1BodyCollider = dk1Body.gameObject.AddComponent<BoxCollider>();
-
-                    Colliders = new Collider[] { dk1TrackhatCollider, dk1BodyCollider };
-                    break;
-
-                case "vr_controller_vive_1_5":
-                    Transform dk2TrackhatColliders = ModelParent.transform.FindChild("VivePreColliders");
-                    if (dk2TrackhatColliders == null)
-                    {
-                        dk2TrackhatColliders = GameObject.Instantiate(Resources.Load<GameObject>("VivePreColliders")).transform;
-                        dk2TrackhatColliders.parent = ModelParent.transform;
-                        dk2TrackhatColliders.localPosition = Vector3.zero;
-                        dk2TrackhatColliders.localRotation = Quaternion.identity;
-                        dk2TrackhatColliders.localScale = Vector3.one;
-                    }
-
-                    Colliders = dk2TrackhatColliders.GetComponentsInChildren<Collider>();
-                    break;
-
                 case "Custom":
                     Transform customCollidersTransform = PhysicalController.transform.FindChild("VivePreColliders");
                     if (customCollidersTransform == null)

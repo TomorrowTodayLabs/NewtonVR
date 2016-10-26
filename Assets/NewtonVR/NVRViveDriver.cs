@@ -21,8 +21,6 @@ public class NVRViveDriver : NVRDriver
     private SteamVR_TrackedObject LeftHandTracker;
     private SteamVR_TrackedObject RightHandTracker;
 
-    public bool CustomModel = false; // set to True if you are providing your own mesh
-
     private Dictionary<NVRButtonID, Valve.VR.EVRButtonId> InputMap = new Dictionary<NVRButtonID, EVRButtonId>()
     {
         { NVRButtonID.HoldButton, EVRButtonId.k_EButton_Grip },
@@ -149,11 +147,17 @@ public class NVRViveDriver : NVRDriver
         //    Head.gameObject.AddComponent<SteamVR_Camera>();
         //}
 
-        var leftmodelObj = new GameObject(LeftHand.gameObject.name + "_RenderModel", typeof(SteamVR_RenderModel));
-        leftmodelObj.transform.parent = LeftHand.transform;
+        if (LeftHand.CustomModel == null)
+        {
+            var leftmodelObj = new GameObject(LeftHand.gameObject.name + "_RenderModel", typeof(SteamVR_RenderModel));
+            leftmodelObj.transform.parent = LeftHand.transform;
+        }
 
-        var rightmodelObj = new GameObject(RightHand.gameObject.name + "_RenderModel", typeof(SteamVR_RenderModel));
-        rightmodelObj.transform.parent = RightHand.transform;
+        if (RightHand.CustomModel == null)
+        {
+            var rightmodelObj = new GameObject(RightHand.gameObject.name + "_RenderModel", typeof(SteamVR_RenderModel));
+            rightmodelObj.transform.parent = RightHand.transform;
+        }
 
         RightHandTracker = RightHand.gameObject.AddComponent<SteamVR_TrackedObject>();
         LeftHandTracker = LeftHand.gameObject.AddComponent<SteamVR_TrackedObject>();
@@ -161,7 +165,7 @@ public class NVRViveDriver : NVRDriver
         // enable dummy object containing ControllerManager & PlayArea
         go.SetActive(true);
 
-        if (!CustomModel && !(LeftRenderModelInitialized || RightRenderModelInitialized))
+        if (!LeftRenderModelInitialized || !RightRenderModelInitialized)
         {
             StartCoroutine(DoInitSteamVRModels());
         }
@@ -170,25 +174,40 @@ public class NVRViveDriver : NVRDriver
     private IEnumerator DoInitSteamVRModels()
     {
         Debug.Log("Waiting for models to load... ");
-        var leftModel = LeftHand.GetComponentInChildren<SteamVR_RenderModel>();
-        var rightModel = RightHand.GetComponentInChildren<SteamVR_RenderModel>();
 
         // check to see if models have already been loaded for the controllers
-        if (leftModel.renderModelName != null)
+        if (LeftHand.CustomModel == null)
         {
-            Debug.Log("Left already initialized");
+            var leftModel = LeftHand.GetComponentInChildren<SteamVR_RenderModel>();
+            if (leftModel.renderModelName != null)
+            {
+                Debug.Log("Left already initialized");
+                LeftRenderModelInitialized = true;
+            }
+        }
+        else
+        {
             LeftRenderModelInitialized = true;
         }
-        if (rightModel.renderModelName!= null)
+
+        if (RightHand.CustomModel == null)
         {
-            Debug.Log("Right already initialized");
+            var rightModel = RightHand.GetComponentInChildren<SteamVR_RenderModel>();
+            if (rightModel.renderModelName != null)
+            {
+                Debug.Log("Right already initialized");
+                RightRenderModelInitialized = true;
+            }
+        }
+        else
+        {
             RightRenderModelInitialized = true;
         }
 
         do
         {
-            yield return null; //wait for render model to be initialized
-        } while ((LeftRenderModelInitialized == false || RightRenderModelInitialized == false) && !CustomModel);
+            yield return null; //wait for steamvr render model to be initialized
+        } while (LeftRenderModelInitialized == false || RightRenderModelInitialized == false);
 
         Debug.Log("RenderModels initialized!");
 
@@ -203,7 +222,7 @@ public class NVRViveDriver : NVRDriver
     private void InitColliders(NVRHand hand)
     {
         Collider[] DeviceColliders;
-        if (!CustomModel)
+        if (hand.CustomModel != null)
         {
             string controllerModel = GetDeviceName(hand);
             SteamVR_RenderModel renderModel = hand.GetComponentInChildren<SteamVR_RenderModel>();
@@ -259,7 +278,9 @@ public class NVRViveDriver : NVRDriver
                     DeviceColliders = new Collider[] { dk2TrackhatCollider };
                     hand.SetColliders(DeviceColliders);
                     break;
-
+                case "Custom":
+                    Debug.Log("Custom colliders should be handled by NVRHand");
+                    break;
                 default:
                     Debug.LogError("Error. Unsupported device type: " + controllerModel);
                     break;
