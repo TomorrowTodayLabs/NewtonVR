@@ -182,12 +182,12 @@ namespace NewtonVR
 
         public void TriggerHapticPulse(ushort durationMicroSec = 500)
         {
-            Driver.TriggerHapticPulse(durationMicroSec);
+            Driver.TriggerHapticPulse(this, durationMicroSec);
         }
 
         public void LongHapticPulse(float seconds)
         {
-            Driver.LongHapticPulse(seconds);
+            Driver.LongHapticPulse(this, seconds);
         }
 
         public void SetColliders(Collider[] newColliders)
@@ -352,7 +352,7 @@ namespace NewtonVR
 
             if (IsInteracting == false && IsHovering == true)
             {
-                Driver.TriggerHapticPulse(100);
+                Driver.TriggerHapticPulse(this, 100);
             }
         }
 

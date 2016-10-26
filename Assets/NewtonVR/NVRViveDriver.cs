@@ -304,33 +304,35 @@ public class NVRViveDriver : NVRDriver
         return "HTC Vive HMD";
     }
 
-    public override void TriggerHapticPulse(ushort durationMicroSec = 500)
+    public override void TriggerHapticPulse(NVRHand hand, ushort durationMicroSec = 500)
     {
-    //    if (Controller != null)
-    //    {
-    //        if (durationMicroSec < 3000)
-    //        {
-    //            Controller.TriggerHapticPulse(durationMicroSec);
-    //        }
-    //        else
-    //        {
-    //            Debug.LogWarning("You're trying to pulse for over 3000 microseconds, you probably don't want to do that. If you do, use LongHapticPulse(float seconds)");
-    //        }
-    //    }
+        var controller = SteamVR_Controller.Input((int)hand.GetComponentInChildren<SteamVR_TrackedObject>().index);
+        if (controller != null)
+        {
+            if (durationMicroSec < 3000)
+            {
+                controller.TriggerHapticPulse(durationMicroSec);
+            }
+            else
+            {
+                Debug.LogWarning("you're trying to pulse for over 3000 microseconds, you probably don't want to do that. if you do, use longhapticpulse(float seconds)");
+            }
+        }
     }
 
-    public override void LongHapticPulse(float seconds)
+    public override void LongHapticPulse(NVRHand hand, float seconds)
     {
-        StartCoroutine(DoLongHapticPulse(seconds));
+        StartCoroutine(DoLongHapticPulse(hand, seconds));
     }
 
-    private IEnumerator DoLongHapticPulse(float seconds)
+    private IEnumerator DoLongHapticPulse(NVRHand hand, float seconds)
     {
         float startTime = Time.time;
         float endTime = startTime + seconds;
+        var controller = SteamVR_Controller.Input((int)hand.GetComponentInChildren<SteamVR_TrackedObject>().index);
         while (Time.time < endTime)
         {
-            //Controller.TriggerHapticPulse(100);
+            controller.TriggerHapticPulse(100);
             yield return null;
         }
     }
