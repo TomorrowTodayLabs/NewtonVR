@@ -15,6 +15,12 @@ public abstract class NVRDriver : MonoBehaviour {
     public delegate void NewPosesEvent();
     public NewPosesEvent OnNewPoses;
 
+    /// <summary>
+    /// Retrieves button state (pressed/up, etc) for whatever device the given hand is using
+    /// </summary>
+    /// <param name="hand">Which hand to look up button states for</param>
+    /// <param name="button">Which button to check (dev is responsible for mapping NVRButtonID to their device's buttons)</param>
+    /// <returns>Complete state of given button for the current frame</returns>
     public abstract NVRButtonInputs GetButtonState(NVRHand hand, NVRButtonID button);
 
     public abstract void TriggerHapticPulse(ushort durationMicroSec);
