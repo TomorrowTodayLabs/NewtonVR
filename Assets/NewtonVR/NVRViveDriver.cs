@@ -43,7 +43,10 @@ public class NVRViveDriver : NVRDriver
 
     private void OnNewPosesApplied(params object[] args)
     {
-        OnNewPoses();
+        if (OnNewPoses != null)
+        {
+            OnNewPoses();
+        }
     }
 
     public override NVRButtonInputs GetButtonState(NVRHand hand, NVRButtonID button)
@@ -103,17 +106,18 @@ public class NVRViveDriver : NVRDriver
 
     public void Awake()
     {
+        Debug.Log("NVRViveDriver initializing...");
         // SteamVR Setup & Initialization
         GameObject go = new GameObject("SteamVR_Stuff"); // dummy object to hold SteamVR components
         go.transform.parent = this.transform;
-        go.SetActive(false);
+        go.SetActive(false); // SteamVR components do a lot of initialization in Awake() and OnEnable(), so we want to wait until everything is ready before letting them run
 
-        RightHandTracker = RightHand.gameObject.AddComponent<SteamVR_TrackedObject>();
-        LeftHandTracker = LeftHand.gameObject.AddComponent<SteamVR_TrackedObject>();
+        
 
         var playArea = this.GetComponentInChildren<SteamVR_PlayArea>();
         if (playArea == null)
         {
+            Debug.Log("Adding new SteamVR PlayArea");
             playArea = go.AddComponent<SteamVR_PlayArea>();
             playArea.size = PlayAreaSize;
         }
@@ -121,6 +125,7 @@ public class NVRViveDriver : NVRDriver
         var controllerManager = this.GetComponentInChildren<SteamVR_ControllerManager>();
         if (controllerManager == null)
         {
+            Debug.Log("Adding new SteamVR ControllerManager");
             controllerManager = go.AddComponent<SteamVR_ControllerManager>();
         }
 
@@ -133,31 +138,55 @@ public class NVRViveDriver : NVRDriver
             controllerManager.right = RightHand.gameObject;
         }
 
-        //Head.gameObject.AddComponent<SteamVR_TrackedObject>().index = SteamVR_TrackedObject.EIndex.Hmd;
-        //Head.gameObject.AddComponent<SteamVR_Camera>();
+        //var headTracker = Head.GetComponent<SteamVR_TrackedObject>();
+        //if (headTracker == null)
+        //{
+        //    Head.gameObject.AddComponent<SteamVR_TrackedObject>().index = SteamVR_TrackedObject.EIndex.Hmd;
+        //}
+        //var headSteamCamera = Head.GetComponent<SteamVR_Camera>();
+        //if (headSteamCamera == null)
+        //{
+        //    Head.gameObject.AddComponent<SteamVR_Camera>();
+        //}
 
-        go.SetActive(true);
-
-        if (!CustomModel && !(LeftRenderModelInitialized || RightRenderModelInitialized))
-        {
-            StartCoroutine(DoInitSteamVRModels());
-        }
-
-
-
-    }
-
-    private IEnumerator DoInitSteamVRModels()
-    {
         var leftmodelObj = new GameObject(LeftHand.gameObject.name + "_RenderModel", typeof(SteamVR_RenderModel));
         leftmodelObj.transform.parent = LeftHand.transform;
 
         var rightmodelObj = new GameObject(RightHand.gameObject.name + "_RenderModel", typeof(SteamVR_RenderModel));
         rightmodelObj.transform.parent = RightHand.transform;
 
+        RightHandTracker = RightHand.gameObject.AddComponent<SteamVR_TrackedObject>();
+        LeftHandTracker = LeftHand.gameObject.AddComponent<SteamVR_TrackedObject>();
+
+        // enable dummy object containing ControllerManager & PlayArea
+        go.SetActive(true);
+
+        if (!CustomModel && !(LeftRenderModelInitialized || RightRenderModelInitialized))
+        {
+            StartCoroutine(DoInitSteamVRModels());
+        }
+    }
+
+    private IEnumerator DoInitSteamVRModels()
+    {
+        Debug.Log("Waiting for models to load... ");
+        var leftModel = LeftHand.GetComponentInChildren<SteamVR_RenderModel>();
+        var rightModel = RightHand.GetComponentInChildren<SteamVR_RenderModel>();
+
+        // check to see if models have already been loaded for the controllers
+        if (leftModel.renderModelName != null)
+        {
+            Debug.Log("Left already initialized");
+            LeftRenderModelInitialized = true;
+        }
+        if (rightModel.renderModelName!= null)
+        {
+            Debug.Log("Right already initialized");
+            RightRenderModelInitialized = true;
+        }
+
         do
         {
-            Debug.Log("Waiting for models to load... " + LeftRenderModelInitialized + "|" + RightRenderModelInitialized);
             yield return null; //wait for render model to be initialized
         } while ((LeftRenderModelInitialized == false || RightRenderModelInitialized == false) && !CustomModel);
 
@@ -242,7 +271,7 @@ public class NVRViveDriver : NVRDriver
     {
         if (LeftHandTracker.isValid)
         {
-            foreach (NVRButtonID button in LeftHand.Inputs.Keys.ToList<NVRButtonID>())
+            foreach (NVRButtonID button in LeftHand.Inputs.Keys.ToList())
             {
                 LeftHand.Inputs[button] = GetButtonState(LeftHand, button);
             }
@@ -250,7 +279,7 @@ public class NVRViveDriver : NVRDriver
 
         if (RightHandTracker.isValid)
         {
-            foreach (NVRButtonID button in RightHand.Inputs.Keys.ToList<NVRButtonID>())
+            foreach (NVRButtonID button in RightHand.Inputs.Keys.ToList())
             {
                 RightHand.Inputs[button] = GetButtonState(RightHand, button);
             }
@@ -272,7 +301,7 @@ public class NVRViveDriver : NVRDriver
 
     public override string GetDeviceName(NVRHead head)
     {
-        return "HTC Vive";
+        return "HTC Vive HMD";
     }
 
     public override void TriggerHapticPulse(ushort durationMicroSec = 500)
