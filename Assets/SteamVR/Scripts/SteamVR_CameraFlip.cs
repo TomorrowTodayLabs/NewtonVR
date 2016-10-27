@@ -5,14 +5,21 @@
 //=============================================================================
 
 using UnityEngine;
+using System.Collections;
 
-[ExecuteInEditMode]
 public class SteamVR_CameraFlip : MonoBehaviour
 {
-	void Awake()
+	static Material blitMaterial;
+
+	void OnEnable()
 	{
-		Debug.Log("SteamVR_CameraFlip is deprecated in Unity 5.4 - REMOVING");
-		DestroyImmediate(this);
+		if (blitMaterial == null)
+			blitMaterial = new Material(Shader.Find("Custom/SteamVR_BlitFlip"));
+	}
+
+	void OnRenderImage(RenderTexture src, RenderTexture dest)
+	{
+		Graphics.Blit(src, dest, blitMaterial);
 	}
 }
 

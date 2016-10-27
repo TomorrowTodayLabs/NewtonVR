@@ -125,7 +125,11 @@ public class SteamVR_Update : EditorWindow
 		EditorGUILayout.HelpBox("A new version of the SteamVR plugin is available!", MessageType.Warning);
 
 		var resourcePath = GetResourcePath();
+#if UNITY_5_0
+		var logo = Resources.LoadAssetAtPath<Texture2D>(resourcePath + "logo.png");
+#else
 		var logo = AssetDatabase.LoadAssetAtPath<Texture2D>(resourcePath + "logo.png");
+#endif
 		var rect = GUILayoutUtility.GetRect(position.width, 150, GUI.skin.box);
 		if (logo)
 			GUI.DrawTexture(rect, logo, ScaleMode.ScaleToFit);
