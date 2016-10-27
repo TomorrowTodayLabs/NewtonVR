@@ -110,6 +110,8 @@ public class NVRViveDriver : NVRDriver
         go.transform.parent = this.transform;
         go.SetActive(false); // SteamVR components do a lot of initialization in Awake() and OnEnable(), so we want to wait until everything is ready before letting them run
 
+        // for each component needed to use SteamVR, check to see if the user has already set their character up with them.
+        // if any components are missing, add them.
         var playArea = this.GetComponentInChildren<SteamVR_PlayArea>();
         if (playArea == null)
         {
@@ -173,7 +175,9 @@ public class NVRViveDriver : NVRDriver
     {
         Debug.Log("Waiting for models to load... ");
 
-        // check to see if models have already been loaded for the controllers
+        // Check to see if models have already been loaded for the controllers.
+        // This is the case if a custom model was provided, or if we're loading a new
+        // scene after the SteamVR models were loaded in a previous scene.
         if (LeftHand.CustomModel == null)
         {
             var leftModel = LeftHand.GetComponentInChildren<SteamVR_RenderModel>();
@@ -290,18 +294,20 @@ public class NVRViveDriver : NVRDriver
     {
         if (LeftHandTracker.isValid)
         {
-            foreach (NVRButtonID button in LeftHand.Inputs.Keys.ToList())
-            {
-                LeftHand.Inputs[button] = GetButtonState(LeftHand, button);
-            }
+            SetButtonStates(LeftHand);
         }
 
         if (RightHandTracker.isValid)
         {
-            foreach (NVRButtonID button in RightHand.Inputs.Keys.ToList())
-            {
-                RightHand.Inputs[button] = GetButtonState(RightHand, button);
-            }
+            SetButtonStates(RightHand);
+        }
+    }
+
+    public override void SetButtonStates(NVRHand hand)
+    {
+        foreach (NVRButtonID button in hand.Inputs.Keys.ToList())
+        {
+            hand.Inputs[button] = GetButtonState(hand, button);
         }
     }
 

@@ -24,7 +24,9 @@ namespace NewtonVR
         public bool UseButtonPressed = false;
         public float UseButtonAxis = 0f;
 
-        public NVRDriver Driver; /// TODO: make this private?
+        [Space]
+
+        public NVRDriver Driver;
 
         public Dictionary<NVRButtonID, NVRButtonInputs> Inputs;
 
@@ -33,7 +35,7 @@ namespace NewtonVR
 
         public Rigidbody Rigidbody;
 
-        [Tooltip("If you want to use something other than the standard SteamVR Controller models place the Prefab here. Otherwise we use steamvr models.")]
+        [Tooltip("If empty, will rely on the NVRDriver to provide models for rendering (e.g. SteamVR models from the Vive driver). Set your own model to override this.")]
         public GameObject CustomModel;
 
         [Tooltip("If you're using a custom model or if you just want custom physical colliders, stick the prefab for them here.")]
@@ -53,7 +55,6 @@ namespace NewtonVR
         private Quaternion[] LastRotations;
         private float[] LastDeltas;
         private int EstimationSamples = 5;
-        private int RotationEstimationSamples = 10;
 
         private NVRPhysicalController PhysicalController;
 
@@ -112,6 +113,7 @@ namespace NewtonVR
             if (CurrentHandState == HandState.Uninitialized)
                 return;
 
+            // button states should be updated by NVRDriver each frame, we just read them here
             HoldButtonPressed = Inputs[NVRButtonID.HoldButton].IsPressed;
             HoldButtonDown    = Inputs[NVRButtonID.HoldButton].PressDown;
             HoldButtonUp      = Inputs[NVRButtonID.HoldButton].PressUp;
@@ -253,7 +255,6 @@ namespace NewtonVR
                         {
                             VisibilityLocked = false;
                         }
-
                     }
                     else if (CurrentHandState == HandState.GripToggleOnInteracting)
                     {
@@ -284,60 +285,6 @@ namespace NewtonVR
                     SetVisibility(VisibilityLevel.Ghost);
                 }
             }
-        }
-
-        public Vector3 GetVelocityEstimation()
-        {
-            float delta = LastDeltas.Sum();
-            Vector3 distance = Vector3.zero;
-
-            for (int index = 0; index < LastPositions.Length-1; index++)
-            {
-                Vector3 diff = LastPositions[index + 1] - LastPositions[index];
-                distance += diff;
-            }
-
-            return distance / delta;
-        }
-
-        public Vector3 GetAngularVelocityEstimation()
-        {
-            float delta = LastDeltas.Sum();
-            float angleDegrees = 0.0f;
-            Vector3 unitAxis = Vector3.zero;
-            Quaternion rotation = Quaternion.identity;
-
-            rotation =  LastRotations[LastRotations.Length-1] * Quaternion.Inverse(LastRotations[LastRotations.Length-2]);
-
-            //Error: the incorrect rotation is sometimes returned
-            rotation.ToAngleAxis(out angleDegrees, out unitAxis);
-            return unitAxis * ((angleDegrees * Mathf.Deg2Rad) / delta);
-        }
-
-        public Vector3 GetPositionDelta()
-        {
-            int last = EstimationSampleIndex - 1;
-            int secondToLast = EstimationSampleIndex - 2;
-
-            if (last < 0)
-                last += EstimationSamples;
-            if (secondToLast < 0)
-                secondToLast += EstimationSamples;
-
-            return LastPositions[last] - LastPositions[secondToLast];
-        }
-
-        public Quaternion GetRotationDelta()
-        {
-            int last = EstimationSampleIndex - 1;
-            int secondToLast = EstimationSampleIndex - 2;
-
-            if (last < 0)
-                last += EstimationSamples;
-            if (secondToLast < 0)
-                secondToLast += EstimationSamples;
-
-            return LastRotations[last] * Quaternion.Inverse(LastRotations[secondToLast]);
         }
 
         protected virtual void FixedUpdate()
@@ -471,7 +418,6 @@ namespace NewtonVR
 
         public void DoInitialize()
         {
-            Debug.Log(this.gameObject.name + "Hand DoInitialize");
             Rigidbody = this.GetComponent<Rigidbody>();
             if (Rigidbody == null)
                 Rigidbody = this.gameObject.AddComponent<Rigidbody>();
