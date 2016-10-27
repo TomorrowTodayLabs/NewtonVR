@@ -16,8 +16,17 @@ public abstract class NVRDriver : MonoBehaviour {
 
     public NVRPlayer Player;
     public NVRHead Head;
-    public NVRHand LeftHand;
-    public NVRHand RightHand;
+    public NVRHand[] Hands;
+
+    // Left hand is Hand 0, Right hand is Hand 1
+    public NVRHand LeftHand
+    {
+        get { return Hands != null && Hands.Length > 0 ? Hands[0] : null; }
+    }
+    public NVRHand RightHand
+    {
+        get { return Hands != null && Hands.Length > 1 ? Hands[1] : null; }
+    }
 
     /// <summary>
     /// Event fired any time the poses for the hands or head are updated.
@@ -48,4 +57,12 @@ public abstract class NVRDriver : MonoBehaviour {
     // Retrieves device-specific name for each component (e.g. name given by hardware-specific SDK)
     public abstract string GetDeviceName(NVRHand hand);
     public abstract string GetDeviceName(NVRHead head);
+
+    protected virtual void Update()
+    {
+        foreach (var hand in Hands)
+        {
+            SetButtonStates(hand);
+        }
+    }
 }

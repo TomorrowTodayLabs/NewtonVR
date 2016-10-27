@@ -15,8 +15,7 @@ public class NVRViveDriver : NVRDriver
 {
     public SteamVR_PlayArea.Size PlayAreaSize;
 
-    private bool LeftRenderModelInitialized = false;
-    private bool RightRenderModelInitialized = false;
+    private List<SteamVR_RenderModel> modelsToInitialize;
 
     private SteamVR_TrackedObject LeftHandTracker;
     private SteamVR_TrackedObject RightHandTracker;
@@ -78,33 +77,16 @@ public class NVRViveDriver : NVRDriver
         SteamVR_RenderModel renderModel = (SteamVR_RenderModel)args[0];
         bool success = (bool)args[1];
 
-        NVRHand hand = renderModel.transform.parent.GetComponent<NVRHand>();
-        if (hand != null && LeftHand != null && RightHand != null)
+        if (modelsToInitialize.Contains(renderModel))
         {
-            if (hand.name == this.LeftHand.name)
-            {
-                Debug.Log("Loaded RenderModel for Left hand: " + success);
-                LeftRenderModelInitialized = true;
-            }
-            else if (hand.name == this.RightHand.name)
-            {
-                Debug.Log("Loaded RenderModel for Right hand: " + success);
-                RightRenderModelInitialized = true;
-            }
-            else
-            {
-                Debug.LogWarning("Loaded RenderModel for unexpected hand: " + hand.gameObject.name + " (success: " + success + ")");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Loaded RenderModel '" + renderModel.name + "' but could not find corresponding NVRHand :(");
+            modelsToInitialize.Remove(renderModel);
         }
     }
 
     public void Awake()
     {
         Debug.Log("NVRViveDriver initializing...");
+        modelsToInitialize = new List<SteamVR_RenderModel>();
         // SteamVR Setup & Initialization
         GameObject go = new GameObject("SteamVR_Stuff"); // dummy object to hold SteamVR components
         go.transform.parent = this.transform;
@@ -165,60 +147,43 @@ public class NVRViveDriver : NVRDriver
         // enable dummy object containing ControllerManager & PlayArea
         go.SetActive(true);
 
-        if (!LeftRenderModelInitialized || !RightRenderModelInitialized)
-        {
-            StartCoroutine(DoInitSteamVRModels());
-        }
+        StartCoroutine(DoInitSteamVRModels(LeftHand));
+        StartCoroutine(DoInitSteamVRModels(RightHand));
+
     }
 
-    private IEnumerator DoInitSteamVRModels()
+    private IEnumerator DoInitSteamVRModels(NVRHand hand)
     {
         Debug.Log("Waiting for models to load... ");
 
         // Check to see if models have already been loaded for the controllers.
         // This is the case if a custom model was provided, or if we're loading a new
         // scene after the SteamVR models were loaded in a previous scene.
-        if (LeftHand.CustomModel == null)
+        if (hand.CustomModel == null)
         {
-            var leftModel = LeftHand.GetComponentInChildren<SteamVR_RenderModel>();
-            if (leftModel.renderModelName != null)
+            var handModel = hand.GetComponentInChildren<SteamVR_RenderModel>();
+            if (handModel.renderModelName != null)
             {
-                Debug.Log("Left already initialized");
-                LeftRenderModelInitialized = true;
+                Debug.Log("Hand already initialized");
+            }
+            else
+            {
+                modelsToInitialize.Add(handModel);
+                do
+                {
+                    Debug.Log("Waiting for hand model...");
+                    yield return null; //wait for steamvr render model to be initialized
+                } while (modelsToInitialize.Contains(handModel));
+                Debug.Log("Initialized " + handModel.renderModelName);
             }
         }
-        else
-        {
-            LeftRenderModelInitialized = true;
-        }
-
-        if (RightHand.CustomModel == null)
-        {
-            var rightModel = RightHand.GetComponentInChildren<SteamVR_RenderModel>();
-            if (rightModel.renderModelName != null)
-            {
-                Debug.Log("Right already initialized");
-                RightRenderModelInitialized = true;
-            }
-        }
-        else
-        {
-            RightRenderModelInitialized = true;
-        }
-
-        do
-        {
-            yield return null; //wait for steamvr render model to be initialized
-        } while (LeftRenderModelInitialized == false || RightRenderModelInitialized == false);
 
         Debug.Log("RenderModels initialized!");
 
         // configure colliders
-        InitColliders(LeftHand);
-        InitColliders(RightHand);
+        InitColliders(hand);
 
-        LeftHand.DoInitialize();
-        RightHand.DoInitialize();
+        hand.DoInitialize();
     }
 
     private void InitColliders(NVRHand hand)
@@ -290,7 +255,7 @@ public class NVRViveDriver : NVRDriver
         }
     }
 
-    public void Update()
+    protected override void Update()
     {
         if (LeftHandTracker.isValid)
         {

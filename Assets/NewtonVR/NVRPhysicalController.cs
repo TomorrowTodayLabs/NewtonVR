@@ -39,7 +39,6 @@ namespace NewtonVR
                 GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
                 GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRHand>());
                 GameObject.DestroyImmediate(PhysicalController.GetComponent<SteamVR_TrackedObject>());
-                GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
 
                 Hand.gameObject.SetActive(true);
                 PhysicalController.gameObject.SetActive(true);
@@ -81,13 +80,14 @@ namespace NewtonVR
             }
             else
             {
-                Colliders = PhysicalController.GetComponentsInChildren<Collider>();
+                Colliders = PhysicalController.GetComponentsInChildren<Collider>(true);
             }
 
             // in case we picked up trigger colliders from a custom/inherited model, mark them as physical
             foreach (Collider col in Colliders)
             {
                 col.isTrigger = false;
+                col.gameObject.SetActive(true); // for some reason this is sometimes deactivated?
             }
 
             Rigidbody = PhysicalController.GetComponent<Rigidbody>();
