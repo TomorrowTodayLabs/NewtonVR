@@ -110,8 +110,6 @@ public class NVRViveDriver : NVRDriver
         go.transform.parent = this.transform;
         go.SetActive(false); // SteamVR components do a lot of initialization in Awake() and OnEnable(), so we want to wait until everything is ready before letting them run
 
-        
-
         var playArea = this.GetComponentInChildren<SteamVR_PlayArea>();
         if (playArea == null)
         {
@@ -136,16 +134,16 @@ public class NVRViveDriver : NVRDriver
             controllerManager.right = RightHand.gameObject;
         }
 
-        //var headTracker = Head.GetComponent<SteamVR_TrackedObject>();
-        //if (headTracker == null)
-        //{
-        //    Head.gameObject.AddComponent<SteamVR_TrackedObject>().index = SteamVR_TrackedObject.EIndex.Hmd;
-        //}
-        //var headSteamCamera = Head.GetComponent<SteamVR_Camera>();
-        //if (headSteamCamera == null)
-        //{
-        //    Head.gameObject.AddComponent<SteamVR_Camera>();
-        //}
+        var headTracker = Head.GetComponentInChildren<SteamVR_TrackedObject>();
+        if (headTracker == null)
+        {
+            Head.gameObject.AddComponent<SteamVR_TrackedObject>().index = SteamVR_TrackedObject.EIndex.Hmd;
+        }
+        var headSteamCamera = Head.GetComponentInChildren<SteamVR_Camera>();
+        if (headSteamCamera == null)
+        {
+            Head.gameObject.AddComponent<SteamVR_Camera>();
+        }
 
         if (LeftHand.CustomModel == null)
         {
