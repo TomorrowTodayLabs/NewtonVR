@@ -93,12 +93,12 @@ public class NVRViveDriver : NVRDriver
             }
             else
             {
-                Debug.LogWarning("Loaded RenderModel for unexpected hand: " + hand.gameObject.name + " (" + success + ")");
+                Debug.LogWarning("Loaded RenderModel for unexpected hand: " + hand.gameObject.name + " (success: " + success + ")");
             }
         }
         else
         {
-            Debug.LogError("Loaded RenderModel '" + renderModel.name + "' but could not find corresponding NVRHand :(");
+            Debug.LogWarning("Loaded RenderModel '" + renderModel.name + "' but could not find corresponding NVRHand :(");
         }
     }
 
@@ -222,7 +222,7 @@ public class NVRViveDriver : NVRDriver
     private void InitColliders(NVRHand hand)
     {
         Collider[] DeviceColliders;
-        if (hand.CustomModel != null)
+        if (hand.CustomModel == null)
         {
             string controllerModel = GetDeviceName(hand);
             SteamVR_RenderModel renderModel = hand.GetComponentInChildren<SteamVR_RenderModel>();

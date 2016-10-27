@@ -27,6 +27,7 @@ public abstract class NVRDriver : MonoBehaviour {
     public abstract void TriggerHapticPulse(NVRHand hand, ushort durationMicroSec);
     public abstract void LongHapticPulse(NVRHand hand, float seconds);
 
+    // Retrieves device-specific name for each component (e.g. name given by hardware-specific SDK)
     public abstract string GetDeviceName(NVRHand hand);
     public abstract string GetDeviceName(NVRHead head);
 }

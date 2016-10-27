@@ -14,7 +14,6 @@ namespace NewtonVR
 
         private Collider[] Colliders;
         private GameObject PhysicalController;
-        private Transform ModelParent;
 
         protected float DropDistance { get { return 1f; } }
         protected Vector3 ClosestHeldPoint;
@@ -27,22 +26,27 @@ namespace NewtonVR
             Debug.Log(this.gameObject.name + " PHYSICAL Controller Init");
             Hand = trackingHand;
 
-            Hand.gameObject.SetActive(false);
-            PhysicalController = GameObject.Instantiate(Hand.gameObject);
-            PhysicalController.name = PhysicalController.name.Replace("(Clone)", " [Physical]");
-
-            GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
-            GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRHand>());
-            GameObject.DestroyImmediate(PhysicalController.GetComponent<SteamVR_TrackedObject>());
-            GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
-
-            Hand.gameObject.SetActive(true);
-            PhysicalController.gameObject.SetActive(true);
-
-            Collider[] clonedColliders = PhysicalController.GetComponentsInChildren<Collider>();
-            for (int index = 0; index < clonedColliders.Length; index++)
+            // if we don't have custom models to use for collision, copy whatever the hand has
+            if (Hand.CustomModel == null && Hand.CustomPhysicalColliders == null)
             {
-                GameObject.DestroyImmediate(clonedColliders[index]);
+                // prevent new PhysicalController's components from starting until we're ready
+                Hand.gameObject.SetActive(false);
+
+                PhysicalController = GameObject.Instantiate(Hand.gameObject);
+                PhysicalController.name = PhysicalController.name.Replace("(Clone)", " [Physical]");
+
+                // TODO: This could use some cleanup. Plenty of other scripts could cause problems being duplicated...
+                GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
+                GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRHand>());
+                GameObject.DestroyImmediate(PhysicalController.GetComponent<SteamVR_TrackedObject>());
+                GameObject.DestroyImmediate(PhysicalController.GetComponent<NVRPhysicalController>());
+
+                Hand.gameObject.SetActive(true);
+                PhysicalController.gameObject.SetActive(true);
+            }
+            else
+            {
+                PhysicalController = new GameObject(Hand.gameObject.name + " [Physical]", typeof(Rigidbody));
             }
 
             PhysicalController.transform.parent = Hand.transform.parent;
@@ -50,49 +54,40 @@ namespace NewtonVR
             PhysicalController.transform.rotation = Hand.transform.rotation;
             PhysicalController.transform.localScale = Hand.transform.localScale;
 
-            string controllerModel = Hand.GetDeviceName();
-            switch (controllerModel)
+            if (Hand.CustomPhysicalColliders != null)
             {
-                case "Custom":
-                    Transform customCollidersTransform = PhysicalController.transform.FindChild("VivePreColliders");
-                    if (customCollidersTransform == null)
-                    {
-                        if (Hand.CustomPhysicalColliders == null)
-                        {
-                            GameObject customColliders = GameObject.Instantiate(Hand.CustomModel);
-                            customColliders.name = "CustomColliders";
-                            customCollidersTransform = customColliders.transform;
+                GameObject customColliders = GameObject.Instantiate(Hand.CustomPhysicalColliders);
+                customColliders.name = "CustomColliders";
+                Transform customCollidersTransform = customColliders.transform;
 
-                            customCollidersTransform.parent = PhysicalController.transform;
-                            customCollidersTransform.localPosition = Vector3.zero;
-                            customCollidersTransform.localRotation = Quaternion.identity;
-                            customCollidersTransform.localScale = Vector3.one;
+                customCollidersTransform.parent = PhysicalController.transform;
+                customCollidersTransform.localPosition = Vector3.zero;
+                customCollidersTransform.localRotation = Quaternion.identity;
+                customCollidersTransform.localScale = Vector3.one;
+                Colliders = customCollidersTransform.GetComponentsInChildren<Collider>();
+            }
+            else if (Hand.CustomModel != null)
+            {
+                GameObject customColliders = GameObject.Instantiate(Hand.CustomModel);
+                customColliders.name = "CustomColliders";
+                Transform customCollidersTransform = customColliders.transform;
 
-                            foreach (Collider col in customColliders.GetComponentsInChildren<Collider>())
-                            {
-                                col.isTrigger = false;
-                            }
+                customCollidersTransform.parent = PhysicalController.transform;
+                customCollidersTransform.localPosition = Vector3.zero;
+                customCollidersTransform.localRotation = Quaternion.identity;
+                customCollidersTransform.localScale = Vector3.one;
 
-                        }
-                        else
-                        {
-                            GameObject customColliders = GameObject.Instantiate(Hand.CustomPhysicalColliders);
-                            customColliders.name = "CustomColliders";
-                            customCollidersTransform = customColliders.transform;
+                Colliders = customCollidersTransform.GetComponentsInChildren<Collider>();
+            }
+            else
+            {
+                Colliders = PhysicalController.GetComponentsInChildren<Collider>();
+            }
 
-                            customCollidersTransform.parent = PhysicalController.transform;
-                            customCollidersTransform.localPosition = Vector3.zero;
-                            customCollidersTransform.localRotation = Quaternion.identity;
-                            customCollidersTransform.localScale = Vector3.one;
-                        }
-                    }
-
-                    Colliders = customCollidersTransform.GetComponentsInChildren<Collider>();
-                    break;
-
-                default:
-                    Debug.LogError("Error. Unsupported device type: " + controllerModel);
-                    break;
+            // in case we picked up trigger colliders from a custom/inherited model, mark them as physical
+            foreach (Collider col in Colliders)
+            {
+                col.isTrigger = false;
             }
 
             Rigidbody = PhysicalController.GetComponent<Rigidbody>();
