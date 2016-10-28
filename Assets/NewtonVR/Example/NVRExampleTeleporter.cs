@@ -34,7 +34,7 @@ namespace NewtonVR.Example
 
         private void LateUpdate()
         {
-            Line.enabled = (Hand != null && Hand.Inputs[Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger].SingleAxis > 0.01f);
+            Line.enabled = (Hand != null && Hand.Inputs[NVRButtonID.UseButton].SingleAxis > 0.01f);
 
             if (Line.enabled == true)
             {
@@ -50,23 +50,23 @@ namespace NewtonVR.Example
                 {
                     endPoint = hitInfo.point;
 
-                    if (Hand.Inputs[Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger].PressDown == true)
+                    if (Hand.Inputs[NVRButtonID.UseButton].PressDown == true)
                     {
-                        NVRInteractable LHandInteractable = NVRPlayer.Instance.LeftHand.CurrentlyInteracting;
-                        NVRInteractable RHandInteractable = NVRPlayer.Instance.RightHand.CurrentlyInteracting;
+                        NVRInteractable LHandInteractable = Hand.player.LeftHand.CurrentlyInteracting;
+                        NVRInteractable RHandInteractable = Hand.player.RightHand.CurrentlyInteracting;
 
 
-                        Vector3 offset = NVRPlayer.Instance.Head.transform.position - NVRPlayer.Instance.transform.position;
+                        Vector3 offset = Hand.player.Head.transform.position - Hand.player.transform.position;
                         offset.y = 0;
 
-                        NVRPlayer.Instance.transform.position = hitInfo.point - offset;
+                        Hand.player.transform.position = hitInfo.point - offset;
                         if (LHandInteractable != null)
                         {
-                            LHandInteractable.transform.position = NVRPlayer.Instance.LeftHand.transform.position;
+                            LHandInteractable.transform.position = Hand.player.LeftHand.transform.position;
                         }
                         if (RHandInteractable != null)
                         {
-                            RHandInteractable.transform.position = NVRPlayer.Instance.RightHand.transform.position;
+                            RHandInteractable.transform.position = Hand.player.RightHand.transform.position;
                         }
                     }
                 }

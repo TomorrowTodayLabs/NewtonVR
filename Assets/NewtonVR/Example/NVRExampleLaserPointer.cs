@@ -37,7 +37,7 @@ namespace NewtonVR.Example
 
         private void LateUpdate()
         {
-            Line.enabled = ForceLineVisible || (OnlyVisibleOnTrigger && Hand != null && Hand.Inputs[Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger].IsPressed);
+            Line.enabled = ForceLineVisible || (OnlyVisibleOnTrigger && Hand != null && Hand.Inputs[NVRButtonID.UseButton].IsPressed);
 
             if (Line.enabled == true)
             {

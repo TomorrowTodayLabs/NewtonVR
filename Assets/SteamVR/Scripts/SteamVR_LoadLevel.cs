@@ -357,6 +357,7 @@ public class SteamVR_LoadLevel : MonoBehaviour
 		}
 		else
 		{
+#if !(UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
 			var mode = loadAdditive ? UnityEngine.SceneManagement.LoadSceneMode.Additive : UnityEngine.SceneManagement.LoadSceneMode.Single;
 			if (loadAsync)
 			{
@@ -374,6 +375,27 @@ public class SteamVR_LoadLevel : MonoBehaviour
 			{
 				UnityEngine.SceneManagement.SceneManager.LoadScene(levelName, mode);
 			}
+#else
+			if (loadAsync)
+			{
+				async = loadAdditive ? Application.LoadLevelAdditiveAsync(levelName) : Application.LoadLevelAsync(levelName);
+
+				// Performing this in a while loop instead seems to help smooth things out.
+				//yield return async;
+				while (!async.isDone)
+				{
+					yield return null;
+				}
+			}
+			else if (loadAdditive)
+			{
+				Application.LoadLevelAdditive(levelName);
+			}
+			else
+			{
+				Application.LoadLevel(levelName);
+			}
+#endif
 		}
 
 		yield return null;

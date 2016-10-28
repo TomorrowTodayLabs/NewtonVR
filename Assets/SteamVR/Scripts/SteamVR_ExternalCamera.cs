@@ -119,6 +119,7 @@ public class SteamVR_ExternalCamera : MonoBehaviour
 		go.name = "camera";
 
 		DestroyImmediate(go.GetComponent<SteamVR_Camera>());
+		DestroyImmediate(go.GetComponent<SteamVR_CameraFlip>());
 
 		cam = go.GetComponent<Camera>();
 		cam.fieldOfView = config.fov;
@@ -148,7 +149,11 @@ public class SteamVR_ExternalCamera : MonoBehaviour
 		clipRenderer.material = clipMaterial;
 		clipRenderer.shadowCastingMode = ShadowCastingMode.Off;
 		clipRenderer.receiveShadows = false;
+#if !(UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
 		clipRenderer.lightProbeUsage = LightProbeUsage.Off;
+#else
+		clipRenderer.useLightProbes = false;
+#endif
 		clipRenderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
 
 		var clipTransform = clipQuad.transform;

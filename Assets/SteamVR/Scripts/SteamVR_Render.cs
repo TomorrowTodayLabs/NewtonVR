@@ -16,6 +16,11 @@ public class SteamVR_Render : MonoBehaviour
 	public SteamVR_ExternalCamera externalCamera;
 	public string externalCameraConfigPath = "externalcamera.cfg";
 
+#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
+	public LayerMask leftMask, rightMask;
+
+	SteamVR_CameraMask cameraMask;
+#endif
 	public ETrackingUniverseOrigin trackingSpace = ETrackingUniverseOrigin.TrackingUniverseStanding;
 
 	static public EVREye eye { get; private set; }
@@ -88,6 +93,10 @@ public class SteamVR_Render : MonoBehaviour
 			sorted[insert] = vrcam;
 
 		cameras = sorted;
+
+#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
+		enabled = true;
+#endif
 	}
 
 	void RemoveInternal(SteamVR_Camera vrcam)
@@ -133,10 +142,11 @@ public class SteamVR_Render : MonoBehaviour
 		set
 		{
 			_pauseRendering = value;
-
+#if !(UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
 			var compositor = OpenVR.Compositor;
 			if (compositor != null)
 				compositor.SuspendRendering(value);
+#endif
 		}
 	}
 
@@ -156,6 +166,19 @@ public class SteamVR_Render : MonoBehaviour
 					continue;
 
 				compositor.SetTrackingSpace(trackingSpace);
+
+#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
+				SteamVR_Utils.QueueEventOnRenderThread(SteamVR.Unity.k_nRenderEventID_WaitGetPoses);
+
+				// Hack to flush render event that was queued in Update (this ensures WaitGetPoses has returned before we grab the new values).
+				SteamVR.Unity.EventWriteString("[UnityMain] GetNativeTexturePtr - Begin");
+				SteamVR_Camera.GetSceneTexture(cameras[0].GetComponent<Camera>().hdr).GetNativeTexturePtr();
+				SteamVR.Unity.EventWriteString("[UnityMain] GetNativeTexturePtr - End");
+
+				compositor.GetLastPoses(poses, gamePoses);
+				SteamVR_Utils.Event.Send("new_poses", poses);
+				SteamVR_Utils.Event.Send("new_poses_applied");
+#endif
 			}
 
 			var overlay = SteamVR_Overlay.instance;
@@ -163,8 +186,60 @@ public class SteamVR_Render : MonoBehaviour
 				overlay.UpdateOverlay();
 
 			RenderExternalCamera();
+
+#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
+			var vr = SteamVR.instance;
+			RenderEye(vr, EVREye.Eye_Left);
+			RenderEye(vr, EVREye.Eye_Right);
+
+			// Move cameras back to head position so they can be tracked reliably
+			foreach (var c in cameras)
+			{
+				c.transform.localPosition = Vector3.zero;
+				c.transform.localRotation = Quaternion.identity;
+			}
+
+			if (cameraMask != null)
+				cameraMask.Clear();
+#endif
 		}
 	}
+
+#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
+	void RenderEye(SteamVR vr, EVREye eye)
+	{
+		int i = (int)eye;
+		SteamVR_Render.eye = eye;
+
+		if (cameraMask != null)
+			cameraMask.Set(vr, eye);
+
+		foreach (var c in cameras)
+		{
+			c.transform.localPosition = vr.eyes[i].pos;
+			c.transform.localRotation = vr.eyes[i].rot;
+
+			// Update position to keep from getting culled
+			cameraMask.transform.position = c.transform.position;
+
+			var camera = c.GetComponent<Camera>();
+			camera.targetTexture = SteamVR_Camera.GetSceneTexture(camera.hdr);
+			int cullingMask = camera.cullingMask;
+			if (eye == EVREye.Eye_Left)
+			{
+				camera.cullingMask &= ~rightMask;
+				camera.cullingMask |= leftMask;
+			}
+			else
+			{
+				camera.cullingMask &= ~leftMask;
+				camera.cullingMask |= rightMask;
+			}
+			camera.Render();
+			camera.cullingMask = cullingMask;
+		}
+	}
+#endif
 
 	void RenderExternalCamera()
 	{
@@ -300,6 +375,11 @@ public class SteamVR_Render : MonoBehaviour
 
 	void Awake()
 	{
+#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
+		var go = new GameObject("cameraMask");
+		go.transform.parent = transform;
+		cameraMask = go.AddComponent<SteamVR_CameraMask>();
+#endif
 		if (externalCamera == null && System.IO.File.Exists(externalCameraConfigPath))
 		{
 			var prefab = Resources.Load<GameObject>("SteamVR_ExternalCamera");
@@ -312,17 +392,37 @@ public class SteamVR_Render : MonoBehaviour
 		}
 	}
 
+	void FixedUpdate()
+	{
+#if (UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
+		// We want to call this as soon after Present as possible.
+		SteamVR_Utils.QueueEventOnRenderThread(SteamVR.Unity.k_nRenderEventID_PostPresentHandoff);
+#endif
+	}
+
+#if !(UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
 	private SteamVR_UpdatePoses poseUpdater;
+#endif
 
 	void Update()
 	{
+#if !(UNITY_5_3 || UNITY_5_2 || UNITY_5_1 || UNITY_5_0)
 		if (poseUpdater == null)
 		{
 			var go = new GameObject("poseUpdater");
 			go.transform.parent = transform;
 			poseUpdater = go.AddComponent<SteamVR_UpdatePoses>();
 		}
+#else
+		if (cameras.Length == 0)
+		{
+			enabled = false;
+			return;
+		}
 
+		// If our FixedUpdate rate doesn't match our render framerate, then catch the handoff here.
+		SteamVR_Utils.QueueEventOnRenderThread(SteamVR.Unity.k_nRenderEventID_PostPresentHandoff);
+#endif
 		// Force controller update in case no one else called this frame to ensure prevState gets updated.
 		SteamVR_Controller.Update();
 

@@ -21,7 +21,7 @@ namespace NewtonVR.Example
 
             bullet.GetComponent<Rigidbody>().AddRelativeForce(BulletForce);
 
-            AttachedHand.TriggerHapticPulse(500, Valve.VR.EVRButtonId.k_EButton_Axis0);
+            AttachedHand.TriggerHapticPulse(500);
         }
     }
 }

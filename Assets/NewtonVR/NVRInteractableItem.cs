@@ -13,6 +13,7 @@ namespace NewtonVR
         protected Vector3?[] VelocityHistory;
         protected Vector3?[] AngularVelocityHistory;
         protected int VelocityHistoryStep = 0;
+        protected int VelocityHistorySteps = 3;
 
         protected bool DoPhysicsStep = true;
 
@@ -26,11 +27,8 @@ namespace NewtonVR
         {
             base.Start();
 
-            if (NVRPlayer.Instance.VelocityHistorySteps > 0)
-            {
-                VelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
-                AngularVelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
-            }
+            VelocityHistory = new Vector3?[VelocityHistorySteps];
+            AngularVelocityHistory = new Vector3?[VelocityHistorySteps];
         }
 
         protected override void Update()
