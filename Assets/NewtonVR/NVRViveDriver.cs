@@ -77,7 +77,7 @@ public class NVRViveDriver : NVRDriver
         SteamVR_RenderModel renderModel = (SteamVR_RenderModel)args[0];
         bool success = (bool)args[1];
 
-        if (modelsToInitialize.Contains(renderModel))
+        if (success && modelsToInitialize.Contains(renderModel))
         {
             modelsToInitialize.Remove(renderModel);
         }
