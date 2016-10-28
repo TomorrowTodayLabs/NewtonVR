@@ -27,9 +27,13 @@ namespace NewtonVR
         public bool DEBUGDropFrames = false;
         public int DEBUGSleepPerFrame = 13;
 
+        NVRPlayer()
+        {
+            ColliderToHandMapping = new Dictionary<Collider, NVRHand>();
+        }
+
         private void Awake()
         {
-            //Instance = this;
             NVRInteractables.Initialize();
 
             if (Head == null)
@@ -46,8 +50,6 @@ namespace NewtonVR
             {
                 Hands = new NVRHand[] { LeftHand, RightHand };
             }
-
-            ColliderToHandMapping = new Dictionary<Collider, NVRHand>();
 
             LeftHand.player = this;
             RightHand.player = this;
