@@ -13,3 +13,4 @@ AudioManager:
   m_RealVoiceCount: 32
   m_SpatializerPlugin: 3Dception
   m_DisableAudio: 0
+  m_VirtualizeEffects: 0

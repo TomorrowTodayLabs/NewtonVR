@@ -131,7 +131,7 @@ GameObject:
   - 4: {fileID: 491076}
   - 54: {fileID: 5465268}
   - 114: {fileID: 11439710}
-  - 114: {fileID: 114000012638998888}
+  - 114: {fileID: 114000010829133008}
   m_Layer: 0
   m_Name: NVRExampleGun
   m_TagString: Untagged
@@ -548,6 +548,16 @@ MonoBehaviour:
   EnableGravityOnDetach: 1
   AttachedHand: {fileID: 0}
   InteractionPoint: {fileID: 414918}
+  OnUseButtonDown:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnUseButtonUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   BulletPrefab: {fileID: 192818, guid: 2a0f0df5cc781d94ba3d699d90be871b, type: 2}
   FirePoint: {fileID: 422528}
   BulletForce: {x: 0, y: 0, z: 100}
@@ -562,7 +572,7 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 196754}
   m_IsPrefabParent: 1
---- !u!114 &114000012638998888
+--- !u!114 &114000010829133008
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

@@ -60,6 +60,7 @@ namespace NewtonVR
                 AudioPool[CurrentPoolIndex].pitch = Random.Range(1 - NVRCollisionSoundController.Instance.PitchModulationRange, 1 + NVRCollisionSoundController.Instance.PitchModulationRange);
             }
 
+            AudioPool[CurrentPoolIndex].transform.position = position;
             AudioPool[CurrentPoolIndex].volume = impactVolume;
             AudioPool[CurrentPoolIndex].clip = GetClip(material);
             AudioPool[CurrentPoolIndex].Play();

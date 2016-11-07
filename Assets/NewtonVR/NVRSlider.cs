@@ -36,15 +36,15 @@ namespace NewtonVR
             SliderPath = EndPoint.position - StartPoint.position;
         }
 
-        public override void OnNewPosesApplied()
+        protected virtual void FixedUpdate()
         {
-            base.OnNewPosesApplied();
-
             if (IsAttached == true)
             {
+                CheckForDrop();
+
                 Vector3 PositionDelta = (PickupTransform.position - this.transform.position);
 
-                Vector3 velocity = PositionDelta * AttachedPositionMagic * deltaPoses;
+                Vector3 velocity = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
                 this.Rigidbody.velocity = ProjectVelocityOnPath(velocity, SliderPath);
             }
 
@@ -66,8 +66,6 @@ namespace NewtonVR
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;
-
-            ClosestHeldPoint = (PickupTransform.position - this.transform.position);
         }
 
         public override void EndInteraction()
@@ -76,15 +74,6 @@ namespace NewtonVR
 
             if (PickupTransform != null)
                 Destroy(PickupTransform.gameObject);
-        }
-
-        protected override void DropIfTooFar()
-        {
-            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
-            if (distance > DropDistance)
-            {
-                DroppedBecauseOfDistance();
-            }
         }
 
         protected Vector3 ProjectVelocityOnPath(Vector3 velocity, Vector3 path)

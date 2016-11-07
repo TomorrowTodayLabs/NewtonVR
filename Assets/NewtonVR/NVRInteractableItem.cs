@@ -1,50 +1,48 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 namespace NewtonVR
 {
     public class NVRInteractableItem : NVRInteractable
     {
+        private const float MaxVelocityChange = 10f;
+        private const float MaxAngularVelocityChange = 30f;
+        private const float VelocityMagic = 6000f;
+        private const float AngularVelocityMagic = 100f;
+
         [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
         public Transform InteractionPoint;
 
+        public UnityEvent OnUseButtonDown;
+        public UnityEvent OnUseButtonUp;
+
         protected Transform PickupTransform;
+
+        protected Vector3 VelocityToAdd;
+        protected Vector3 AngularVelocityToAdd;
 
         protected Vector3?[] VelocityHistory;
         protected Vector3?[] AngularVelocityHistory;
-        protected int VelocityHistoryStep = 0;
-
-        protected bool DoPhysicsStep = true;
+        protected int CurrentVelocityHistoryStep = 0;
 
         protected override void Awake()
         {
             base.Awake();
+
             this.Rigidbody.maxAngularVelocity = 100f;
         }
 
         protected override void Start()
         {
             base.Start();
-
-            if (NVRPlayer.Instance.VelocityHistorySteps > 0)
-            {
-                VelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
-                AngularVelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
-            }
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-
-            DoPhysicsStep = true;
         }
 
         protected virtual void FixedUpdate()
         {
-            if (IsAttached == true && DoPhysicsStep == true)
+            if (IsAttached == true)
             {
-                DoPhysicsStep = false;
+                CheckForDrop();
 
                 Quaternion RotationDelta;
                 Vector3 PositionDelta;
@@ -71,24 +69,58 @@ namespace NewtonVR
                 if (angle != 0)
                 {
                     Vector3 AngularTarget = angle * axis;
-                    this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, 10f * (deltaPoses * 1000));
+                    if (float.IsNaN(AngularTarget.x) == false)
+                    {
+                        AngularTarget = (AngularTarget * AngularVelocityMagic) * Time.fixedDeltaTime;
+                        this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, MaxAngularVelocityChange);
+                    }
                 }
 
-                Vector3 VelocityTarget = PositionDelta / Time.fixedDeltaTime;
-                this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, 10f);
+                Vector3 VelocityTarget = (PositionDelta * VelocityMagic) * Time.fixedDeltaTime;
+                if (float.IsNaN(VelocityTarget.x) == false)
+                {
+                    this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, MaxVelocityChange);
+                }
+
+                AddExternalVelocities();
 
                 if (VelocityHistory != null)
                 {
-                    VelocityHistoryStep++;
-                    if (VelocityHistoryStep >= VelocityHistory.Length)
+                    CurrentVelocityHistoryStep++;
+                    if (CurrentVelocityHistoryStep >= VelocityHistory.Length)
                     {
-                        VelocityHistoryStep = 0;
+                        CurrentVelocityHistoryStep = 0;
                     }
 
-                    VelocityHistory[VelocityHistoryStep] = this.Rigidbody.velocity;
-                    AngularVelocityHistory[VelocityHistoryStep] = this.Rigidbody.angularVelocity;
+                    VelocityHistory[CurrentVelocityHistoryStep] = this.Rigidbody.velocity;
+                    AngularVelocityHistory[CurrentVelocityHistoryStep] = this.Rigidbody.angularVelocity;
                 }
             }
+        }
+
+        protected virtual void AddExternalVelocities()
+        {
+            if (VelocityToAdd != Vector3.zero)
+            {
+                this.Rigidbody.velocity += VelocityToAdd;
+                VelocityToAdd = Vector3.zero;
+            }
+
+            if (AngularVelocityToAdd != Vector3.zero)
+            {
+                this.Rigidbody.angularVelocity += AngularVelocityToAdd;
+                AngularVelocityToAdd = Vector3.zero;
+            }
+        }
+
+        public override void AddVelocity(Vector3 velocity)
+        {
+            VelocityToAdd += velocity;
+        }
+
+        public override void AddAngularVelocity(Vector3 angularVelocity)
+        {
+            AngularVelocityToAdd += angularVelocity;
         }
 
         public override void BeginInteraction(NVRHand hand)
@@ -100,7 +132,12 @@ namespace NewtonVR
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;
 
-            ClosestHeldPoint = (PickupTransform.position - this.transform.position);
+
+            if (hand.Player.VelocityHistorySteps > 0)
+            {
+                VelocityHistory = new Vector3?[hand.Player.VelocityHistorySteps];
+                AngularVelocityHistory = new Vector3?[hand.Player.VelocityHistorySteps];
+            }
         }
 
         public override void EndInteraction()
@@ -117,7 +154,7 @@ namespace NewtonVR
                 this.Rigidbody.velocity = GetMeanVector(VelocityHistory);
                 this.Rigidbody.angularVelocity = GetMeanVector(AngularVelocityHistory);
 
-                VelocityHistoryStep = 0;
+                CurrentVelocityHistoryStep = 0;
 
                 for (int index = 0; index < VelocityHistory.Length; index++)
                 {
@@ -127,12 +164,29 @@ namespace NewtonVR
             }
         }
 
-        protected override void DropIfTooFar()
+        public override void Reset()
         {
-            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
-            if (distance > DropDistance)
+            EndInteraction();
+            base.Reset();
+        }
+
+        public override void UseButtonDown()
+        {
+            base.UseButtonDown();
+
+            if (OnUseButtonDown != null)
             {
-                DroppedBecauseOfDistance();
+                OnUseButtonDown.Invoke();
+            }
+        }
+
+        public override void UseButtonUp()
+        {
+            base.UseButtonUp();
+
+            if (OnUseButtonUp != null)
+            {
+                OnUseButtonUp.Invoke();
             }
         }
 

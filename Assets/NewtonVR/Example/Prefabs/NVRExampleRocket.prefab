@@ -46,7 +46,7 @@ GameObject:
   - 4: {fileID: 425318}
   - 54: {fileID: 5478958}
   - 114: {fileID: 11461986}
-  - 114: {fileID: 114000013553132510}
+  - 114: {fileID: 114000011250809776}
   m_Layer: 0
   m_Name: NVRExampleRocket
   m_TagString: Untagged
@@ -453,6 +453,16 @@ MonoBehaviour:
   EnableGravityOnDetach: 1
   AttachedHand: {fileID: 0}
   InteractionPoint: {fileID: 0}
+  OnUseButtonDown:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnUseButtonUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!136 &13630870
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -489,7 +499,7 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 130380}
   m_IsPrefabParent: 1
---- !u!114 &114000013553132510
+--- !u!114 &114000011250809776
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -500,4 +510,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5acc68a2ecf98824ba3f8fa739c53028, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Material: 7
+  Material: 6

@@ -1,0 +1,113 @@
+fileFormatVersion: 2
+guid: 8e96259776f65e14cb6ef188a9152bc5
+timeCreated: 1477716241
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: grip_tooche_group4
+    100002: //RootNode
+    100004: tooche_group4_body
+    100006: tooche_group4_control_surface_group2_button1
+    100008: tooche_group4_control_surface_group2_button2
+    100010: tooche_group4_control_surface_group2_button3
+    100012: tooche_group4_control_surface_group2_thumb_stick
+    100014: tooche_group4_face_control_surface_group2
+    100016: tooche_group4_trigger
+    400000: grip_tooche_group4
+    400002: //RootNode
+    400004: tooche_group4_body
+    400006: tooche_group4_control_surface_group2_button1
+    400008: tooche_group4_control_surface_group2_button2
+    400010: tooche_group4_control_surface_group2_button3
+    400012: tooche_group4_control_surface_group2_thumb_stick
+    400014: tooche_group4_face_control_surface_group2
+    400016: tooche_group4_trigger
+    2300000: grip_tooche_group4
+    2300002: tooche_group4_body
+    2300004: tooche_group4_control_surface_group2_button1
+    2300006: tooche_group4_control_surface_group2_button2
+    2300008: tooche_group4_control_surface_group2_button3
+    2300010: tooche_group4_control_surface_group2_thumb_stick
+    2300012: tooche_group4_face_control_surface_group2
+    2300014: tooche_group4_trigger
+    3300000: grip_tooche_group4
+    3300002: tooche_group4_body
+    3300004: tooche_group4_control_surface_group2_button1
+    3300006: tooche_group4_control_surface_group2_button2
+    3300008: tooche_group4_control_surface_group2_button3
+    3300010: tooche_group4_control_surface_group2_thumb_stick
+    3300012: tooche_group4_face_control_surface_group2
+    3300014: tooche_group4_trigger
+    4300000: grip_tooche_group4
+    4300002: tooche_group4_body
+    4300004: tooche_group4_control_surface_group2_button1
+    4300006: tooche_group4_control_surface_group2_button2
+    4300008: tooche_group4_control_surface_group2_button3
+    4300010: tooche_group4_control_surface_group2_thumb_stick
+    4300012: tooche_group4_face_control_surface_group2
+    4300014: tooche_group4_trigger
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

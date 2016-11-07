@@ -20,10 +20,8 @@ namespace NewtonVR
             RungAngleInterval = 360f / (float)LETTERLIST.Length;
         }
 
-        public override void OnNewPosesApplied()
+        protected override void FixedUpdate()
         {
-            base.OnNewPosesApplied();
-
             if (IsAttached == false)
             {
                 float wheelAngle = this.transform.localEulerAngles.z;

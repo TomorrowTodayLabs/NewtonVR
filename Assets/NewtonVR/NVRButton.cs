@@ -54,7 +54,7 @@ namespace NewtonVR
             ConstrainedPosition = InitialLocalPosition;
 
             InitialLocalRotation = this.transform.localRotation;
-            ConstrainedRotation = this.transform.localRotation;
+            ConstrainedRotation = InitialLocalRotation;
         }
 
         private void FixedUpdate()

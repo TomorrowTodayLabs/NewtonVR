@@ -67,8 +67,8 @@ namespace NewtonVR
 
         public virtual void PullTowards(Vector3 jointPosition)
         {
-            Vector3 delta = jointPosition - this.transform.position;
-            Rigidbody.AddForceAtPosition(delta * PositionMagic, this.transform.position, ForceMode.VelocityChange);
+            Vector3 positionDelta = jointPosition - this.transform.position;
+            Item.AddVelocity(positionDelta);
         }
     }
 }

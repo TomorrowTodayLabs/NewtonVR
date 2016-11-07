@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Reflection;
 
 namespace NewtonVR
 {
@@ -54,6 +55,30 @@ namespace NewtonVR
             material.DisableKeyword("_ALPHABLEND_ON");
             material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
             material.renderQueue = -1;
+        }
+
+        public static void SetProperty(object obj, string propertyName, object value, bool isPublic)
+        {
+            BindingFlags flags = BindingFlags.Instance;
+            if (isPublic)
+                flags = flags | BindingFlags.Public;
+            else
+                flags = flags | BindingFlags.NonPublic;
+
+            PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName, flags);
+            propertyInfo.SetValue(obj, value, null);
+        }
+
+        public static void SetField(object obj, string fieldName, object value, bool isPublic)
+        {
+            BindingFlags flags = BindingFlags.Instance;
+            if (isPublic)
+                flags = flags | BindingFlags.Public;
+            else
+                flags = flags | BindingFlags.NonPublic;
+
+            FieldInfo fieldInfo = obj.GetType().GetField(fieldName, flags);
+            fieldInfo.SetValue(obj, value);
         }
     }
 }

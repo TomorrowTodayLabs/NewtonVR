@@ -18,7 +18,9 @@ namespace NewtonVR
         public NVRHand AttachedHand = null;
 
         protected Collider[] Colliders;
-        protected Vector3 ClosestHeldPoint;       
+        protected Vector3 ClosestHeldPoint;
+
+        
 
         public virtual bool IsAttached
         {
@@ -38,29 +40,47 @@ namespace NewtonVR
                 Debug.LogError("There is no rigidbody attached to this interactable.");
             }
 
-            Colliders = this.GetComponentsInChildren<Collider>();
         }
 
         protected virtual void Start()
         {
+            UpdateColliders();
+        }
+
+        public virtual void Reset()
+        {
+            Awake();
+            Start();
+            AttachedHand = null;
+        }
+
+        public virtual void UpdateColliders()
+        {
+            Colliders = this.GetComponentsInChildren<Collider>();
             NVRInteractables.Register(this, Colliders);
         }
 
-        private float lastPoses;
-        protected float deltaPoses;
-        public virtual void OnNewPosesApplied()
+        protected virtual void CheckForDrop()
         {
-            if (IsAttached == true)
+            float shortestDistance = float.MaxValue;
+
+            for (int index = 0; index < Colliders.Length; index++)
             {
-                DropIfTooFar();
+                //todo: this does not do what I think it does.
+                Vector3 closest = Colliders[index].ClosestPointOnBounds(AttachedHand.transform.position);
+                float distance = Vector3.Distance(AttachedHand.transform.position, closest);
+
+                if (distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    ClosestHeldPoint = closest;
+                }
             }
 
-            deltaPoses = Time.time - lastPoses;
-
-            if (deltaPoses == 0)
-                deltaPoses = Time.fixedDeltaTime;
-
-            lastPoses = Time.time;
+            if (DropDistance != -1 && AttachedHand.CurrentInteractionStyle != InterationStyle.ByScript && shortestDistance > DropDistance)
+            {
+                DroppedBecauseOfDistance();
+            }
         }
 
         //Remove items that go too high or too low.
@@ -83,8 +103,6 @@ namespace NewtonVR
             {
                 Rigidbody.isKinematic = false;
             }
-
-            lastPoses = Time.time;
         }
 
         public virtual void InteractingUpdate(NVRHand hand)
@@ -98,6 +116,11 @@ namespace NewtonVR
             {
                 UseButtonDown();
             }
+        }
+
+        public virtual void HoveringUpdate(NVRHand hand, float forTime)
+        {
+
         }
 
         public void ForceDetach()
@@ -125,8 +148,6 @@ namespace NewtonVR
             }
         }
 
-        abstract protected void DropIfTooFar();
-
         protected virtual void DroppedBecauseOfDistance()
         {
             AttachedHand.EndInteraction(this);
@@ -140,6 +161,17 @@ namespace NewtonVR
         public virtual void UseButtonDown()
         {
 
+        }
+
+
+        public virtual void AddVelocity(Vector3 velocity)
+        {
+            Rigidbody.AddForce(velocity, ForceMode.VelocityChange);
+        }
+
+        public virtual void AddAngularVelocity(Vector3 angularVelocity)
+        {
+            Rigidbody.AddTorque(angularVelocity, ForceMode.VelocityChange);
         }
 
         protected virtual void OnDestroy()

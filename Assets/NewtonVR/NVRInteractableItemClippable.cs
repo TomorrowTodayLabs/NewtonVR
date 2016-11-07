@@ -20,10 +20,8 @@ namespace NewtonVR
             this.Rigidbody.maxAngularVelocity = 100f;
         }
 
-        public override void OnNewPosesApplied()
+        protected void FixedUpdate()
         {
-            base.OnNewPosesApplied();
-
             if (IsAttached == true)
             {
                 Vector3 TargetPosition;
@@ -55,8 +53,6 @@ namespace NewtonVR
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;
-
-            ClosestHeldPoint = (PickupTransform.position - this.transform.position);
         }
 
         public override void EndInteraction()
@@ -67,15 +63,6 @@ namespace NewtonVR
 
             if (PickupTransform != null)
                 Destroy(PickupTransform.gameObject);
-        }
-
-        protected override void DropIfTooFar()
-        {
-            float distance = Vector3.Distance(AttachedHand.transform.position, (this.transform.position + ClosestHeldPoint));
-            if (distance > DropDistance)
-            {
-                DroppedBecauseOfDistance();
-            }
         }
 
     }
