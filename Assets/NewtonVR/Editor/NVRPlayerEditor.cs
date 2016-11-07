@@ -245,38 +245,39 @@ namespace NewtonVR
 
             GUILayout.Space(10);
 
-#if NewtonVRSupportingOculus
-            GUILayout.Label("Model override for Oculus SDK");
-            using (new EditorGUI.DisabledScope(hasOculusSDK == false))
+            if (player.OculusSDKEnabled == true)
             {
-                bool modelOverrideOculus = EditorGUILayout.Toggle("Override hand models for Oculus SDK", player.OverrideOculus);
-                EditorGUILayout.BeginFadeGroup(Convert.ToSingle(modelOverrideOculus));
-                using (new EditorGUI.DisabledScope(modelOverrideOculus == false))
+                GUILayout.Label("Model override for Oculus SDK");
+                using (new EditorGUI.DisabledScope(hasOculusSDK == false))
                 {
-                    player.OverrideOculusLeftHand = (GameObject)EditorGUILayout.ObjectField("Left Hand", player.OverrideOculusLeftHand, typeof(GameObject), false);
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(20);
-                    player.OverrideOculusLeftHandPhysicalColliders = (GameObject)EditorGUILayout.ObjectField("Left Hand Physical Colliders", player.OverrideOculusLeftHandPhysicalColliders, typeof(GameObject), false);
-                    GUILayout.EndHorizontal();
-                    player.OverrideOculusRightHand = (GameObject)EditorGUILayout.ObjectField("Right Hand", player.OverrideOculusRightHand, typeof(GameObject), false);
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(20);
-                    player.OverrideOculusRightHandPhysicalColliders = (GameObject)EditorGUILayout.ObjectField("Right Hand Physical Colliders", player.OverrideOculusRightHandPhysicalColliders, typeof(GameObject), false);
-                    GUILayout.EndHorizontal();
-                }
-                EditorGUILayout.EndFadeGroup();
+                    bool modelOverrideOculus = EditorGUILayout.Toggle("Override hand models for Oculus SDK", player.OverrideOculus);
+                    EditorGUILayout.BeginFadeGroup(Convert.ToSingle(modelOverrideOculus));
+                    using (new EditorGUI.DisabledScope(modelOverrideOculus == false))
+                    {
+                        player.OverrideOculusLeftHand = (GameObject)EditorGUILayout.ObjectField("Left Hand", player.OverrideOculusLeftHand, typeof(GameObject), false);
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Space(20);
+                        player.OverrideOculusLeftHandPhysicalColliders = (GameObject)EditorGUILayout.ObjectField("Left Hand Physical Colliders", player.OverrideOculusLeftHandPhysicalColliders, typeof(GameObject), false);
+                        GUILayout.EndHorizontal();
+                        player.OverrideOculusRightHand = (GameObject)EditorGUILayout.ObjectField("Right Hand", player.OverrideOculusRightHand, typeof(GameObject), false);
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Space(20);
+                        player.OverrideOculusRightHandPhysicalColliders = (GameObject)EditorGUILayout.ObjectField("Right Hand Physical Colliders", player.OverrideOculusRightHandPhysicalColliders, typeof(GameObject), false);
+                        GUILayout.EndHorizontal();
+                    }
+                    EditorGUILayout.EndFadeGroup();
 
-                if (modelOverrideOculus == true)
-                {
-                    player.OverrideAll = false;
+                    if (modelOverrideOculus == true)
+                    {
+                        player.OverrideAll = false;
+                    }
+                    if (player.OverrideOculus != modelOverrideOculus)
+                    {
+                        EditorUtility.SetDirty(target);
+                        player.OverrideOculus = modelOverrideOculus;
+                    }
                 }
-                if (player.OverrideOculus != modelOverrideOculus)
-                {
-                    EditorUtility.SetDirty(target);
-                    player.OverrideOculus = modelOverrideOculus;
-                }
-            }      
-#endif
+            }
 
             if (player.SteamVREnabled == true)
             {
