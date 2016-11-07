@@ -14,4 +14,5 @@ We've also created a few physical UI elements to help with basic configuration a
 <img class='gfyitem' data-id='PointlessImperturbableBorzoi' />
 
 <br>
-NewtonVR brought to you by Tomorrow Today Labs:<br>**Development:** Keith Bradner, Nick Abel<br>**Interaction Design:** Adrienne Hunter<br>**Modeling:** Wesley Eldridge, Carli Wood<br>**Audio:** Joshua Du Chene
+NewtonVR brought to you by [Tomorrow Today Labs](http://www.tomorrowtodaylabs.com):
+**Development:** Keith Bradner, Nick Abel<br>**Interaction Design:** Adrienne Hunter<br>**Modeling:** Wesley Eldridge, Carli Wood<br>**Audio:** Joshua Du Chene
