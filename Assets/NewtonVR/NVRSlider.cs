@@ -46,6 +46,9 @@ namespace NewtonVR
 
                 Vector3 velocity = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
                 this.Rigidbody.velocity = ProjectVelocityOnPath(velocity, SliderPath);
+
+                // Constrain to slider endpoints
+                ConstrainToEndpoints();
             }
 
             if (this.transform.hasChanged == true)
@@ -93,6 +96,32 @@ namespace NewtonVR
         protected Vector3 ProjectVelocityOnPath(Vector3 velocity, Vector3 path)
         {
             return Vector3.Project(velocity, path);
+        }
+
+        /**
+         * Clamps the slider movement to the line between the start and
+         * endpoints
+         */
+        private void ConstrainToEndpoints()
+        {
+            Vector3 sliderVec   = EndPoint.position - StartPoint.position;
+            Vector3 pProjected = 
+                transform.position + this.Rigidbody.velocity * Time.fixedDeltaTime;
+            Vector3 pToSlider  = pProjected - StartPoint.position;
+
+            if (Vector3.Dot(sliderVec, pToSlider) < 0f) {
+                // If the slider is trying to go behind the start
+                this.Rigidbody.position = StartPoint.position;
+                this.Rigidbody.velocity = Vector3.zero;
+                return;
+            }
+
+            if (pToSlider.sqrMagnitude > sliderVec.sqrMagnitude) {
+                // If the slider is trying to go beyond the end
+                this.Rigidbody.position = EndPoint.position;
+                this.Rigidbody.velocity = Vector3.zero;
+                return;
+            }
         }
     }
 }
