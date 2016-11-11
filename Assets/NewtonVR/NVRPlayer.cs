@@ -8,7 +8,7 @@ namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public const decimal NewtonVRVersion = 0.92m;
+        public const decimal NewtonVRVersion = 0.93m;
 
         public static List<NVRPlayer> Instances = new List<NVRPlayer>();
         public static NVRPlayer Instance
