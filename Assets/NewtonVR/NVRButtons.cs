@@ -25,4 +25,20 @@ namespace NewtonVR
         Back,
         Stick
     }
+
+    public class NVRButtonsHelper
+    {
+        private static NVRButtons[] array = null;
+        public static NVRButtons[] Array
+        {
+            get
+            {
+                if (array == null)
+                {
+                    array = (NVRButtons[])System.Enum.GetValues(typeof(NVRButtons));
+                }
+                return array;
+            }
+        }
+    }
 }

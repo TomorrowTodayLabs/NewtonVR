@@ -13,6 +13,12 @@ namespace NewtonVR
     {
         private OVRInput.Controller Controller;
 
+        private Dictionary<NVRButtons, OVRInput.Button> ButtonMapping = new Dictionary<NVRButtons, OVRInput.Button>(new EnumEqualityComparer<NVRButtons>());
+        private Dictionary<NVRButtons, OVRInput.Touch> TouchMapping = new Dictionary<NVRButtons, OVRInput.Touch>(new EnumEqualityComparer<NVRButtons>());
+        private Dictionary<NVRButtons, OVRInput.NearTouch> NearTouchMapping = new Dictionary<NVRButtons, OVRInput.NearTouch>(new EnumEqualityComparer<NVRButtons>());
+        private Dictionary<NVRButtons, OVRInput.Axis1D> TriggerMapping = new Dictionary<NVRButtons, OVRInput.Axis1D>(new EnumEqualityComparer<NVRButtons>());
+        private Dictionary<NVRButtons, OVRInput.Axis2D> StickMapping = new Dictionary<NVRButtons, OVRInput.Axis2D>(new EnumEqualityComparer<NVRButtons>());
+
         public override void Initialize(NVRHand hand)
         {
             base.Initialize(hand);
@@ -30,11 +36,6 @@ namespace NewtonVR
             
         }
 
-        private Dictionary<NVRButtons, OVRInput.Button> ButtonMapping = new Dictionary<NVRButtons, OVRInput.Button>();
-        private Dictionary<NVRButtons, OVRInput.Touch> TouchMapping = new Dictionary<NVRButtons, OVRInput.Touch>();
-        private Dictionary<NVRButtons, OVRInput.NearTouch> NearTouchMapping = new Dictionary<NVRButtons, OVRInput.NearTouch>();
-        private Dictionary<NVRButtons, OVRInput.Axis1D> TriggerMapping = new Dictionary<NVRButtons, OVRInput.Axis1D>();
-        private Dictionary<NVRButtons, OVRInput.Axis2D> StickMapping = new Dictionary<NVRButtons, OVRInput.Axis2D>();
         protected virtual void SetupButtonMapping()
         {
             ButtonMapping.Add(NVRButtons.A, OVRInput.Button.One);

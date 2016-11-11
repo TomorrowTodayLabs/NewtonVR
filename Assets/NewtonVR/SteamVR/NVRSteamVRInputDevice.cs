@@ -19,6 +19,8 @@ namespace NewtonVR
 
         private bool RenderModelInitialized = false;
 
+        private Dictionary<NVRButtons, EVRButtonId> ButtonMapping = new Dictionary<NVRButtons, EVRButtonId>(new EnumEqualityComparer<NVRButtons>());
+
         public override void Initialize(NVRHand hand)
         {
             SetupButtonMapping();
@@ -35,7 +37,6 @@ namespace NewtonVR
             SteamVR_Utils.Event.Remove("new_poses_applied", OnNewPosesApplied);
         }
 
-        private Dictionary<NVRButtons, EVRButtonId> ButtonMapping = new Dictionary<NVRButtons, EVRButtonId>();
         protected virtual void SetupButtonMapping()
         {
             ButtonMapping.Add(NVRButtons.A, EVRButtonId.k_EButton_A);
