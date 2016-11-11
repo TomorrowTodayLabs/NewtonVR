@@ -228,8 +228,10 @@ namespace NewtonVR
         {
             if (CurrentHandState == HandState.Idle)
             {
-                foreach (var hoveringOver in CurrentlyHoveringOver)
+                var hoveringEnumerator = CurrentlyHoveringOver.GetEnumerator();
+                while (hoveringEnumerator.MoveNext())
                 {
+                    var hoveringOver = hoveringEnumerator.Current;
                     if (hoveringOver.Value.Count > 0)
                     {
                         hoveringOver.Key.HoveringUpdate(this, Time.time - hoveringOver.Value.OrderBy(colliderTime => colliderTime.Value).First().Value);
