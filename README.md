@@ -1,6 +1,6 @@
 ## Summary
 
-**Go to [newtonvr.readme.io](http://newtovr.readme.io) for documentation, guides on how to get started with NewtonVR, and basic integration instructions.**
+**Go to [newtonvr.readme.io](http://newtonvr.readme.io) for documentation, guides on how to get started with NewtonVR, and basic integration instructions.**
 
 Our system allows players to pick up, drop, throw, and use held objects. Items don't pass through other items (rigidbodies), or the environment (non-rigidbodies). Rather, held items interact with other rigidbodies naturally -- taking mass into account. For example, if you have two boxes of the same mass they can push each other equally, but a balloon, with considerably less mass, can't push a box.
 
