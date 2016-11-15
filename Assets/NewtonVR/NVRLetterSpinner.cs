@@ -22,6 +22,8 @@ namespace NewtonVR
 
         protected override void FixedUpdate()
         {
+            base.FixedUpdate();
+
             if (IsAttached == false)
             {
                 float wheelAngle = this.transform.localEulerAngles.z;

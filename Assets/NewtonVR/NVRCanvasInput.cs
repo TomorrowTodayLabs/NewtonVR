@@ -17,8 +17,9 @@ namespace NewtonVR
 
         public bool LaserEnabled = true;
         public Color LaserColor = Color.blue;
-        public float LaserWidth = 0.01f;
-        
+        public float LaserStartWidth = 0.02f;
+        public float LaserEndWidth = 0.001f;
+
         public bool OnCanvas;
         public bool CanvasUsed;
         
@@ -80,7 +81,7 @@ namespace NewtonVR
                         Lasers[index].material = new Material(Shader.Find("Standard"));
                         Lasers[index].material.color = LaserColor;
                         Lasers[index].SetColors(LaserColor, LaserColor);
-                        Lasers[index].SetWidth(LaserWidth, LaserWidth);
+                        Lasers[index].SetWidth(LaserStartWidth, LaserEndWidth);
                         Lasers[index].useWorldSpace = true;
                         Lasers[index].enabled = false;
                     }
