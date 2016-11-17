@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.VR;
 using System.Linq;
+using UnityEngine.Events;
 
 namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public const decimal NewtonVRVersion = 0.94m;
+        public const decimal NewtonVRVersion = 0.95m;
 
         public static List<NVRPlayer> Instances = new List<NVRPlayer>();
         public static NVRPlayer Instance
@@ -30,6 +31,8 @@ namespace NewtonVR
         public bool AutomaticallySetControllerTransparency = true;
         public bool VibrateOnHover = true;
         public int VelocityHistorySteps = 3;
+
+        public UnityEvent OnInitialized;
 
         [Space]
 
@@ -142,6 +145,11 @@ namespace NewtonVR
             }
 
             Integration.Initialize(this);
+
+            if (OnInitialized != null)
+            {
+                OnInitialized.Invoke();
+            }
         }
 
         private void DetermineCurrentIntegration()

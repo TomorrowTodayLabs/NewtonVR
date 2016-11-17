@@ -7,15 +7,18 @@ namespace NewtonVR
     public class NVRInteractableItem : NVRInteractable
     {
         private const float MaxVelocityChange = 10f;
-        private const float MaxAngularVelocityChange = 30f;
+        private const float MaxAngularVelocityChange = 20f;
         private const float VelocityMagic = 6000f;
-        private const float AngularVelocityMagic = 100f;
+        private const float AngularVelocityMagic = 50f;
 
         [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
         public Transform InteractionPoint;
 
         public UnityEvent OnUseButtonDown;
         public UnityEvent OnUseButtonUp;
+
+        public UnityEvent OnBeginInteraction;
+        public UnityEvent OnEndInteraction;
 
         protected Transform PickupTransform;
 
@@ -138,6 +141,11 @@ namespace NewtonVR
                 VelocityHistory = new Vector3?[hand.Player.VelocityHistorySteps];
                 AngularVelocityHistory = new Vector3?[hand.Player.VelocityHistorySteps];
             }
+
+            if (OnBeginInteraction != null)
+            {
+                OnBeginInteraction.Invoke();
+            }
         }
 
         public override void EndInteraction()
@@ -161,6 +169,11 @@ namespace NewtonVR
                     VelocityHistory[index] = null;
                     AngularVelocityHistory[index] = null;
                 }
+            }
+
+            if (OnEndInteraction != null)
+            {
+                OnEndInteraction.Invoke();
             }
         }
 
