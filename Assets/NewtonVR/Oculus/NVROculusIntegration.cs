@@ -11,6 +11,19 @@ namespace NewtonVR
 {
     public class NVROculusIntegration : NVRIntegration
     {
+        private OVRBoundary boundary;
+        private OVRBoundary Boundary
+        {
+            get
+            {
+                if (boundary == null)
+                {
+                    boundary = new OVRBoundary();
+                }
+                return boundary;
+            }
+        }
+
         public override void Initialize(NVRPlayer player)
         {
             Player = player;
@@ -28,6 +41,18 @@ namespace NewtonVR
 
             Player.gameObject.SetActive(true);
         }
+
+        private Vector3 PlayspaceBounds = Vector3.zero;
+        public override Vector3 GetPlayspaceBounds()
+        {
+            bool configured = Boundary.GetConfigured();
+            if (configured == true)
+            {
+                PlayspaceBounds = Boundary.GetDimensions(OVRBoundary.BoundaryType.OuterBoundary);
+            }
+
+            return PlayspaceBounds;
+        }
     }
 }
 #else
@@ -37,7 +62,11 @@ namespace NewtonVR
     {
         public override void Initialize(NVRPlayer player)
         {
-            Debug.LogError("Oculus not supported.");
+        }
+
+        public override Vector3 GetPlayspaceBounds()
+        {
+            return Vector3.zero;
         }
     }
 }

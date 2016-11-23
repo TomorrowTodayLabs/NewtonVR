@@ -9,7 +9,7 @@ namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public const decimal NewtonVRVersion = 0.95m;
+        public const decimal NewtonVRVersion = 0.96m;
 
         public static List<NVRPlayer> Instances = new List<NVRPlayer>();
         public static NVRPlayer Instance
@@ -33,6 +33,48 @@ namespace NewtonVR
         public int VelocityHistorySteps = 3;
 
         public UnityEvent OnInitialized;
+
+        [Space]
+        public bool EnableEditorPlayerPreview = true;
+        public Mesh EditorPlayerPreview;
+        public Mesh EditorPlayspacePreview;
+        public bool EditorPlayspaceOverride = false;
+        public Vector2 EditorPlayspaceDefault = new Vector2(2, 1.5f);
+        
+        public Vector3 PlayspaceSize
+        {
+            get
+            {
+                if (Integration != null)
+                {
+                    return Integration.GetPlayspaceBounds();
+                }
+                else
+                {
+                    if (OculusSDKEnabled == true)
+                    {
+                        Integration = new NVROculusIntegration();
+                        Vector3 bounds = Integration.GetPlayspaceBounds();
+                        if (bounds != Vector3.zero)
+                        {
+                            return bounds;
+                        }
+                    }
+
+                    if (SteamVREnabled == true)
+                    {
+                        Integration = new NVRSteamVRIntegration();
+                        Vector3 bounds = Integration.GetPlayspaceBounds();
+                        if (bounds != Vector3.zero)
+                        {
+                            return bounds;
+                        }
+                    }
+
+                    return Vector3.zero;
+                }
+            }
+        }
 
         [Space]
 
@@ -112,27 +154,7 @@ namespace NewtonVR
 
             ColliderToHandMapping = new Dictionary<Collider, NVRHand>();
 
-            DetermineCurrentIntegration();
-
-            if (CurrentIntegrationType == NVRSDKIntegrations.Oculus)
-            {
-                Integration = this.gameObject.AddComponent<NVROculusIntegration>();
-            }
-            else if (CurrentIntegrationType == NVRSDKIntegrations.SteamVR)
-            {
-                Integration = this.gameObject.AddComponent<NVRSteamVRIntegration>();
-            }
-            else if (CurrentIntegrationType == NVRSDKIntegrations.FallbackNonVR)
-            {
-                Debug.LogError("[NewtonVR] Fallback non-vr not yet implemented.");
-                return;
-            }
-            else
-            {
-                Debug.LogError("[NewtonVR] Critical Error: Oculus / SteamVR not setup properly or no headset found.");
-                return;
-            }
-
+            SetupIntegration();
 
             if (Hands == null || Hands.Length == 0)
             {
@@ -152,8 +174,39 @@ namespace NewtonVR
             }
         }
 
-        private void DetermineCurrentIntegration()
+        private void SetupIntegration(bool logOutput = true)
         {
+            CurrentIntegrationType = DetermineCurrentIntegration(logOutput);
+
+            if (CurrentIntegrationType == NVRSDKIntegrations.Oculus)
+            {
+                Integration = new NVROculusIntegration();
+            }
+            else if (CurrentIntegrationType == NVRSDKIntegrations.SteamVR)
+            {
+                Integration = new NVRSteamVRIntegration();
+            }
+            else if (CurrentIntegrationType == NVRSDKIntegrations.FallbackNonVR)
+            {
+                if (logOutput == true)
+                {
+                    Debug.LogError("[NewtonVR] Fallback non-vr not yet implemented.");
+                }
+                return;
+            }
+            else
+            {
+                if (logOutput == true)
+                {
+                    Debug.LogError("[NewtonVR] Critical Error: Oculus / SteamVR not setup properly or no headset found.");
+                }
+                return;
+            }
+        }
+
+        private NVRSDKIntegrations DetermineCurrentIntegration(bool logOutput = true)
+        {
+            NVRSDKIntegrations currentIntegration = NVRSDKIntegrations.None;
             string resultLog = "[NewtonVR] Version : " + NewtonVRVersion + ". ";
             if (VRDevice.isPresent == true)
             {
@@ -162,26 +215,30 @@ namespace NewtonVR
                 #if NVR_Oculus
                 if (VRDevice.model.IndexOf("oculus", System.StringComparison.CurrentCultureIgnoreCase) != -1)
                 {
-                    CurrentIntegrationType = NVRSDKIntegrations.Oculus;
+                    currentIntegration = NVRSDKIntegrations.Oculus;
                     resultLog += "Using Oculus SDK";
-                    return;
+                    return currentIntegration;
                 }
                 #endif
 
                 #if NVR_SteamVR
-                CurrentIntegrationType = NVRSDKIntegrations.SteamVR;
+                currentIntegration = NVRSDKIntegrations.SteamVR;
                 resultLog += "Using SteamVR SDK";
-                return;
+                return currentIntegration;
                 #endif
             }
 
             if (CurrentIntegrationType == NVRSDKIntegrations.None && DEBUGEnableFallback2D == true)
             {
-                CurrentIntegrationType = NVRSDKIntegrations.FallbackNonVR;
+                currentIntegration = NVRSDKIntegrations.FallbackNonVR;
                 resultLog += "Did not find supported VR device. Or no integrations enabled.";
             }
 
-            Debug.Log(resultLog);
+            if (logOutput == true)
+            {
+                Debug.Log(resultLog);
+            }
+            return currentIntegration;
         }
 
         public void RegisterHand(NVRHand hand)
@@ -231,5 +288,44 @@ namespace NewtonVR
                 System.Threading.Thread.Sleep(DEBUGSleepPerFrame);
             }
         }
+
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (EnableEditorPlayerPreview == false)
+                return;
+
+            Vector3 playspaceScale;
+            if (EditorPlayspaceOverride == false)
+            {
+                Vector3 returnedPlayspaceSize = PlayspaceSize;
+                if (returnedPlayspaceSize == Vector3.zero)
+                {
+                    playspaceScale = EditorPlayspaceDefault;
+                    playspaceScale.z = playspaceScale.y;
+                }
+                else
+                {
+                    playspaceScale = returnedPlayspaceSize;
+                }
+            }
+            else
+            {
+                playspaceScale = EditorPlayspaceDefault;
+                playspaceScale.z = playspaceScale.y;
+            }
+
+            playspaceScale.y = 1f;
+
+            Color drawColor = Color.green;
+            drawColor.a = 0.075f;
+            Gizmos.color = drawColor;
+            Gizmos.DrawWireMesh(EditorPlayerPreview, this.transform.position, this.transform.rotation, this.transform.localScale);
+            drawColor.a = 0.5f;
+            Gizmos.color = drawColor;
+            Gizmos.DrawWireMesh(EditorPlayspacePreview, this.transform.position, this.transform.rotation, playspaceScale);
+        }
+#endif
     }
 }
