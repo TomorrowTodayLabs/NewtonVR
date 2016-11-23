@@ -17,6 +17,8 @@ namespace NewtonVR
         public UnityEvent OnUseButtonDown;
         public UnityEvent OnUseButtonUp;
 
+        public UnityEvent OnHovering;
+
         public UnityEvent OnBeginInteraction;
         public UnityEvent OnEndInteraction;
 
@@ -174,6 +176,16 @@ namespace NewtonVR
             if (OnEndInteraction != null)
             {
                 OnEndInteraction.Invoke();
+            }
+        }
+
+        public override void HoveringUpdate(NVRHand hand, float forTime)
+        {
+            base.HoveringUpdate(hand, forTime);
+
+            if (OnHovering != null)
+            {
+                OnHovering.Invoke();
             }
         }
 
