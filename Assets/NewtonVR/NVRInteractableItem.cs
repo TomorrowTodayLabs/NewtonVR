@@ -31,6 +31,9 @@ namespace NewtonVR
         protected Vector3?[] AngularVelocityHistory;
         protected int CurrentVelocityHistoryStep = 0;
 
+        protected float StartingDrag = -1;
+        protected float StartingAngularDrag = -1;
+
         protected override void Awake()
         {
             base.Awake();
@@ -132,6 +135,11 @@ namespace NewtonVR
         {
             base.BeginInteraction(hand);
 
+            StartingDrag = Rigidbody.drag;
+            StartingAngularDrag = Rigidbody.angularDrag;
+            Rigidbody.drag = 0;
+            Rigidbody.angularDrag = 0.05f;
+
             PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", this.gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
@@ -153,6 +161,9 @@ namespace NewtonVR
         public override void EndInteraction()
         {
             base.EndInteraction();
+
+            Rigidbody.drag = StartingDrag;
+            Rigidbody.angularDrag = StartingAngularDrag;
 
             if (PickupTransform != null)
             {
