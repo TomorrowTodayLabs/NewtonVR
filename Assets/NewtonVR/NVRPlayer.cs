@@ -9,7 +9,7 @@ namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public const decimal NewtonVRVersion = 0.985m;
+        public const decimal NewtonVRVersion = 0.987m;
 
         public static List<NVRPlayer> Instances = new List<NVRPlayer>();
         public static NVRPlayer Instance
@@ -166,7 +166,10 @@ namespace NewtonVR
                 }
             }
 
-            Integration.Initialize(this);
+            if (Integration != null)
+            {
+                Integration.Initialize(this);
+            }
 
             if (OnInitialized != null)
             {
@@ -213,6 +216,11 @@ namespace NewtonVR
             {
                 resultLog += "Found VRDevice: " + VRDevice.model + ". ";
 
+                #if !NVR_Oculus && !NVR_SteamVR
+                string warning = "Neither SteamVR or Oculus SDK is enabled in the NVRPlayer. Please check the \"Enable SteamVR\" or \"Enable Oculus SDK\" checkbox in the NVRPlayer script in the NVRPlayer GameObject.";
+                Debug.LogWarning(warning);
+                #endif
+
                 #if NVR_Oculus
                 if (VRDevice.model.IndexOf("oculus", System.StringComparison.CurrentCultureIgnoreCase) != -1)
                 {
@@ -230,10 +238,16 @@ namespace NewtonVR
                 #endif
             }
 
-            if (CurrentIntegrationType == NVRSDKIntegrations.None && DEBUGEnableFallback2D == true)
+            if (CurrentIntegrationType == NVRSDKIntegrations.None)
             {
-                currentIntegration = NVRSDKIntegrations.FallbackNonVR;
-                resultLog += "Did not find supported VR device. Or no integrations enabled.";
+                if (DEBUGEnableFallback2D == true)
+                {
+                    currentIntegration = NVRSDKIntegrations.FallbackNonVR;
+                }
+                else
+                {
+                    resultLog += "Did not find supported VR device. Or no integrations enabled.";
+                }
             }
 
             if (logOutput == true)

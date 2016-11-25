@@ -171,7 +171,7 @@ namespace NewtonVR
             }
             else
             {
-                Debug.LogError("[NewtonVR] Critical Error: NVRPlayer.CurrentIntegration not setup.");
+                //Debug.LogError("[NewtonVR] Critical Error: NVRPlayer.CurrentIntegration not setup.");
                 return;
             }
 
