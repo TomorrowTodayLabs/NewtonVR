@@ -9,7 +9,7 @@ namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public const decimal NewtonVRVersion = 0.98m;
+        public const decimal NewtonVRVersion = 0.981m;
 
         public static List<NVRPlayer> Instances = new List<NVRPlayer>();
         public static NVRPlayer Instance
@@ -208,6 +208,7 @@ namespace NewtonVR
         {
             NVRSDKIntegrations currentIntegration = NVRSDKIntegrations.None;
             string resultLog = "[NewtonVR] Version : " + NewtonVRVersion + ". ";
+
             if (VRDevice.isPresent == true)
             {
                 resultLog += "Found VRDevice: " + VRDevice.model + ". ";
@@ -217,14 +218,15 @@ namespace NewtonVR
                 {
                     currentIntegration = NVRSDKIntegrations.Oculus;
                     resultLog += "Using Oculus SDK";
-                    return currentIntegration;
                 }
                 #endif
 
                 #if NVR_SteamVR
-                currentIntegration = NVRSDKIntegrations.SteamVR;
-                resultLog += "Using SteamVR SDK";
-                return currentIntegration;
+                if (currentIntegration == NVRSDKIntegrations.None)
+                { 
+                    currentIntegration = NVRSDKIntegrations.SteamVR;
+                    resultLog += "Using SteamVR SDK";
+                }
                 #endif
             }
 
@@ -238,6 +240,7 @@ namespace NewtonVR
             {
                 Debug.Log(resultLog);
             }
+
             return currentIntegration;
         }
 
