@@ -19,7 +19,7 @@ namespace NewtonVR
 
         private bool RenderModelInitialized = false;
 
-        private Dictionary<NVRButtons, EVRButtonId> ButtonMapping = new Dictionary<NVRButtons, EVRButtonId>(new EnumEqualityComparer<NVRButtons>());
+        private Dictionary<NVRButtons, EVRButtonId> ButtonMapping = new Dictionary<NVRButtons, EVRButtonId>(new NVRButtonsComparer());
 
         public override void Initialize(NVRHand hand)
         {

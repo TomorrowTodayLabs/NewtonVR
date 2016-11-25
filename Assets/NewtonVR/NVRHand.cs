@@ -116,7 +116,7 @@ namespace NewtonVR
 
             VisibilityLocked = false;
             
-            Inputs = new Dictionary<NVRButtons, NVRButtonInputs>(new EnumEqualityComparer<NVRButtons>());
+            Inputs = new Dictionary<NVRButtons, NVRButtonInputs>(new NVRButtonsComparer());
             for (int buttonIndex = 0; buttonIndex < NVRButtonsHelper.Array.Length; buttonIndex++)
             {
                 if (Inputs.ContainsKey(NVRButtonsHelper.Array[buttonIndex]) == false) 
