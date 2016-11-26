@@ -19,7 +19,7 @@ namespace NewtonVR
 
         private Dictionary<Collider, NVRHand> ColliderToHandMapping;
 
-        private void Awake()
+        protected void Awake()
         {
             Instance = this;
             NVRInteractables.Initialize();
