@@ -238,7 +238,7 @@ namespace NewtonVR
                 #endif
             }
 
-            if (CurrentIntegrationType == NVRSDKIntegrations.None)
+            if (currentIntegration == NVRSDKIntegrations.None)
             {
                 if (DEBUGEnableFallback2D == true)
                 {
