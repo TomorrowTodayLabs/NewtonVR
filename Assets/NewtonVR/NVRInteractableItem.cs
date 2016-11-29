@@ -24,8 +24,8 @@ namespace NewtonVR
 
         protected Transform PickupTransform;
 
-        protected Vector3 VelocityToAdd;
-        protected Vector3 AngularVelocityToAdd;
+        protected Vector3 ExternalVelocity;
+        protected Vector3 ExternalAngularVelocity;
 
         protected Vector3?[] VelocityHistory;
         protected Vector3?[] AngularVelocityHistory;
@@ -52,45 +52,44 @@ namespace NewtonVR
             {
                 CheckForDrop();
 
-                Quaternion RotationDelta;
-                Vector3 PositionDelta;
+                Quaternion rotationDelta;
+                Vector3 positionDelta;
 
                 float angle;
                 Vector3 axis;
 
                 if (InteractionPoint != null)
                 {
-                    RotationDelta = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.rotation);
-                    PositionDelta = (AttachedHand.transform.position - InteractionPoint.position);
+                    rotationDelta = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.rotation);
+                    positionDelta = (AttachedHand.transform.position - InteractionPoint.position);
                 }
                 else
                 {
-                    RotationDelta = PickupTransform.rotation * Quaternion.Inverse(this.transform.rotation);
-                    PositionDelta = (PickupTransform.position - this.transform.position);
+                    rotationDelta = PickupTransform.rotation * Quaternion.Inverse(this.transform.rotation);
+                    positionDelta = (PickupTransform.position - this.transform.position);
                 }
 
-                RotationDelta.ToAngleAxis(out angle, out axis);
+                rotationDelta.ToAngleAxis(out angle, out axis);
 
                 if (angle > 180)
                     angle -= 360;
 
                 if (angle != 0)
                 {
-                    Vector3 AngularTarget = angle * axis;
-                    if (float.IsNaN(AngularTarget.x) == false)
+                    Vector3 angularTarget = angle * axis;
+                    if (float.IsNaN(angularTarget.x) == false)
                     {
-                        AngularTarget = (AngularTarget * AngularVelocityMagic) * Time.fixedDeltaTime;
-                        this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, AngularTarget, MaxAngularVelocityChange);
+                        angularTarget = (angularTarget * AngularVelocityMagic) * Time.fixedDeltaTime;
+                        this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, angularTarget, MaxAngularVelocityChange);
                     }
                 }
 
-                Vector3 VelocityTarget = (PositionDelta * VelocityMagic) * Time.fixedDeltaTime;
-                if (float.IsNaN(VelocityTarget.x) == false)
+                Vector3 velocityTarget = (positionDelta * VelocityMagic) * Time.fixedDeltaTime;
+                if (float.IsNaN(velocityTarget.x) == false)
                 {
-                    this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, VelocityTarget, MaxVelocityChange);
+                    this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, velocityTarget, MaxVelocityChange);
                 }
 
-                AddExternalVelocities();
 
                 if (VelocityHistory != null)
                 {
@@ -104,31 +103,47 @@ namespace NewtonVR
                     AngularVelocityHistory[CurrentVelocityHistoryStep] = this.Rigidbody.angularVelocity;
                 }
             }
+
+            AddExternalVelocities();
         }
 
         protected virtual void AddExternalVelocities()
         {
-            if (VelocityToAdd != Vector3.zero)
+            if (ExternalVelocity != Vector3.zero)
             {
-                this.Rigidbody.velocity += VelocityToAdd;
-                VelocityToAdd = Vector3.zero;
+                this.Rigidbody.velocity = Vector3.Lerp(this.Rigidbody.velocity, ExternalVelocity, 0.5f);
+                ExternalVelocity = Vector3.zero;
             }
 
-            if (AngularVelocityToAdd != Vector3.zero)
+            if (ExternalAngularVelocity != Vector3.zero)
             {
-                this.Rigidbody.angularVelocity += AngularVelocityToAdd;
-                AngularVelocityToAdd = Vector3.zero;
+                this.Rigidbody.angularVelocity = Vector3.Lerp(this.Rigidbody.angularVelocity, ExternalAngularVelocity, 0.5f);
+                ExternalAngularVelocity = Vector3.zero;
             }
         }
 
-        public override void AddVelocity(Vector3 velocity)
+        public override void AddExternalVelocity(Vector3 velocity)
         {
-            VelocityToAdd += velocity;
+            if (ExternalVelocity == Vector3.zero)
+            {
+                ExternalVelocity = velocity;
+            }
+            else
+            {
+                ExternalVelocity = Vector3.Lerp(ExternalVelocity, velocity, 0.5f);
+            }
         }
 
-        public override void AddAngularVelocity(Vector3 angularVelocity)
+        public override void AddExternalAngularVelocity(Vector3 angularVelocity)
         {
-            AngularVelocityToAdd += angularVelocity;
+            if (ExternalAngularVelocity == Vector3.zero)
+            {
+                ExternalAngularVelocity = angularVelocity;
+            }
+            else
+            {
+                ExternalAngularVelocity = Vector3.Lerp(ExternalAngularVelocity, angularVelocity, 0.5f);
+            }
         }
 
         public override void BeginInteraction(NVRHand hand)

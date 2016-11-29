@@ -335,7 +335,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1001 &123025767
 Prefab:
@@ -428,7 +427,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1001 &139138004
 Prefab:
@@ -605,8 +603,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 152693972}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.0999999}
-  m_LocalScale: {x: 1, y: 1.2, z: 1}
+  m_LocalPosition: {x: -0, y: 0, z: -1.225}
+  m_LocalScale: {x: 1, y: 1.7, z: 0.75}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1291961725}
@@ -1414,7 +1412,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!4 &334875613 stripped
 Transform:
@@ -1665,7 +1662,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1 &391344398
 GameObject:
@@ -2518,7 +2514,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1001 &553651117
 Prefab:
@@ -3157,8 +3152,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 598788270}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.0999999}
-  m_LocalScale: {x: 1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1.225}
+  m_LocalScale: {x: 1, y: 1.7, z: 0.75}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1291961725}
@@ -6413,8 +6408,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 698973714}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.1000004, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 3.2}
+  m_LocalPosition: {x: 0, y: -1.225, z: 0}
+  m_LocalScale: {x: 1, y: 0.75, z: 3.2}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1291961725}
@@ -7913,7 +7908,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1 &1006138698
 GameObject:
@@ -8222,7 +8216,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1 &1059543857
 GameObject:
@@ -8507,7 +8500,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1001 &1111809530
 Prefab:
@@ -9932,7 +9924,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1001 &1403459150
 Prefab:
@@ -10257,7 +10248,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1001 &1484638663
 Prefab:
@@ -10524,7 +10514,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1 &1516174810
 GameObject:
@@ -11147,7 +11136,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1 &1629482253
 GameObject:
@@ -12106,8 +12094,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1782604926}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1000004, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 3.2}
+  m_LocalPosition: {x: 0, y: 1.225, z: 0}
+  m_LocalScale: {x: 1, y: 0.75, z: 3.2}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 1291961725}
@@ -12289,23 +12277,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttachedItem: {fileID: 0}
   AttachedPoint: {fileID: 0}
-  PullRange: 0.1
-  AttachRange: 0.1
+  PullRange: 0.2
+  AttachRange: 0.01
   DropDistance: 0.1
+  MatchRotation: 1
 --- !u!23 &1805797902
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1805797899}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: f190f6a97a669ca45b19bf3715895809, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -12896,7 +12885,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1001 &2000790273
 Prefab:
@@ -13256,7 +13244,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 0}
   Item: {fileID: 0}
-  PositionMagic: 10
   IsAttached: 0
 --- !u!1001 &2077229941
 Prefab:

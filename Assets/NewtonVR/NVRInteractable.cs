@@ -164,12 +164,12 @@ namespace NewtonVR
         }
 
 
-        public virtual void AddVelocity(Vector3 velocity)
+        public virtual void AddExternalVelocity(Vector3 velocity)
         {
             Rigidbody.AddForce(velocity, ForceMode.VelocityChange);
         }
 
-        public virtual void AddAngularVelocity(Vector3 angularVelocity)
+        public virtual void AddExternalAngularVelocity(Vector3 angularVelocity)
         {
             Rigidbody.AddTorque(angularVelocity, ForceMode.VelocityChange);
         }
