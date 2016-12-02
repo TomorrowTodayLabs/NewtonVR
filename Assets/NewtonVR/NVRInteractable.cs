@@ -167,6 +167,11 @@ namespace NewtonVR
 
         }
 
+        protected virtual void OnDisable()
+        {
+            ForceDetach();
+        }
+
         protected virtual void OnDestroy()
         {
             ForceDetach();
