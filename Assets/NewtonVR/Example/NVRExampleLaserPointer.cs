@@ -29,7 +29,8 @@ namespace NewtonVR.Example
             {
                 Line.material = new Material(Shader.Find("Unlit/Color"));
                 Line.material.SetColor("_Color", LineColor);
-                Line.SetColors(LineColor, LineColor);
+                Line.startColor = LineColor;
+                Line.endColor = LineColor;
             }
 
             Line.useWorldSpace = true;
@@ -42,8 +43,10 @@ namespace NewtonVR.Example
             if (Line.enabled == true)
             {
                 Line.material.SetColor("_Color", LineColor);
-                Line.SetColors(LineColor, LineColor);
-                Line.SetWidth(LineWidth, LineWidth);
+                Line.startColor = LineColor;
+                Line.endColor = LineColor;
+                Line.startWidth = LineWidth;
+                Line.endWidth = LineWidth;
 
                 RaycastHit hitInfo;
                 bool hit = Physics.Raycast(this.transform.position, this.transform.forward, out hitInfo, 1000);
