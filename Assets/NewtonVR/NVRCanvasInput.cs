@@ -80,8 +80,10 @@ namespace NewtonVR
                         Lasers[index] = cursor.AddComponent<LineRenderer>();
                         Lasers[index].material = new Material(Shader.Find("Standard"));
                         Lasers[index].material.color = LaserColor;
-                        Lasers[index].SetColors(LaserColor, LaserColor);
-                        Lasers[index].SetWidth(LaserStartWidth, LaserEndWidth);
+                        Lasers[index].startColor = LaserColor;
+                        Lasers[index].endColor = LaserColor;
+                        Lasers[index].startWidth = LaserStartWidth;
+                        Lasers[index].endWidth = LaserEndWidth;
                         Lasers[index].useWorldSpace = true;
                         Lasers[index].enabled = false;
                     }
