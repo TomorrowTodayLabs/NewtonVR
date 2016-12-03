@@ -199,10 +199,10 @@ namespace NewtonVR
             }
         }
 
-        public override void Reset()
+        public override void ResetInteractable()
         {
             EndInteraction();
-            base.Reset();
+            base.ResetInteractable();
         }
 
         public override void UseButtonDown()

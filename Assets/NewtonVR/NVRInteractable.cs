@@ -47,7 +47,7 @@ namespace NewtonVR
             UpdateColliders();
         }
 
-        public virtual void Reset()
+        public virtual void ResetInteractable()
         {
             Awake();
             Start();
