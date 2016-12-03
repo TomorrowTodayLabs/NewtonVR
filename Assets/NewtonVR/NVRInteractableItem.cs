@@ -160,12 +160,7 @@ namespace NewtonVR
             PickupTransform.position = this.transform.position;
             PickupTransform.rotation = this.transform.rotation;
 
-
-            if (hand.Player.VelocityHistorySteps > 0)
-            {
-                VelocityHistory = new Vector3?[hand.Player.VelocityHistorySteps];
-                AngularVelocityHistory = new Vector3?[hand.Player.VelocityHistorySteps];
-            }
+            ResetVelocityHistory();
 
             if (OnBeginInteraction != null)
             {
@@ -185,19 +180,8 @@ namespace NewtonVR
                 Destroy(PickupTransform.gameObject);
             }
 
-            if (VelocityHistory != null)
-            {
-                this.Rigidbody.velocity = GetMeanVector(VelocityHistory);
-                this.Rigidbody.angularVelocity = GetMeanVector(AngularVelocityHistory);
-
-                CurrentVelocityHistoryStep = 0;
-
-                for (int index = 0; index < VelocityHistory.Length; index++)
-                {
-                    VelocityHistory[index] = null;
-                    AngularVelocityHistory[index] = null;
-                }
-            }
+            ApplyVelocityHistory();
+            ResetVelocityHistory();
 
             if (OnEndInteraction != null)
             {
@@ -241,7 +225,36 @@ namespace NewtonVR
             }
         }
 
-        private Vector3 GetMeanVector(Vector3?[] positions)
+        protected virtual void ApplyVelocityHistory()
+        {
+            if (VelocityHistory != null)
+            {
+                Vector3? meanVelocity = GetMeanVector(VelocityHistory);
+                if (meanVelocity != null)
+                {
+                    this.Rigidbody.velocity = meanVelocity.Value;
+                }
+
+                Vector3? meanAngularVelocity = GetMeanVector(AngularVelocityHistory);
+                if (meanAngularVelocity != null)
+                {
+                    this.Rigidbody.angularVelocity = meanAngularVelocity.Value;
+                }
+            }
+        }
+
+        protected virtual void ResetVelocityHistory()
+        {
+            if (NVRPlayer.Instance.VelocityHistorySteps > 0)
+            {
+                CurrentVelocityHistoryStep = 0;
+
+                VelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
+                AngularVelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
+            }
+        }
+
+        protected Vector3? GetMeanVector(Vector3?[] positions)
         {
             float x = 0f;
             float y = 0f;
@@ -260,7 +273,12 @@ namespace NewtonVR
                 }
             }
 
-            return new Vector3(x / count, y / count, z / count);
+            if (count > 0)
+            {
+                return new Vector3(x / count, y / count, z / count);
+            }
+
+            return null;
         }
     }
 }
