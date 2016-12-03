@@ -128,6 +128,11 @@ namespace NewtonVR
 
             string newDefines = string.Join(";", listDefines.ToArray());
             PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, newDefines);
+
+            if (PlayerSettings.virtualRealitySupported == false)
+            {
+                PlayerSettings.virtualRealitySupported = true;
+            }
         }
 
         private static void DisplayProgressBar(string newMessage = null)
