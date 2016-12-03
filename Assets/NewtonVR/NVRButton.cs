@@ -64,7 +64,7 @@ namespace NewtonVR
             CurrentDistance = Vector3.Distance(this.transform.position, InitialPosition.position);
 
             Vector3 PositionDelta = InitialPosition.position - this.transform.position;
-            this.Rigidbody.velocity = PositionDelta * PositionMagic * Time.fixedDeltaTime;
+            this.Rigidbody.velocity = PositionDelta * PositionMagic * Time.deltaTime;
         }
 
         private void Update()

@@ -124,14 +124,17 @@ namespace NewtonVR
             Destroy(this);
         }
 
-        private void CheckForDrop()
+        private bool CheckForDrop()
         {
             float distance = Vector3.Distance(Hand.transform.position, this.transform.position);
 
             if (distance > DropDistance)
             {
                 DroppedBecauseOfDistance();
+                return true;
             }
+
+            return false;
         }
 
         private void UpdatePosition()
@@ -158,7 +161,7 @@ namespace NewtonVR
                 this.Rigidbody.angularVelocity = AngularTarget;
             }
 
-            Vector3 VelocityTarget = PositionDelta / Time.fixedDeltaTime;
+            Vector3 VelocityTarget = PositionDelta / Time.deltaTime;
             this.Rigidbody.velocity = VelocityTarget;
         }
 
@@ -166,9 +169,12 @@ namespace NewtonVR
         {
             if (State == true)
             {
-                CheckForDrop();
+                bool dropped = CheckForDrop();
 
-                UpdatePosition();
+                if (dropped == false)
+                {
+                    UpdatePosition();
+                }
             }
         }
 

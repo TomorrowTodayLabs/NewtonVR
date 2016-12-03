@@ -78,8 +78,11 @@ namespace NewtonVR
 
         public virtual void PullTowards(NVRAttachJoint joint)
         {
+            float velocityMagic = VelocityMagic / (Time.deltaTime / NVRPlayer.NewtonVRExpectedDeltaTime);
+            float angularVelocityMagic = AngularVelocityMagic / (Time.deltaTime / NVRPlayer.NewtonVRExpectedDeltaTime);
+
             Vector3 positionDelta = joint.transform.position - this.transform.position;
-            Vector3 velocityTarget = (positionDelta * VelocityMagic) * Time.fixedDeltaTime;
+            Vector3 velocityTarget = (positionDelta * velocityMagic) * Time.deltaTime;
 
             if (float.IsNaN(velocityTarget.x) == false)
             {
@@ -105,7 +108,7 @@ namespace NewtonVR
                     Vector3 angularTarget = angle * axis;
                     if (float.IsNaN(angularTarget.x) == false)
                     {
-                        angularTarget = (angularTarget * AngularVelocityMagic) * Time.fixedDeltaTime;
+                        angularTarget = (angularTarget * angularVelocityMagic) * Time.deltaTime;
                         angularTarget = Vector3.MoveTowards(Item.Rigidbody.angularVelocity, angularTarget, MaxAngularVelocityChange);
                         Item.AddExternalAngularVelocity(angularTarget);
                     }

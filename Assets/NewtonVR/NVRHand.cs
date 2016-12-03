@@ -510,7 +510,7 @@ namespace NewtonVR
 
             LastPositions[EstimationSampleIndex] = this.transform.position;
             LastRotations[EstimationSampleIndex] = this.transform.rotation;
-            LastDeltas[EstimationSampleIndex] = Time.fixedDeltaTime;
+            LastDeltas[EstimationSampleIndex] = Time.deltaTime;
             EstimationSampleIndex++;
 
             if (EstimationSampleIndex >= LastPositions.Length)

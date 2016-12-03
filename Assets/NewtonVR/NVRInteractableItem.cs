@@ -50,61 +50,72 @@ namespace NewtonVR
         {
             if (IsAttached == true)
             {
-                CheckForDrop();
+                bool dropped = CheckForDrop();
 
-                Quaternion rotationDelta;
-                Vector3 positionDelta;
-
-                float angle;
-                Vector3 axis;
-
-                if (InteractionPoint != null)
+                if (dropped == false)
                 {
-                    rotationDelta = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.rotation);
-                    positionDelta = (AttachedHand.transform.position - InteractionPoint.position);
-                }
-                else
-                {
-                    rotationDelta = PickupTransform.rotation * Quaternion.Inverse(this.transform.rotation);
-                    positionDelta = (PickupTransform.position - this.transform.position);
-                }
-
-                rotationDelta.ToAngleAxis(out angle, out axis);
-
-                if (angle > 180)
-                    angle -= 360;
-
-                if (angle != 0)
-                {
-                    Vector3 angularTarget = angle * axis;
-                    if (float.IsNaN(angularTarget.x) == false)
-                    {
-                        angularTarget = (angularTarget * AngularVelocityMagic) * Time.fixedDeltaTime;
-                        this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, angularTarget, MaxAngularVelocityChange);
-                    }
-                }
-
-                Vector3 velocityTarget = (positionDelta * VelocityMagic) * Time.fixedDeltaTime;
-                if (float.IsNaN(velocityTarget.x) == false)
-                {
-                    this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, velocityTarget, MaxVelocityChange);
-                }
-
-
-                if (VelocityHistory != null)
-                {
-                    CurrentVelocityHistoryStep++;
-                    if (CurrentVelocityHistoryStep >= VelocityHistory.Length)
-                    {
-                        CurrentVelocityHistoryStep = 0;
-                    }
-
-                    VelocityHistory[CurrentVelocityHistoryStep] = this.Rigidbody.velocity;
-                    AngularVelocityHistory[CurrentVelocityHistoryStep] = this.Rigidbody.angularVelocity;
+                    UpdateVelocities();
                 }
             }
 
             AddExternalVelocities();
+        }
+
+        protected virtual void UpdateVelocities()
+        {
+            float velocityMagic = VelocityMagic / (Time.deltaTime / NVRPlayer.NewtonVRExpectedDeltaTime);
+            float angularVelocityMagic = AngularVelocityMagic / (Time.deltaTime / NVRPlayer.NewtonVRExpectedDeltaTime);
+
+            Quaternion rotationDelta;
+            Vector3 positionDelta;
+
+            float angle;
+            Vector3 axis;
+
+            if (InteractionPoint != null || PickupTransform == null) //PickupTransform should only be null
+            {
+                rotationDelta = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.rotation);
+                positionDelta = (AttachedHand.transform.position - InteractionPoint.position);
+            }
+            else
+            {
+                rotationDelta = PickupTransform.rotation * Quaternion.Inverse(this.transform.rotation);
+                positionDelta = (PickupTransform.position - this.transform.position);
+            }
+
+            rotationDelta.ToAngleAxis(out angle, out axis);
+
+            if (angle > 180)
+                angle -= 360;
+
+            if (angle != 0)
+            {
+                Vector3 angularTarget = angle * axis;
+                if (float.IsNaN(angularTarget.x) == false)
+                {
+                    angularTarget = (angularTarget * angularVelocityMagic) * Time.deltaTime;
+                    this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, angularTarget, MaxAngularVelocityChange);
+                }
+            }
+
+            Vector3 velocityTarget = (positionDelta * velocityMagic) * Time.deltaTime;
+            if (float.IsNaN(velocityTarget.x) == false)
+            {
+                this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, velocityTarget, MaxVelocityChange);
+            }
+
+
+            if (VelocityHistory != null)
+            {
+                CurrentVelocityHistoryStep++;
+                if (CurrentVelocityHistoryStep >= VelocityHistory.Length)
+                {
+                    CurrentVelocityHistoryStep = 0;
+                }
+
+                VelocityHistory[CurrentVelocityHistoryStep] = this.Rigidbody.velocity;
+                AngularVelocityHistory[CurrentVelocityHistoryStep] = this.Rigidbody.angularVelocity;
+            }
         }
 
         protected virtual void AddExternalVelocities()

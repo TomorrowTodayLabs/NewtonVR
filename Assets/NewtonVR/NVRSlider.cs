@@ -40,12 +40,15 @@ namespace NewtonVR
         {
             if (IsAttached == true)
             {
-                CheckForDrop();
+                bool dropped = CheckForDrop();
 
-                Vector3 PositionDelta = (PickupTransform.position - this.transform.position);
+                if (dropped == false)
+                {
+                    Vector3 PositionDelta = (PickupTransform.position - this.transform.position);
 
-                Vector3 velocity = PositionDelta * AttachedPositionMagic * Time.fixedDeltaTime;
-                this.Rigidbody.velocity = ProjectVelocityOnPath(velocity, SliderPath);
+                    Vector3 velocity = PositionDelta * AttachedPositionMagic * Time.deltaTime;
+                    this.Rigidbody.velocity = ProjectVelocityOnPath(velocity, SliderPath);
+                }
             }
 
             if (this.transform.hasChanged == true)

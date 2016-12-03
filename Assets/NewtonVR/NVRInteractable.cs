@@ -60,7 +60,7 @@ namespace NewtonVR
             NVRInteractables.Register(this, Colliders);
         }
 
-        protected virtual void CheckForDrop()
+        protected virtual bool CheckForDrop()
         {
             float shortestDistance = float.MaxValue;
 
@@ -80,7 +80,10 @@ namespace NewtonVR
             if (DropDistance != -1 && AttachedHand.CurrentInteractionStyle != InterationStyle.ByScript && shortestDistance > DropDistance)
             {
                 DroppedBecauseOfDistance();
+                return true;
             }
+
+            return false;
         }
 
         //Remove items that go too high or too low.

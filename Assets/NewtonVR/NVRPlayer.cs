@@ -9,7 +9,8 @@ namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public const decimal NewtonVRVersion = 1.05m;
+        public const decimal NewtonVRVersion = 1.1m;
+        public const float NewtonVRExpectedDeltaTime = 0.0111f;
 
         public static List<NVRPlayer> Instances = new List<NVRPlayer>();
         public static NVRPlayer Instance
@@ -133,10 +134,16 @@ namespace NewtonVR
         public bool DEBUGDropFrames = false;
         public int DEBUGSleepPerFrame = 13;
 
+        public bool AutoSetFixedDeltaTime = true;
         public bool NotifyOnVersionUpdate = true;
 
         private void Awake()
         {
+            if (AutoSetFixedDeltaTime)
+            {
+                Time.fixedDeltaTime = NewtonVRExpectedDeltaTime;
+            }
+
             Instances.Add(this);
 
             NVRInteractables.Initialize();
