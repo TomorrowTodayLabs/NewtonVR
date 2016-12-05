@@ -149,7 +149,7 @@ namespace NewtonVR
 
         public virtual void GraspTargetEnd(NVRHand hand)
         {
-            GraspTargetCount--;
+            GraspTargetCount = Mathf.Max(GraspTargetCount - 1, 0);
         }
 
         protected virtual void DroppedBecauseOfDistance()
@@ -165,11 +165,6 @@ namespace NewtonVR
         public virtual void UseButtonDown()
         {
 
-        }
-
-        protected virtual void OnDisable()
-        {
-            ForceDetach();
         }
 
         protected virtual void OnDestroy()

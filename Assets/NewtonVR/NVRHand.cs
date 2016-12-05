@@ -128,12 +128,15 @@ namespace NewtonVR
                 if (ClosestGraspable != null)
                 {
                     GraspTargetEnd(ClosestGraspable);
+
+                    ClosestGraspable = newClosestGraspable;
                 }
-                if (newClosestGraspable != null)
+                if (newClosestGraspable != null && (newClosestGraspable.CanAttach == true))
                 {
                     GraspTargetBegin(newClosestGraspable);
+
+                    ClosestGraspable = newClosestGraspable;
                 }
-                ClosestGraspable = newClosestGraspable;
             }
         }
 
