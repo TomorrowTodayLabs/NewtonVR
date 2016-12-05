@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.VR;
 
 #if NVR_Oculus
 namespace NewtonVR
@@ -23,6 +24,33 @@ namespace NewtonVR
                 return boundary;
             }
         }
+
+        private OVRDisplay display;
+        private OVRDisplay Display
+        {
+            get
+            {
+                if (display == null)
+                {
+                    display = new OVRDisplay();
+                }
+                return display;
+            }
+        }
+
+        private OVRTracker tracker;
+        private OVRTracker Tracker
+        {
+            get
+            {
+                if (tracker == null)
+                {
+                    tracker = new OVRTracker();
+                }
+                return tracker;
+            }
+        }
+
 
         public override void Initialize(NVRPlayer player)
         {
@@ -53,6 +81,29 @@ namespace NewtonVR
 
             return PlayspaceBounds;
         }
+
+        public override bool IsHmdPresent()
+        {
+            if (Application.isPlaying == false) //try and enable vr if we're in the editor so we can get hmd present
+            {
+                if (VRSettings.enabled == false)
+                {
+                    VRSettings.enabled = true;
+                }
+
+                if (Display == null)
+                {
+                    return false;
+                }
+
+                if (Tracker == null)
+                {
+                    return false;
+                }
+            }
+
+            return OVRPlugin.hmdPresent;
+        }
     }
 }
 #else
@@ -67,6 +118,11 @@ namespace NewtonVR
         public override Vector3 GetPlayspaceBounds()
         {
             return Vector3.zero;
+        }
+
+        public override bool IsHmdPresent()
+        {
+            return false;
         }
     }
 }

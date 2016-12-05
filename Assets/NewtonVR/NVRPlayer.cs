@@ -9,7 +9,7 @@ namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public const decimal NewtonVRVersion = 1.11m;
+        public const decimal NewtonVRVersion = 1.12m;
         public const float NewtonVRExpectedDeltaTime = 0.0111f;
 
         public static List<NVRPlayer> Instances = new List<NVRPlayer>();
@@ -46,6 +46,14 @@ namespace NewtonVR
         {
             get
             {
+                #if !UNITY_5_5_OR_NEWER
+                if (Application.isPlaying == false)
+                {
+                    return Vector3.zero; //not supported in unity below 5.5.
+                }
+                #endif
+
+
                 if (Integration != null)
                 {
                     return Integration.GetPlayspaceBounds();
@@ -55,20 +63,26 @@ namespace NewtonVR
                     if (OculusSDKEnabled == true)
                     {
                         Integration = new NVROculusIntegration();
-                        Vector3 bounds = Integration.GetPlayspaceBounds();
-                        if (bounds != Vector3.zero)
+                        if (Integration.IsHmdPresent() == true)
                         {
-                            return bounds;
+                            return Integration.GetPlayspaceBounds();
+                        }
+                        else
+                        {
+                            Integration = null;
                         }
                     }
 
                     if (SteamVREnabled == true)
                     {
                         Integration = new NVRSteamVRIntegration();
-                        Vector3 bounds = Integration.GetPlayspaceBounds();
-                        if (bounds != Vector3.zero)
+                        if (Integration.IsHmdPresent() == true)
                         {
-                            return bounds;
+                            return Integration.GetPlayspaceBounds();
+                        }
+                        else
+                        {
+                            Integration = null;
                         }
                     }
 

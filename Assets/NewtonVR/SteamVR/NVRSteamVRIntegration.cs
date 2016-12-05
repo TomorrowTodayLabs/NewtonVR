@@ -68,6 +68,23 @@ namespace NewtonVR
 
             return PlayspaceBounds;
         }
+
+        public override bool IsHmdPresent()
+        {
+            bool initOpenVR = (!SteamVR.active && !SteamVR.usingNativeSupport);
+            if (initOpenVR)
+            {
+                EVRInitError error = EVRInitError.None;
+                OpenVR.Init(ref error, EVRApplicationType.VRApplication_Other);
+
+                if (error != EVRInitError.None)
+                {
+                    return false;
+                }
+            }
+
+            return OpenVR.IsHmdPresent();
+        }
     }
 }
 #else
@@ -82,6 +99,11 @@ namespace NewtonVR
         public override Vector3 GetPlayspaceBounds()
         {
             return Vector3.zero;
+        }
+
+        public override bool IsHmdPresent()
+        {
+            return false;
         }
     }
 }
