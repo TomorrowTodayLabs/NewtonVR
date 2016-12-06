@@ -7,13 +7,16 @@ namespace NewtonVR
 {
     public class NVRAttachPoint : MonoBehaviour
     {
+        private const float MaxVelocityChange = 5f;
+        private const float MaxAngularVelocityChange = 10f;
+        private const float VelocityMagic = 3000f;
+        private const float AngularVelocityMagic = 25f;
+
         [HideInInspector]
         public Rigidbody Rigidbody;
 
         [HideInInspector]
         public NVRInteractableItem Item;
-
-        public float PositionMagic = 10f;
 
         public bool IsAttached;
 
@@ -50,8 +53,12 @@ namespace NewtonVR
 
         public virtual void Attached(NVRAttachJoint joint)
         {
-            Vector3 TargetPosition = joint.transform.position + (Item.transform.position - this.transform.position);
-            Rigidbody.MovePosition(TargetPosition);
+            Vector3 targetPosition = joint.transform.position + (Item.transform.position - this.transform.position);
+            Rigidbody.MovePosition(targetPosition);
+            if (joint.MatchRotation == true)
+            {
+                Rigidbody.MoveRotation(joint.transform.rotation);
+            }
 
             Rigidbody.velocity = Vector3.zero;
             Rigidbody.angularVelocity = Vector3.zero; 
@@ -62,13 +69,51 @@ namespace NewtonVR
         public virtual void Detached(NVRAttachJoint joint)
         {
             IsAttached = false;
-            Rigidbody.useGravity = true;
+
+            if (Item.EnableGravityOnDetach == true)
+            {
+                Rigidbody.useGravity = true;
+            }
         }
 
-        public virtual void PullTowards(Vector3 jointPosition)
+        public virtual void PullTowards(NVRAttachJoint joint)
         {
-            Vector3 positionDelta = jointPosition - this.transform.position;
-            Item.AddVelocity(positionDelta);
+            float velocityMagic = VelocityMagic / (Time.deltaTime / NVRPlayer.NewtonVRExpectedDeltaTime);
+            float angularVelocityMagic = AngularVelocityMagic / (Time.deltaTime / NVRPlayer.NewtonVRExpectedDeltaTime);
+
+            Vector3 positionDelta = joint.transform.position - this.transform.position;
+            Vector3 velocityTarget = (positionDelta * velocityMagic) * Time.deltaTime;
+
+            if (float.IsNaN(velocityTarget.x) == false)
+            {
+                velocityTarget = Vector3.MoveTowards(Item.Rigidbody.velocity, velocityTarget, MaxVelocityChange);
+                Item.AddExternalVelocity(velocityTarget);
+            }
+
+
+            if (joint.MatchRotation == true)
+            {
+                Quaternion rotationDelta = joint.transform.rotation * Quaternion.Inverse(Item.transform.rotation);
+
+                float angle;
+                Vector3 axis;
+
+                rotationDelta.ToAngleAxis(out angle, out axis);
+
+                if (angle > 180)
+                    angle -= 360;
+
+                if (angle != 0)
+                {
+                    Vector3 angularTarget = angle * axis;
+                    if (float.IsNaN(angularTarget.x) == false)
+                    {
+                        angularTarget = (angularTarget * angularVelocityMagic) * Time.deltaTime;
+                        angularTarget = Vector3.MoveTowards(Item.Rigidbody.angularVelocity, angularTarget, MaxAngularVelocityChange);
+                        Item.AddExternalAngularVelocity(angularTarget);
+                    }
+                }
+            }
         }
     }
 }

@@ -47,7 +47,7 @@ namespace NewtonVR
             UpdateColliders();
         }
 
-        public virtual void Reset()
+        public virtual void ResetInteractable()
         {
             Awake();
             Start();
@@ -60,7 +60,7 @@ namespace NewtonVR
             NVRInteractables.Register(this, Colliders);
         }
 
-        protected virtual void CheckForDrop()
+        protected virtual bool CheckForDrop()
         {
             float shortestDistance = float.MaxValue;
 
@@ -80,7 +80,10 @@ namespace NewtonVR
             if (DropDistance != -1 && AttachedHand.CurrentInteractionStyle != InterationStyle.ByScript && shortestDistance > DropDistance)
             {
                 DroppedBecauseOfDistance();
+                return true;
             }
+
+            return false;
         }
 
         //Remove items that go too high or too low.
@@ -164,12 +167,12 @@ namespace NewtonVR
         }
 
 
-        public virtual void AddVelocity(Vector3 velocity)
+        public virtual void AddExternalVelocity(Vector3 velocity)
         {
             Rigidbody.AddForce(velocity, ForceMode.VelocityChange);
         }
 
-        public virtual void AddAngularVelocity(Vector3 angularVelocity)
+        public virtual void AddExternalAngularVelocity(Vector3 angularVelocity)
         {
             Rigidbody.AddTorque(angularVelocity, ForceMode.VelocityChange);
         }

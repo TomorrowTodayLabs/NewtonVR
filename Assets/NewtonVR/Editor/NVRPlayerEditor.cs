@@ -128,6 +128,11 @@ namespace NewtonVR
 
             string newDefines = string.Join(";", listDefines.ToArray());
             PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, newDefines);
+
+            if (PlayerSettings.virtualRealitySupported == false)
+            {
+                PlayerSettings.virtualRealitySupported = true;
+            }
         }
 
         private static void DisplayProgressBar(string newMessage = null)
@@ -342,7 +347,7 @@ namespace NewtonVR
 
             if (installOculusSDK == true)
             {
-                Application.OpenURL("https://developer3.oculus.com/downloads/game-engines/1.8.0/Oculus_Utilities_for_Unity_5/");
+                Application.OpenURL("https://developer3.oculus.com/downloads/game-engines/1.10.0/Oculus_Utilities_for_Unity_5/");
             }
 
             if (installSteamVR == true)

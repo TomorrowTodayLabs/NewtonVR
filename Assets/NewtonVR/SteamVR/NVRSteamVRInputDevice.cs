@@ -19,6 +19,8 @@ namespace NewtonVR
 
         private bool RenderModelInitialized = false;
 
+        private Dictionary<NVRButtons, EVRButtonId> ButtonMapping = new Dictionary<NVRButtons, EVRButtonId>(new NVRButtonsComparer());
+
         public override void Initialize(NVRHand hand)
         {
             SetupButtonMapping();
@@ -35,7 +37,6 @@ namespace NewtonVR
             SteamVR_Utils.Event.Remove("new_poses_applied", OnNewPosesApplied);
         }
 
-        private Dictionary<NVRButtons, EVRButtonId> ButtonMapping = new Dictionary<NVRButtons, EVRButtonId>();
         protected virtual void SetupButtonMapping()
         {
             ButtonMapping.Add(NVRButtons.A, EVRButtonId.k_EButton_A);
@@ -259,6 +260,31 @@ namespace NewtonVR
 
                     Colliders = dk2TrackhatColliders.GetComponentsInChildren<Collider>();
                     break;
+
+                case "external_controllers":
+                    string name = "oculusTouch";
+                    if (Hand.IsLeft == true)
+                    {
+                        name += "Left";
+                    }
+                    else
+                    {
+                        name += "Right";
+                    }
+                    name += "Colliders";
+
+                    Transform touchColliders = ModelParent.transform.FindChild(name);
+                    if (touchColliders == null)
+                    {
+                        touchColliders = GameObject.Instantiate(Resources.Load<GameObject>("TouchControllers/" + name)).transform;
+                        touchColliders.parent = ModelParent.transform;
+                        touchColliders.localPosition = Vector3.zero;
+                        touchColliders.localRotation = Quaternion.identity;
+                        touchColliders.localScale = Vector3.one;
+                    }
+
+                    Colliders = touchColliders.GetComponentsInChildren<Collider>();
+                    break;
                 default:
                     Debug.LogError("[NewtonVR] NVRSteamVRInputDevice Error. Unsupported device type while trying to setup physical colliders: " + controllerModel);
                     break;
@@ -322,6 +348,14 @@ namespace NewtonVR
                     }
 
                     Colliders = new Collider[] { dk2TrackhatCollider };
+                    break;
+
+                case "external_controllers":
+                    SphereCollider OculusCollider = renderModel.gameObject.AddComponent<SphereCollider>();
+                    OculusCollider.isTrigger = true;
+                    OculusCollider.radius = 0.15f;
+
+                    Colliders = new Collider[] { OculusCollider };
                     break;
 
                 default:

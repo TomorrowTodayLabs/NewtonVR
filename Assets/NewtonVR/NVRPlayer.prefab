@@ -155,7 +155,8 @@ MonoBehaviour:
   NormalCursorScale: 0.05
   LaserEnabled: 1
   LaserColor: {r: 0, g: 0, b: 1, a: 1}
-  LaserWidth: 0.01
+  LaserStartWidth: 0.02
+  LaserEndWidth: 0.001
   OnCanvas: 0
   CanvasUsed: 0
 --- !u!114 &11457864
@@ -170,13 +171,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SteamVREnabled: 0
-  OculusSDKEnabled: 1
+  OculusSDKEnabled: 0
   InteractionStyle: 0
   PhysicalHands: 1
   MakeControllerInvisibleOnInteraction: 0
   AutomaticallySetControllerTransparency: 1
   VibrateOnHover: 1
   VelocityHistorySteps: 3
+  OnInitialized:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  EnableEditorPlayerPreview: 1
+  EditorPlayerPreview: {fileID: 4300000, guid: 4c5ee852bb16638409bc37f8004f52a2, type: 3}
+  EditorPlayspacePreview: {fileID: 4300000, guid: 53999722e4cf33d40b85a5c7a0c317fd,
+    type: 2}
+  EditorPlayspaceOverride: 0
+  EditorPlayspaceDefault: {x: 2, y: 1.5}
   OverrideAll: 0
   OverrideAllLeftHand: {fileID: 1000010689928708, guid: 55e83fd42960be248a3e117078f3da8b,
     type: 2}
@@ -208,6 +220,7 @@ MonoBehaviour:
   DEBUGEnableFallback2D: 0
   DEBUGDropFrames: 0
   DEBUGSleepPerFrame: 13
+  NotifyOnVersionUpdate: 1
 --- !u!114 &11464396
 MonoBehaviour:
   m_ObjectHideFlags: 1

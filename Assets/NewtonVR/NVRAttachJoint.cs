@@ -12,9 +12,11 @@ namespace NewtonVR
 
         public bool IsAttached { get { return AttachedItem != null; } }
 
-        public float PullRange = 0.1f;
-        public float AttachRange = 0.1f;
+        public float PullRange = 0.2f;
+        public float AttachRange = 0.01f;
         public float DropDistance = 0.1f;
+
+        public bool MatchRotation = true;
 
         protected virtual void OnTriggerStay(Collider col)
         {
@@ -31,7 +33,7 @@ namespace NewtonVR
                     }
                     else
                     {
-                        point.PullTowards(this.transform.position);
+                        point.PullTowards(this);
                     }
                 }
             }
@@ -55,7 +57,7 @@ namespace NewtonVR
             }
             else
             {
-                AttachedPoint.PullTowards(this.transform.position);
+                AttachedPoint.PullTowards(this);
             }
         }
 

@@ -80,5 +80,25 @@ namespace NewtonVR
             FieldInfo fieldInfo = obj.GetType().GetField(fieldName, flags);
             fieldInfo.SetValue(obj, value);
         }
+
+        public static void LineRendererSetColor(LineRenderer lineRenderer, Color startColor, Color endColor)
+        {
+            #if UNITY_5_5_OR_NEWER
+            lineRenderer.startColor = startColor;
+            lineRenderer.endColor = endColor;
+            #else
+            lineRenderer.SetColors(startColor, endColor);
+            #endif
+        }
+
+        public static void LineRendererSetWidth(LineRenderer lineRenderer, float startWidth, float endWidth)
+        {
+            #if UNITY_5_5_OR_NEWER
+            lineRenderer.startWidth = startWidth;
+            lineRenderer.endWidth = endWidth;
+            #else
+            lineRenderer.SetWidth(startWidth, endWidth);
+            #endif
+        }
     }
 }

@@ -116,13 +116,12 @@ namespace NewtonVR
 
             VisibilityLocked = false;
             
-            Inputs = new Dictionary<NVRButtons, NVRButtonInputs>();
-            System.Array buttonTypes = System.Enum.GetValues(typeof(NVRButtons));
-            foreach (NVRButtons buttonType in buttonTypes)
+            Inputs = new Dictionary<NVRButtons, NVRButtonInputs>(new NVRButtonsComparer());
+            for (int buttonIndex = 0; buttonIndex < NVRButtonsHelper.Array.Length; buttonIndex++)
             {
-                if (Inputs.ContainsKey(buttonType) == false) 
+                if (Inputs.ContainsKey(NVRButtonsHelper.Array[buttonIndex]) == false) 
                 {
-                    Inputs.Add(buttonType, new NVRButtonInputs());
+                    Inputs.Add(NVRButtonsHelper.Array[buttonIndex], new NVRButtonInputs());
                 }
             }
 
@@ -172,7 +171,7 @@ namespace NewtonVR
             }
             else
             {
-                Debug.LogError("[NewtonVR] Critical Error: NVRPlayer.CurrentIntegration not setup.");
+                //Debug.LogError("[NewtonVR] Critical Error: NVRPlayer.CurrentIntegration not setup.");
                 return;
             }
 
@@ -229,8 +228,10 @@ namespace NewtonVR
         {
             if (CurrentHandState == HandState.Idle)
             {
-                foreach (var hoveringOver in CurrentlyHoveringOver)
+                var hoveringEnumerator = CurrentlyHoveringOver.GetEnumerator();
+                while (hoveringEnumerator.MoveNext())
                 {
+                    var hoveringOver = hoveringEnumerator.Current;
                     if (hoveringOver.Value.Count > 0)
                     {
                         hoveringOver.Key.HoveringUpdate(this, Time.time - hoveringOver.Value.OrderBy(colliderTime => colliderTime.Value).First().Value);
@@ -241,19 +242,21 @@ namespace NewtonVR
 
         protected void UpdateButtonStates()
         {
-            foreach (var button in Inputs)
+            for (int index = 0; index < NVRButtonsHelper.Array.Length; index++)
             {
-                button.Value.Axis = InputDevice.GetAxis2D(button.Key);
-                button.Value.SingleAxis = InputDevice.GetAxis1D(button.Key);
-                button.Value.PressDown = InputDevice.GetPressDown(button.Key);
-                button.Value.PressUp = InputDevice.GetPressUp(button.Key);
-                button.Value.IsPressed = InputDevice.GetPress(button.Key);
-                button.Value.TouchDown = InputDevice.GetTouchDown(button.Key);
-                button.Value.TouchUp = InputDevice.GetTouchUp(button.Key);
-                button.Value.IsTouched = InputDevice.GetTouch(button.Key);
-                button.Value.NearTouchDown = InputDevice.GetNearTouchDown(button.Key);
-                button.Value.NearTouchUp = InputDevice.GetNearTouchUp(button.Key);
-                button.Value.IsNearTouched = InputDevice.GetNearTouch(button.Key);
+                NVRButtons nvrbutton = NVRButtonsHelper.Array[index];
+                NVRButtonInputs button = Inputs[nvrbutton];
+                button.Axis = InputDevice.GetAxis2D(nvrbutton);
+                button.SingleAxis = InputDevice.GetAxis1D(nvrbutton);
+                button.PressDown = InputDevice.GetPressDown(nvrbutton);
+                button.PressUp = InputDevice.GetPressUp(nvrbutton);
+                button.IsPressed = InputDevice.GetPress(nvrbutton);
+                button.TouchDown = InputDevice.GetTouchDown(nvrbutton);
+                button.TouchUp = InputDevice.GetTouchUp(nvrbutton);
+                button.IsTouched = InputDevice.GetTouch(nvrbutton);
+                button.NearTouchDown = InputDevice.GetNearTouchDown(nvrbutton);
+                button.NearTouchUp = InputDevice.GetNearTouchUp(nvrbutton);
+                button.IsNearTouched = InputDevice.GetNearTouch(nvrbutton);
             }
 
             HoldButtonPressed = Inputs[HoldButton].IsPressed;
@@ -507,7 +510,7 @@ namespace NewtonVR
 
             LastPositions[EstimationSampleIndex] = this.transform.position;
             LastRotations[EstimationSampleIndex] = this.transform.rotation;
-            LastDeltas[EstimationSampleIndex] = Time.fixedDeltaTime;
+            LastDeltas[EstimationSampleIndex] = Time.deltaTime;
             EstimationSampleIndex++;
 
             if (EstimationSampleIndex >= LastPositions.Length)

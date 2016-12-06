@@ -9,7 +9,7 @@ namespace NewtonVR.Example
         {
             GameObject duplicate = GameObject.Instantiate(this.gameObject);
             duplicate.transform.Translate(0, Random.value, 0, Space.World);
-            duplicate.GetComponent<NVRInteractableItem>().Reset();
+            duplicate.GetComponent<NVRInteractableItem>().ResetInteractable();
         }
     }
 }

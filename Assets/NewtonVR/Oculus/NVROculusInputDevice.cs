@@ -11,7 +11,15 @@ namespace NewtonVR
 {
     public class NVROculusInputDevice : NVRInputDevice
     {
+        private GameObject RenderModel;
+
         private OVRInput.Controller Controller;
+
+        private Dictionary<NVRButtons, OVRInput.Button> ButtonMapping = new Dictionary<NVRButtons, OVRInput.Button>(new NVRButtonsComparer());
+        private Dictionary<NVRButtons, OVRInput.Touch> TouchMapping = new Dictionary<NVRButtons, OVRInput.Touch>(new NVRButtonsComparer());
+        private Dictionary<NVRButtons, OVRInput.NearTouch> NearTouchMapping = new Dictionary<NVRButtons, OVRInput.NearTouch>(new NVRButtonsComparer());
+        private Dictionary<NVRButtons, OVRInput.Axis1D> TriggerMapping = new Dictionary<NVRButtons, OVRInput.Axis1D>(new NVRButtonsComparer());
+        private Dictionary<NVRButtons, OVRInput.Axis2D> StickMapping = new Dictionary<NVRButtons, OVRInput.Axis2D>(new NVRButtonsComparer());
 
         public override void Initialize(NVRHand hand)
         {
@@ -30,11 +38,6 @@ namespace NewtonVR
             
         }
 
-        private Dictionary<NVRButtons, OVRInput.Button> ButtonMapping = new Dictionary<NVRButtons, OVRInput.Button>();
-        private Dictionary<NVRButtons, OVRInput.Touch> TouchMapping = new Dictionary<NVRButtons, OVRInput.Touch>();
-        private Dictionary<NVRButtons, OVRInput.NearTouch> NearTouchMapping = new Dictionary<NVRButtons, OVRInput.NearTouch>();
-        private Dictionary<NVRButtons, OVRInput.Axis1D> TriggerMapping = new Dictionary<NVRButtons, OVRInput.Axis1D>();
-        private Dictionary<NVRButtons, OVRInput.Axis2D> StickMapping = new Dictionary<NVRButtons, OVRInput.Axis2D>();
         protected virtual void SetupButtonMapping()
         {
             ButtonMapping.Add(NVRButtons.A, OVRInput.Button.One);
@@ -234,24 +237,22 @@ namespace NewtonVR
 
         public override GameObject SetupDefaultRenderModel()
         {
-            GameObject renderModel;
-
             if (Hand.IsLeft == true)
             {
-                renderModel = GameObject.Instantiate(Resources.Load<GameObject>("TouchControllers/oculusTouchLeft"));
+                RenderModel = GameObject.Instantiate(Resources.Load<GameObject>("TouchControllers/oculusTouchLeft"));
             }
             else
             {
-                renderModel = GameObject.Instantiate(Resources.Load<GameObject>("TouchControllers/oculusTouchRight"));
+                RenderModel = GameObject.Instantiate(Resources.Load<GameObject>("TouchControllers/oculusTouchRight"));
             }
 
-            renderModel.name = "Render Model for " + Hand.gameObject.name;
-            renderModel.transform.parent = Hand.transform;
-            renderModel.transform.localPosition = Vector3.zero;
-            renderModel.transform.localRotation = Quaternion.identity;
-            renderModel.transform.localScale = Vector3.one;
+            RenderModel.name = "Render Model for " + Hand.gameObject.name;
+            RenderModel.transform.parent = Hand.transform;
+            RenderModel.transform.localPosition = Vector3.zero;
+            RenderModel.transform.localRotation = Quaternion.identity;
+            RenderModel.transform.localScale = Vector3.one;
 
-            return renderModel;
+            return RenderModel;
         }
 
         public override bool ReadyToInitialize()
@@ -304,10 +305,8 @@ namespace NewtonVR
         public override Collider[] SetupDefaultColliders()
         {
             Collider[] Colliders = null;
-
-            //string controllerModel = GetDeviceName();
-
-            SphereCollider OculusCollider = this.gameObject.AddComponent<SphereCollider>();
+            
+            SphereCollider OculusCollider = RenderModel.AddComponent<SphereCollider>();
             OculusCollider.isTrigger = true;
             OculusCollider.radius = 0.15f;
 
