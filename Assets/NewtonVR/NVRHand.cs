@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -47,6 +48,12 @@ namespace NewtonVR
         private Dictionary<NVRInteractable, Dictionary<Collider, float>> CurrentlyHoveringOver;
 
         public NVRInteractable CurrentlyInteracting;
+
+		[Serializable]
+		public class NVRInteractableEvent : UnityEvent<NVRInteractable> { }
+
+        public NVRInteractableEvent OnBeginInteraction = new NVRInteractableEvent ();
+        public NVRInteractableEvent OnEndInteraction = new NVRInteractableEvent ();
 
         private int EstimationSampleIndex;
         private Vector3[] LastPositions;
@@ -516,6 +523,11 @@ namespace NewtonVR
 
                 CurrentlyInteracting = interactable;
                 CurrentlyInteracting.BeginInteraction(this);
+
+	            if (OnBeginInteraction != null)
+	            {
+	                OnBeginInteraction.Invoke(interactable);
+	            }
             }
         }
 
@@ -527,6 +539,12 @@ namespace NewtonVR
             if (CurrentlyInteracting != null)
             {
                 CurrentlyInteracting.EndInteraction();
+
+				if (OnEndInteraction != null)
+				{
+					OnEndInteraction.Invoke(CurrentlyInteracting);
+				}
+				
                 CurrentlyInteracting = null;
             }
 
