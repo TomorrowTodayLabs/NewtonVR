@@ -42,7 +42,8 @@ namespace NewtonVR
         private VisibilityLevel CurrentVisibility = VisibilityLevel.Visible;
         private bool VisibilityLocked = false;
 
-        private HandState CurrentHandState = HandState.Uninitialized;
+        [HideInInspector]
+        public HandState CurrentHandState = HandState.Uninitialized;
 
         private Dictionary<NVRInteractable, Dictionary<Collider, float>> CurrentlyHoveringOver;
 
@@ -752,15 +753,15 @@ namespace NewtonVR
             Rigidbody.maxAngularVelocity = float.MaxValue;
             Rigidbody.useGravity = false;
 
-            Collider[] Colliders = null;
+            Collider[] colliders = null;
 
             if (CustomModel == null)
             {
-                Colliders = InputDevice.SetupDefaultColliders();
+                colliders = InputDevice.SetupDefaultColliders();
             }
             else
             {
-                Colliders = RenderModel.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
+                colliders = RenderModel.GetComponentsInChildren<Collider>(); //note: these should be trigger colliders
             }
 
             Player.RegisterHand(this);
@@ -787,9 +788,9 @@ namespace NewtonVR
                     }
                 }
                 
-                if (Colliders != null)
+                if (colliders != null)
                 {
-                    GhostColliders = Colliders;
+                    GhostColliders = colliders;
                 }
 
                 CurrentVisibility = VisibilityLevel.Ghost;
@@ -808,9 +809,9 @@ namespace NewtonVR
                     }
                 }
 
-                if (Colliders != null)
+                if (colliders != null)
                 {
-                    GhostColliders = Colliders;
+                    GhostColliders = colliders;
                 }
 
                 CurrentVisibility = VisibilityLevel.Ghost;
