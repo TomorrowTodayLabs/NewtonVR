@@ -16,15 +16,33 @@ namespace NewtonVR
             this.Rigidbody.maxAngularVelocity = 100f;
         }
 
+
+        /*
+         * Charm Games, December 21 2016:  Added to allow subclass 
+         * to override when rotational force is applied.
+         */
+        protected virtual bool ShouldApplyRotationForce()
+        {
+            return (IsAttached == true);
+        }
+
+        /*
+         * Charm Games, December 21 2016:  Added to allow subclass 
+         * to override how rotational force is applied.
+         */
+        protected virtual void ApplyRotationalForce()
+        {
+            Vector3 PositionDelta = (AttachedHand.transform.position - InitialAttachPoint.position) * DeltaMagic;
+            this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
+        }
+
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (IsAttached == true)
+            if (ShouldApplyRotationForce())
             {
-                Vector3 PositionDelta = (AttachedHand.transform.position - InitialAttachPoint.position) * DeltaMagic;
-
-                this.Rigidbody.AddForceAtPosition(PositionDelta, InitialAttachPoint.position, ForceMode.VelocityChange);
+                ApplyRotationalForce();
             }
 
             CurrentAngle = this.transform.localEulerAngles.z;
