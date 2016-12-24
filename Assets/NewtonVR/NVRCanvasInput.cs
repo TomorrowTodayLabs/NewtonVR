@@ -51,6 +51,7 @@ namespace NewtonVR
                 ControllerCamera.transform.parent = Player.transform;
                 ControllerCamera.clearFlags = CameraClearFlags.Nothing;
                 ControllerCamera.cullingMask = 0; // 1 << LayerMask.NameToLayer("UI"); 
+                ControllerCamera.stereoTargetEye = StereoTargetEyeMask.None;
 
                 Cursors = new RectTransform[Player.Hands.Length];
                 Lasers = new LineRenderer[Cursors.Length];
