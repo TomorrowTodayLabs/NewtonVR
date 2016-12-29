@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Events;
+using System.Linq;
 
 namespace NewtonVR
 {
@@ -33,6 +35,8 @@ namespace NewtonVR
 
         protected float StartingDrag = -1;
         protected float StartingAngularDrag = -1;
+
+        protected Dictionary<Collider, PhysicMaterial> MaterialCache = new Dictionary<Collider, PhysicMaterial>();
 
         protected override void Awake()
         {
@@ -166,6 +170,8 @@ namespace NewtonVR
             Rigidbody.drag = 0;
             Rigidbody.angularDrag = 0.05f;
 
+            DisablePhysicalMaterials();
+
             PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", this.gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
             PickupTransform.position = this.transform.position;
@@ -190,6 +196,8 @@ namespace NewtonVR
             {
                 Destroy(PickupTransform.gameObject);
             }
+
+            EnablePhysicalMaterials();
 
             ApplyVelocityHistory();
             ResetVelocityHistory();
@@ -290,6 +298,54 @@ namespace NewtonVR
             }
 
             return null;
+        }
+
+        protected void DisablePhysicalMaterials()
+        {
+            for (int colliderIndex = 0; colliderIndex < Colliders.Length; colliderIndex++)
+            {
+                if (Colliders[colliderIndex] == null)
+                {
+                    continue;
+                }
+
+                MaterialCache[Colliders[colliderIndex]] = Colliders[colliderIndex].sharedMaterial;
+                Colliders[colliderIndex].sharedMaterial = null;
+            }
+        }
+
+        protected void EnablePhysicalMaterials()
+        {
+            for (int colliderIndex = 0; colliderIndex < Colliders.Length; colliderIndex++)
+            {
+                if (Colliders[colliderIndex] == null)
+                {
+                    continue;
+                }
+
+                if (MaterialCache.ContainsKey(Colliders[colliderIndex]) == true)
+                {
+                    Colliders[colliderIndex].sharedMaterial = MaterialCache[Colliders[colliderIndex]];
+                }
+            }
+        }
+
+        public override void UpdateColliders()
+        {
+            base.UpdateColliders();
+
+            for (int colliderIndex = 0; colliderIndex < Colliders.Length; colliderIndex++)
+            {
+                if (MaterialCache.ContainsKey(Colliders[colliderIndex]) == false)
+                {
+                    MaterialCache.Add(Colliders[colliderIndex], Colliders[colliderIndex].sharedMaterial);
+
+                    if (IsAttached == true)
+                    {
+                        Colliders[colliderIndex].sharedMaterial = null;
+                    }
+                }
+            }
         }
     }
 }
