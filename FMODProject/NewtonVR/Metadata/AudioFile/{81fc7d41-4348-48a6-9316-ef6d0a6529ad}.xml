@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.08.00">
+    <object class="AudioFile" id="{81fc7d41-4348-48a6-9316-ef6d0a6529ad}">
+        <property name="assetPath">
+            <value>Collisions/surfaces/surface - glass/surface - glass 4.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>0.16428571428571428</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{df5bdea7-351b-4ee0-bbd3-53a4a8d8ac13}</destination>
+        </relationship>
+    </object>
+</objects>

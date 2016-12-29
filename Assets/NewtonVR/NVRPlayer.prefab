@@ -120,6 +120,7 @@ MonoBehaviour:
   Rigidbody: {fileID: 0}
   CustomModel: {fileID: 0}
   CustomPhysicalColliders: {fileID: 0}
+  CurrentHandState: 0
   CurrentlyInteracting: {fileID: 0}
 --- !u!114 &11424654
 MonoBehaviour:
@@ -190,13 +191,13 @@ MonoBehaviour:
   EditorPlayspaceOverride: 0
   EditorPlayspaceDefault: {x: 2, y: 1.5}
   OverrideAll: 0
-  OverrideAllLeftHand: {fileID: 1000010689928708, guid: 55e83fd42960be248a3e117078f3da8b,
+  OverrideAllLeftHand: {fileID: 56742944, guid: 55e83fd42960be248a3e117078f3da8b,
     type: 2}
-  OverrideAllLeftHandPhysicalColliders: {fileID: 1000010146798540, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
+  OverrideAllLeftHandPhysicalColliders: {fileID: 54487328, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
     type: 2}
-  OverrideAllRightHand: {fileID: 1000010689928708, guid: 55e83fd42960be248a3e117078f3da8b,
+  OverrideAllRightHand: {fileID: 56745632, guid: 55e83fd42960be248a3e117078f3da8b,
     type: 2}
-  OverrideAllRightHandPhysicalColliders: {fileID: 1000010146798540, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
+  OverrideAllRightHandPhysicalColliders: {fileID: 56746656, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
     type: 2}
   OverrideSteamVR: 0
   OverrideSteamVRLeftHand: {fileID: 0}
@@ -204,13 +205,13 @@ MonoBehaviour:
   OverrideSteamVRRightHand: {fileID: 0}
   OverrideSteamVRRightHandPhysicalColliders: {fileID: 0}
   OverrideOculus: 0
-  OverrideOculusLeftHand: {fileID: 1000010689928708, guid: 55e83fd42960be248a3e117078f3da8b,
+  OverrideOculusLeftHand: {fileID: 56752288, guid: 55e83fd42960be248a3e117078f3da8b,
     type: 2}
-  OverrideOculusLeftHandPhysicalColliders: {fileID: 1000010146798540, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
+  OverrideOculusLeftHandPhysicalColliders: {fileID: 56753312, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
     type: 2}
-  OverrideOculusRightHand: {fileID: 1000010689928708, guid: 55e83fd42960be248a3e117078f3da8b,
+  OverrideOculusRightHand: {fileID: 54486560, guid: 55e83fd42960be248a3e117078f3da8b,
     type: 2}
-  OverrideOculusRightHandPhysicalColliders: {fileID: 1000010146798540, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
+  OverrideOculusRightHandPhysicalColliders: {fileID: 56641824, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
     type: 2}
   Head: {fileID: 114000011294332214}
   LeftHand: {fileID: 11419036}
@@ -220,6 +221,7 @@ MonoBehaviour:
   DEBUGEnableFallback2D: 0
   DEBUGDropFrames: 0
   DEBUGSleepPerFrame: 13
+  AutoSetFixedDeltaTime: 1
   NotifyOnVersionUpdate: 1
 --- !u!114 &11464396
 MonoBehaviour:
@@ -249,6 +251,7 @@ MonoBehaviour:
   Rigidbody: {fileID: 0}
   CustomModel: {fileID: 0}
   CustomPhysicalColliders: {fileID: 0}
+  CurrentHandState: 0
   CurrentlyInteracting: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:

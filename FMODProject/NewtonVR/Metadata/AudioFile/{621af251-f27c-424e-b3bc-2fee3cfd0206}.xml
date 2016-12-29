@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.08.00">
+    <object class="AudioFile" id="{621af251-f27c-424e-b3bc-2fee3cfd0206}">
+        <property name="assetPath">
+            <value>Collisions/objects/object - ping pong paddle/object - ping pong paddle 6.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>0.21281179138321996</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{df5bdea7-351b-4ee0-bbd3-53a4a8d8ac13}</destination>
+        </relationship>
+    </object>
+</objects>
