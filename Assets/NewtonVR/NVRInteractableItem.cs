@@ -13,6 +13,8 @@ namespace NewtonVR
         private const float VelocityMagic = 6000f;
         private const float AngularVelocityMagic = 50f;
 
+        public bool DisablePhysicalMaterialsOnAttach = true;
+
         [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
         public Transform InteractionPoint;
 
@@ -170,7 +172,10 @@ namespace NewtonVR
             Rigidbody.drag = 0;
             Rigidbody.angularDrag = 0.05f;
 
-            DisablePhysicalMaterials();
+            if (DisablePhysicalMaterialsOnAttach == true)
+            {
+                DisablePhysicalMaterials();
+            }
 
             PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", this.gameObject.name)).transform;
             PickupTransform.parent = hand.transform;
@@ -197,7 +202,10 @@ namespace NewtonVR
                 Destroy(PickupTransform.gameObject);
             }
 
-            EnablePhysicalMaterials();
+            if (DisablePhysicalMaterialsOnAttach == true)
+            {
+                EnablePhysicalMaterials();
+            }
 
             ApplyVelocityHistory();
             ResetVelocityHistory();
@@ -334,15 +342,18 @@ namespace NewtonVR
         {
             base.UpdateColliders();
 
-            for (int colliderIndex = 0; colliderIndex < Colliders.Length; colliderIndex++)
+            if (DisablePhysicalMaterialsOnAttach == true)
             {
-                if (MaterialCache.ContainsKey(Colliders[colliderIndex]) == false)
+                for (int colliderIndex = 0; colliderIndex < Colliders.Length; colliderIndex++)
                 {
-                    MaterialCache.Add(Colliders[colliderIndex], Colliders[colliderIndex].sharedMaterial);
-
-                    if (IsAttached == true)
+                    if (MaterialCache.ContainsKey(Colliders[colliderIndex]) == false)
                     {
-                        Colliders[colliderIndex].sharedMaterial = null;
+                        MaterialCache.Add(Colliders[colliderIndex], Colliders[colliderIndex].sharedMaterial);
+
+                        if (IsAttached == true)
+                        {
+                            Colliders[colliderIndex].sharedMaterial = null;
+                        }
                     }
                 }
             }
