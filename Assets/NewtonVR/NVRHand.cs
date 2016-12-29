@@ -55,7 +55,8 @@ namespace NewtonVR
         private float[] LastDeltas;
         private int EstimationSamples = 5;
 
-        private NVRPhysicalController PhysicalController;
+        [HideInInspector]
+        public NVRPhysicalController PhysicalController;
 
         private Collider[] GhostColliders;
         private Renderer[] GhostRenderers;
@@ -95,6 +96,34 @@ namespace NewtonVR
                 }
 
                 return false;
+            }
+        }
+        public Vector3 CurrentForward
+        {
+            get
+            {
+                if (PhysicalController != null && PhysicalController.State == true)
+                {
+                    return PhysicalController.PhysicalController.transform.forward;
+                }
+                else
+                {
+                    return this.transform.forward;
+                }
+            }
+        }
+        public Vector3 CurrentPosition
+        {
+            get
+            {
+                if (PhysicalController != null && PhysicalController.State == true)
+                {
+                    return PhysicalController.PhysicalController.transform.position;
+                }
+                else
+                {
+                    return this.transform.position;
+                }
             }
         }
 
