@@ -27,9 +27,13 @@ namespace NewtonVR
         public void Initialize(NVRHand trackingHand, bool initialState)
         {
             Hand = trackingHand;
-            
+
+            Hand.gameObject.SetActive(false);
+
             PhysicalController = GameObject.Instantiate(Hand.gameObject);
             PhysicalController.name = PhysicalController.name.Replace("(Clone)", " [Physical]");
+
+            Hand.gameObject.SetActive(true);
 
             Component[] components = PhysicalController.GetComponentsInChildren<Component>(true);
 
@@ -46,48 +50,16 @@ namespace NewtonVR
             PhysicalController.transform.position = Hand.transform.position;
             PhysicalController.transform.rotation = Hand.transform.rotation;
             PhysicalController.transform.localScale = Hand.transform.localScale;
-            
-            string controllerModel = Hand.GetDeviceName();
-            switch (controllerModel)
+
+            PhysicalController.SetActive(true);
+
+            if (Hand.HasCustomModel)
             {
-                case "Custom":
-                    Transform customCollidersTransform = null;
-                    if (Hand.CustomPhysicalColliders == null)
-                    {
-                        GameObject customColliders = GameObject.Instantiate(Hand.CustomModel);
-                        customColliders.name = "CustomColliders";
-                        customCollidersTransform = customColliders.transform;
-
-                        customCollidersTransform.parent = PhysicalController.transform;
-                        customCollidersTransform.localPosition = Vector3.zero;
-                        customCollidersTransform.localRotation = Quaternion.identity;
-                        customCollidersTransform.localScale = Vector3.one;
-
-                        foreach (Collider col in customColliders.GetComponentsInChildren<Collider>())
-                        {
-                            col.isTrigger = false;
-                        }
-
-                        Colliders = customCollidersTransform.GetComponentsInChildren<Collider>();
-                    }
-                    else
-                    {
-                        GameObject customColliders = GameObject.Instantiate(Hand.CustomPhysicalColliders);
-                        customColliders.name = "CustomColliders";
-                        customCollidersTransform = customColliders.transform;
-
-                        customCollidersTransform.parent = PhysicalController.transform;
-                        customCollidersTransform.localPosition = Vector3.zero;
-                        customCollidersTransform.localRotation = Quaternion.identity;
-                        customCollidersTransform.localScale = Hand.CustomPhysicalColliders.transform.localScale;
-                    }
-
-                    Colliders = customCollidersTransform.GetComponentsInChildren<Collider>();
-                    break;
-
-                default:
-                    Colliders = Hand.SetupDefaultPhysicalColliders(PhysicalController.transform);
-                    break;
+                SetupCustomModel();
+            }
+            else
+            {
+                Colliders = Hand.SetupDefaultPhysicalColliders(PhysicalController.transform);
             }
 
             if (Colliders == null)
@@ -141,28 +113,28 @@ namespace NewtonVR
         {
             Rigidbody.maxAngularVelocity = float.MaxValue; //this doesn't seem to be respected in nvrhand's init. or physical hand's init. not sure why. if anybody knows, let us know. -Keith 6/16/2016
 
-            Quaternion RotationDelta;
-            Vector3 PositionDelta;
+            Quaternion rotationDelta;
+            Vector3 positionDelta;
 
             float angle;
             Vector3 axis;
 
-            RotationDelta = Hand.transform.rotation * Quaternion.Inverse(PhysicalController.transform.rotation);
-            PositionDelta = (Hand.transform.position - PhysicalController.transform.position);
+            rotationDelta = Hand.transform.rotation * Quaternion.Inverse(PhysicalController.transform.rotation);
+            positionDelta = (Hand.transform.position - PhysicalController.transform.position);
 
-            RotationDelta.ToAngleAxis(out angle, out axis);
+            rotationDelta.ToAngleAxis(out angle, out axis);
 
             if (angle > 180)
                 angle -= 360;
 
             if (angle != 0)
             {
-                Vector3 AngularTarget = angle * axis;
-                this.Rigidbody.angularVelocity = AngularTarget;
+                Vector3 angularTarget = angle * axis;
+                this.Rigidbody.angularVelocity = angularTarget;
             }
 
-            Vector3 VelocityTarget = PositionDelta / Time.deltaTime;
-            this.Rigidbody.velocity = VelocityTarget;
+            Vector3 velocityTarget = positionDelta / Time.deltaTime;
+            this.Rigidbody.velocity = velocityTarget;
         }
 
         protected virtual void FixedUpdate()
@@ -198,6 +170,42 @@ namespace NewtonVR
             PhysicalController.SetActive(false);
 
             State = false;
+        }
+
+        protected void SetupCustomModel()
+        {
+            Transform customCollidersTransform = null;
+            if (Hand.CustomPhysicalColliders == null)
+            {
+                GameObject customColliders = GameObject.Instantiate(Hand.CustomModel);
+                customColliders.name = "CustomColliders";
+                customCollidersTransform = customColliders.transform;
+
+                customCollidersTransform.parent = PhysicalController.transform;
+                customCollidersTransform.localPosition = Vector3.zero;
+                customCollidersTransform.localRotation = Quaternion.identity;
+                customCollidersTransform.localScale = Vector3.one;
+
+                foreach (Collider col in customColliders.GetComponentsInChildren<Collider>())
+                {
+                    col.isTrigger = false;
+                }
+
+                Colliders = customCollidersTransform.GetComponentsInChildren<Collider>();
+            }
+            else
+            {
+                GameObject customColliders = GameObject.Instantiate(Hand.CustomPhysicalColliders);
+                customColliders.name = "CustomColliders";
+                customCollidersTransform = customColliders.transform;
+
+                customCollidersTransform.parent = PhysicalController.transform;
+                customCollidersTransform.localPosition = Vector3.zero;
+                customCollidersTransform.localRotation = Quaternion.identity;
+                customCollidersTransform.localScale = Hand.CustomPhysicalColliders.transform.localScale;
+            }
+
+            Colliders = customCollidersTransform.GetComponentsInChildren<Collider>();
         }
     }
 }
