@@ -6660,6 +6660,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000013505326784, guid: 3e357e9670ce1ce45aaa8b8bc95c47a7,
+        type: 2}
+      propertyPath: SoundEngine
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3e357e9670ce1ce45aaa8b8bc95c47a7, type: 2}
   m_IsPrefabParent: 0
@@ -9133,18 +9138,6 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11457864, guid: b0047dd65ff208349bf3a5aaaeae24d0, type: 2}
       propertyPath: SteamVREnabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11457864, guid: b0047dd65ff208349bf3a5aaaeae24d0, type: 2}
-      propertyPath: OculusSDKEnabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11457864, guid: b0047dd65ff208349bf3a5aaaeae24d0, type: 2}
-      propertyPath: EditorPlayspaceOverride
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11457864, guid: b0047dd65ff208349bf3a5aaaeae24d0, type: 2}
-      propertyPath: EnableEditorPlayerPreview
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

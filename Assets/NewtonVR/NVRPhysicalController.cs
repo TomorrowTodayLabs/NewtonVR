@@ -13,8 +13,9 @@ namespace NewtonVR
         public bool State = false;
         private Rigidbody Rigidbody;
 
+        [HideInInspector]
+        public GameObject PhysicalController;
         private Collider[] Colliders;
-        private GameObject PhysicalController;
 
         protected float DropDistance { get { return 1f; } }
         protected Vector3 ClosestHeldPoint;
