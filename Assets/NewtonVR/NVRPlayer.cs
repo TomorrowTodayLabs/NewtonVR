@@ -9,7 +9,7 @@ namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public const decimal NewtonVRVersion = 1.18m;
+        public const decimal NewtonVRVersion = 1.19m;
         public const float NewtonVRExpectedDeltaTime = 0.0111f;
 
         public static List<NVRPlayer> Instances = new List<NVRPlayer>();
@@ -41,17 +41,17 @@ namespace NewtonVR
         public Mesh EditorPlayspacePreview;
         public bool EditorPlayspaceOverride = false;
         public Vector2 EditorPlayspaceDefault = new Vector2(2, 1.5f);
-        
+
         public Vector3 PlayspaceSize
         {
             get
             {
-                #if !UNITY_5_5_OR_NEWER
+#if !UNITY_5_5_OR_NEWER
                 if (Application.isPlaying == false)
                 {
                     return Vector3.zero; //not supported in unity below 5.5.
                 }
-                #endif
+#endif
 
 
                 if (Integration != null)
@@ -237,26 +237,26 @@ namespace NewtonVR
             {
                 resultLog += "Found VRDevice: " + VRDevice.model + ". ";
 
-                #if !NVR_Oculus && !NVR_SteamVR
+#if !NVR_Oculus && !NVR_SteamVR
                 string warning = "Neither SteamVR or Oculus SDK is enabled in the NVRPlayer. Please check the \"Enable SteamVR\" or \"Enable Oculus SDK\" checkbox in the NVRPlayer script in the NVRPlayer GameObject.";
                 Debug.LogWarning(warning);
-                #endif
+#endif
 
-                #if NVR_Oculus
+#if NVR_Oculus
                 if (VRDevice.model.IndexOf("oculus", System.StringComparison.CurrentCultureIgnoreCase) != -1)
                 {
                     currentIntegration = NVRSDKIntegrations.Oculus;
                     resultLog += "Using Oculus SDK";
                 }
-                #endif
+#endif
 
-                #if NVR_SteamVR
+#if NVR_SteamVR
                 if (currentIntegration == NVRSDKIntegrations.None)
                 { 
                     currentIntegration = NVRSDKIntegrations.SteamVR;
                     resultLog += "Using SteamVR SDK";
                 }
-                #endif
+#endif
             }
 
             if (currentIntegration == NVRSDKIntegrations.None)
@@ -329,32 +329,47 @@ namespace NewtonVR
 
 
 #if UNITY_EDITOR
+        private static System.DateTime LastRequestedSize;
+        private static Vector3 CachedPlayspaceScale;
         private void OnDrawGizmos()
         {
             if (EnableEditorPlayerPreview == false)
                 return;
 
+            if (Application.isPlaying == true)
+                return;
+
+            System.TimeSpan lastRequested = System.DateTime.Now - LastRequestedSize;
             Vector3 playspaceScale;
-            if (EditorPlayspaceOverride == false)
+            if (lastRequested.TotalSeconds > 1)
             {
-                Vector3 returnedPlayspaceSize = PlayspaceSize;
-                if (returnedPlayspaceSize == Vector3.zero)
+                if (EditorPlayspaceOverride == false)
+                {
+                    Vector3 returnedPlayspaceSize = PlayspaceSize;
+                    if (returnedPlayspaceSize == Vector3.zero)
+                    {
+                        playspaceScale = EditorPlayspaceDefault;
+                        playspaceScale.z = playspaceScale.y;
+                    }
+                    else
+                    {
+                        playspaceScale = returnedPlayspaceSize;
+                    }
+                }
+                else
                 {
                     playspaceScale = EditorPlayspaceDefault;
                     playspaceScale.z = playspaceScale.y;
                 }
-                else
-                {
-                    playspaceScale = returnedPlayspaceSize;
-                }
+
+                playspaceScale.y = 1f;
+                LastRequestedSize = System.DateTime.Now;
             }
             else
             {
-                playspaceScale = EditorPlayspaceDefault;
-                playspaceScale.z = playspaceScale.y;
+                playspaceScale = CachedPlayspaceScale;
             }
-
-            playspaceScale.y = 1f;
+            CachedPlayspaceScale = playspaceScale;
 
             Color drawColor = Color.green;
             drawColor.a = 0.075f;

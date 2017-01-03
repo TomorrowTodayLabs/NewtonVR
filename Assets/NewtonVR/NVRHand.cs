@@ -50,11 +50,11 @@ namespace NewtonVR
 
         public NVRInteractable CurrentlyInteracting;
 
-		[Serializable]
-		public class NVRInteractableEvent : UnityEvent<NVRInteractable> { }
+        [Serializable]
+        public class NVRInteractableEvent : UnityEvent<NVRInteractable> { }
 
-        public NVRInteractableEvent OnBeginInteraction = new NVRInteractableEvent ();
-        public NVRInteractableEvent OnEndInteraction = new NVRInteractableEvent ();
+        public NVRInteractableEvent OnBeginInteraction = new NVRInteractableEvent();
+        public NVRInteractableEvent OnEndInteraction = new NVRInteractableEvent();
 
         private int EstimationSampleIndex;
         private Vector3[] LastPositions;
@@ -152,11 +152,11 @@ namespace NewtonVR
             EstimationSampleIndex = 0;
 
             VisibilityLocked = false;
-            
+
             Inputs = new Dictionary<NVRButtons, NVRButtonInputs>(new NVRButtonsComparer());
             for (int buttonIndex = 0; buttonIndex < NVRButtonsHelper.Array.Length; buttonIndex++)
             {
-                if (Inputs.ContainsKey(NVRButtonsHelper.Array[buttonIndex]) == false) 
+                if (Inputs.ContainsKey(NVRButtonsHelper.Array[buttonIndex]) == false)
                 {
                     Inputs.Add(NVRButtonsHelper.Array[buttonIndex], new NVRButtonInputs());
                 }
@@ -231,7 +231,7 @@ namespace NewtonVR
                     return;
                 }
             }
-            
+
 
             InputDevice.Initialize(this);
             InitializeRenderModel();
@@ -283,7 +283,7 @@ namespace NewtonVR
             {
                 NVRButtons nvrbutton = NVRButtonsHelper.Array[index];
                 NVRButtonInputs button = Inputs[nvrbutton];
-				button.FrameReset (InputDevice, nvrbutton);
+                button.FrameReset(InputDevice, nvrbutton);
             }
         }
 
@@ -469,7 +469,7 @@ namespace NewtonVR
             float delta = LastDeltas.Sum();
             Vector3 distance = Vector3.zero;
 
-            for (int index = 0; index < LastPositions.Length-1; index++)
+            for (int index = 0; index < LastPositions.Length - 1; index++)
             {
                 Vector3 diff = LastPositions[index + 1] - LastPositions[index];
                 distance += diff;
@@ -485,7 +485,7 @@ namespace NewtonVR
             Vector3 unitAxis = Vector3.zero;
             Quaternion rotation = Quaternion.identity;
 
-            rotation =  LastRotations[LastRotations.Length-1] * Quaternion.Inverse(LastRotations[LastRotations.Length-2]);
+            rotation = LastRotations[LastRotations.Length - 1] * Quaternion.Inverse(LastRotations[LastRotations.Length - 2]);
 
             //Error: the incorrect rotation is sometimes returned
             rotation.ToAngleAxis(out angleDegrees, out unitAxis);
@@ -554,10 +554,10 @@ namespace NewtonVR
                 CurrentlyInteracting = interactable;
                 CurrentlyInteracting.BeginInteraction(this);
 
-	            if (OnBeginInteraction != null)
-	            {
-	                OnBeginInteraction.Invoke(interactable);
-	            }
+                if (OnBeginInteraction != null)
+                {
+                    OnBeginInteraction.Invoke(interactable);
+                }
             }
         }
 
@@ -570,11 +570,11 @@ namespace NewtonVR
             {
                 CurrentlyInteracting.EndInteraction();
 
-				if (OnEndInteraction != null)
-				{
-					OnEndInteraction.Invoke(CurrentlyInteracting);
-				}
-				
+                if (OnEndInteraction != null)
+                {
+                    OnEndInteraction.Invoke(CurrentlyInteracting);
+                }
+
                 CurrentlyInteracting = null;
             }
 
@@ -814,7 +814,7 @@ namespace NewtonVR
                         NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
                     }
                 }
-                
+
                 if (colliders != null)
                 {
                     GhostColliders = colliders;
@@ -853,7 +853,7 @@ namespace NewtonVR
             PhysicalController.Off();
         }
     }
-    
+
     public enum VisibilityLevel
     {
         Invisible = 0,
@@ -863,7 +863,7 @@ namespace NewtonVR
 
     public enum HandState
     {
-        Uninitialized, 
+        Uninitialized,
         Idle,
         GripDownNotInteracting,
         GripDownInteracting,
