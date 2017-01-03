@@ -26,8 +26,6 @@ namespace NewtonVR
         public UnityEvent OnBeginInteraction;
         public UnityEvent OnEndInteraction;
 
-        protected Transform PickupTransform;
-
         protected Vector3 ExternalVelocity;
         protected Vector3 ExternalAngularVelocity;
 
@@ -39,6 +37,13 @@ namespace NewtonVR
         protected float StartingAngularDrag = -1;
 
         protected Dictionary<Collider, PhysicMaterial> MaterialCache = new Dictionary<Collider, PhysicMaterial>();
+
+        protected Vector3 PickupPointItem;
+        protected Quaternion PickupRotationItem;
+        protected Vector3 PickupPointHand;
+        protected Quaternion PickupRotationHand;
+        protected Vector3 PickupPointDiff;
+        protected Quaternion PickupRotationDelta;
 
         protected override void Awake()
         {
@@ -67,6 +72,14 @@ namespace NewtonVR
             AddExternalVelocities();
         }
 
+        private Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Quaternion rotation)
+        {
+            Vector3 dir = point - pivot; // get point direction relative to pivot
+            dir = rotation * dir; // rotate it
+            point = dir + pivot; // calculate rotated point
+            return point; // return it
+        }
+
         protected virtual void UpdateVelocities()
         {
             float velocityMagic = VelocityMagic / (Time.deltaTime / NVRPlayer.NewtonVRExpectedDeltaTime);
@@ -78,15 +91,26 @@ namespace NewtonVR
             float angle;
             Vector3 axis;
 
-            if (InteractionPoint != null || PickupTransform == null) //PickupTransform should only be null
+            if (InteractionPoint != null)
             {
-                rotationDelta = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.rotation);
-                positionDelta = (AttachedHand.transform.position - InteractionPoint.position);
+                rotationDelta = AttachedHand.Rigidbody.rotation * Quaternion.Inverse(InteractionPoint.rotation);
+                positionDelta = (AttachedHand.Rigidbody.position - InteractionPoint.position);
             }
             else
             {
-                rotationDelta = PickupTransform.rotation * Quaternion.Inverse(this.transform.rotation);
-                positionDelta = (PickupTransform.position - this.transform.position);
+                Quaternion currentHandRotationDelta = Quaternion.Inverse(PickupRotationHand) * AttachedHand.Rigidbody.rotation;
+
+                Quaternion targetRotation = PickupRotationItem * currentHandRotationDelta;
+                rotationDelta = Quaternion.Inverse(this.Rigidbody.rotation) * targetRotation;
+
+
+                Vector3 currentPickupPoint = RotatePointAroundPivot(PickupPointDiff + this.Rigidbody.position, this.Rigidbody.position, Quaternion.Inverse(PickupRotationItem) * this.Rigidbody.rotation);
+                Vector3 currentDiff = this.Rigidbody.position - currentPickupPoint;
+
+                Vector3 targetPosition = RotatePointAroundPivot(AttachedHand.Rigidbody.position + currentDiff, AttachedHand.Rigidbody.position, Quaternion.Inverse(PickupRotationHand) * AttachedHand.Rigidbody.rotation);
+
+
+                positionDelta = targetPosition - this.Rigidbody.position;
             }
 
             rotationDelta.ToAngleAxis(out angle, out axis);
@@ -99,12 +123,12 @@ namespace NewtonVR
                 Vector3 angularTarget = angle * axis;
                 if (float.IsNaN(angularTarget.x) == false)
                 {
-                    angularTarget = (angularTarget * angularVelocityMagic) * Time.deltaTime;
+                    angularTarget = angularTarget / (Time.deltaTime * 100);
                     this.Rigidbody.angularVelocity = Vector3.MoveTowards(this.Rigidbody.angularVelocity, angularTarget, MaxAngularVelocityChange);
                 }
             }
 
-            Vector3 velocityTarget = (positionDelta * velocityMagic) * Time.deltaTime;
+            Vector3 velocityTarget = positionDelta / Time.deltaTime;
             if (float.IsNaN(velocityTarget.x) == false)
             {
                 this.Rigidbody.velocity = Vector3.MoveTowards(this.Rigidbody.velocity, velocityTarget, MaxVelocityChange);
@@ -177,10 +201,12 @@ namespace NewtonVR
                 DisablePhysicalMaterials();
             }
 
-            PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", this.gameObject.name)).transform;
-            PickupTransform.parent = hand.transform;
-            PickupTransform.position = this.transform.position;
-            PickupTransform.rotation = this.transform.rotation;
+            PickupPointItem = this.Rigidbody.position;
+            PickupRotationItem = this.Rigidbody.rotation;
+            PickupPointHand = hand.Rigidbody.position;
+            PickupRotationHand = hand.Rigidbody.rotation;
+            PickupPointDiff = PickupPointHand - PickupPointItem;
+            PickupRotationDelta = Quaternion.Inverse(PickupRotationHand) * PickupRotationItem;
 
             ResetVelocityHistory();
 
@@ -196,11 +222,6 @@ namespace NewtonVR
 
             Rigidbody.drag = StartingDrag;
             Rigidbody.angularDrag = StartingAngularDrag;
-
-            if (PickupTransform != null)
-            {
-                Destroy(PickupTransform.gameObject);
-            }
 
             if (DisablePhysicalMaterialsOnAttach == true)
             {
