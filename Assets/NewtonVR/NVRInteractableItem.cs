@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
-using System.Linq;
 
 namespace NewtonVR
 {
@@ -27,6 +25,7 @@ namespace NewtonVR
         public UnityEvent OnEndInteraction;
 
         protected Transform PickupTransform;
+        protected Transform DualPickupTransform;
 
         protected Vector3 ExternalVelocity;
         protected Vector3 ExternalAngularVelocity;
@@ -85,6 +84,10 @@ namespace NewtonVR
             }
             else
             {
+                if (TwoHanded && SecondHand != null)
+                {
+                    UpdateDualPickupTransform();//start updating PickupTransform position and rotation every frame
+                }
                 rotationDelta = PickupTransform.rotation * Quaternion.Inverse(this.transform.rotation);
                 positionDelta = (PickupTransform.position - this.transform.position);
             }
@@ -216,6 +219,63 @@ namespace NewtonVR
             }
         }
 
+        public override void BeginDualInteration(NVRHand hand)
+        {
+            base.BeginDualInteration(hand);
+            //create DualPickupTransform at midpoint, parent PickupTransform to it
+            DualPickupTransform = new GameObject(string.Format("[{0}] NVRDualPickupTransform", this.gameObject.name)).transform;
+            DualPickupTransform.parent = hand.Player.transform;
+
+            //move PickupTransform to average of position and rotation between two attached hands
+
+            Vector3 offset = (AttachedHand._trans.position - SecondHand._trans.position) / 2;
+            Vector3 centerPoint = AttachedHand._trans.position - offset;
+            DualPickupTransform.position = centerPoint;
+            DualPickupTransform.LookAt(SecondHand._trans);
+
+            PickupTransform.parent = DualPickupTransform;//change PickupTransform parent to follow DualPickupTransform
+
+        }
+
+        protected virtual void UpdateDualPickupTransform()
+        {
+            Vector3 offset = (AttachedHand._trans.position - SecondHand._trans.position) / 2;
+            Vector3 centerPoint = AttachedHand._trans.position - offset;
+            DualPickupTransform.position = centerPoint;
+            DualPickupTransform.LookAt(SecondHand._trans);
+        }
+
+        public override void EndDualInteraction(NVRHand hand, bool forceFullDrop = false)
+        {
+            //remove hand and promote other hand to primary.
+            NVRHand otherHand;
+            if (AttachedHand == hand)
+            {
+                otherHand = SecondHand;
+                AttachedHand = SecondHand;
+                SecondHand = null;
+            }
+            else
+            {
+                otherHand = AttachedHand;
+                SecondHand = null;
+            }
+            //reset PickupTransform to hand position and parent
+            Transform otherHandT = otherHand.transform;
+            PickupTransform.parent = otherHandT;
+
+            if (DualPickupTransform != null) //remove DualPickupTransform when it is no longer in use
+            {
+                Destroy(DualPickupTransform.gameObject); //TODO: pool these to avoid GC (although it isn't very much or very frequent)
+            }
+
+            if (forceFullDrop)
+            {//end interation on the other hand if necessary
+                otherHand.EndInteraction(this);
+            }
+
+        }
+
         public override void HoveringUpdate(NVRHand hand, float forTime)
         {
             base.HoveringUpdate(hand, forTime);
@@ -228,7 +288,14 @@ namespace NewtonVR
 
         public override void ResetInteractable()
         {
-            EndInteraction();
+            if (TwoHanded && DualPickupTransform != null)
+            {
+                EndDualInteraction(AttachedHand, true);
+            }
+            else
+            {
+                EndInteraction();
+            }
             base.ResetInteractable();
         }
 

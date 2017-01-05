@@ -1,9 +1,9 @@
-using UnityEngine;
-using UnityEngine.Events;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.Events;
 
 namespace NewtonVR
 {
@@ -71,6 +71,8 @@ namespace NewtonVR
         private NVRInputDevice InputDevice;
 
         private GameObject RenderModel;
+        [HideInInspector]
+        public Transform _trans;
 
         public bool IsHovering
         {
@@ -132,6 +134,11 @@ namespace NewtonVR
                     return this.transform.position;
                 }
             }
+        }
+
+        private void Awake()
+        {
+            _trans = transform;  //cached to reduce GetComponent calls
         }
 
 
@@ -548,34 +555,57 @@ namespace NewtonVR
             {
                 if (interactable.AttachedHand != null)
                 {
-                    interactable.AttachedHand.EndInteraction(null);
+                    if (interactable.TwoHanded)
+                    {
+                        //this is where to handle two handed pickups
+                        CurrentlyInteracting = interactable;
+                        interactable.BeginDualInteration(this);
+                        return;
+                    }
+                    else
+                    {
+                        NVRHand tempHand = interactable.AttachedHand;  // this is just turning on the old hand in stiff mode
+                        interactable.AttachedHand.EndInteraction(null);
+                        tempHand.ForceEndHovering(interactable);
+                    }
                 }
 
                 CurrentlyInteracting = interactable;
                 CurrentlyInteracting.BeginInteraction(this);
-
-                if (OnBeginInteraction != null)
-                {
-                    OnBeginInteraction.Invoke(interactable);
-                }
             }
+            else
+            {
+                ForceEndHovering(interactable); //this should catch vibration error if you try to grab inactive
+            }
+            VisibilityLocked = false;
         }
 
-        public virtual void EndInteraction(NVRInteractable item)
+        public virtual void ForceEndHovering(NVRInteractable interactable)
+        {
+            if (interactable != null && CurrentlyHoveringOver.ContainsKey(interactable) == true)
+            {
+                //Debug.Log("Force end hovering: " + interactable.name + " on hand: " + name);
+                CurrentlyHoveringOver[interactable].Clear();
+                CurrentlyHoveringOver.Remove(interactable);
+            }
+        }
+        public virtual void EndInteraction(NVRInteractable item, bool forceFullDrop = false)
         {
             if (item != null && CurrentlyHoveringOver.ContainsKey(item) == true)
                 CurrentlyHoveringOver.Remove(item);
 
             if (CurrentlyInteracting != null)
             {
-                CurrentlyInteracting.EndInteraction();
-
-                if (OnEndInteraction != null)
+                if (CurrentlyInteracting.TwoHanded && CurrentlyInteracting.SecondHand != null)
                 {
-                    OnEndInteraction.Invoke(CurrentlyInteracting);
+                    CurrentlyInteracting.EndDualInteraction(this, forceFullDrop);
                 }
-
+                else
+                {
+                    CurrentlyInteracting.EndInteraction();
+                }
                 CurrentlyInteracting = null;
+                //CurrentHandState = HandState.JustDropped; //TODO- may need to publish functionality for making hand reappear after force drop
             }
 
             if (CurrentInteractionStyle == InterationStyle.Toggle)

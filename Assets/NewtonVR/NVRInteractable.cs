@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
+using UnityEngine;
 
 namespace NewtonVR
 {
@@ -8,7 +7,7 @@ namespace NewtonVR
         public Rigidbody Rigidbody;
 
         public bool CanAttach = true;
-        
+
         public bool DisableKinematicOnAttach = true;
         public bool EnableKinematicOnDetach = false;
         public float DropDistance = 1;
@@ -17,10 +16,18 @@ namespace NewtonVR
 
         public NVRHand AttachedHand = null;
 
+        [Tooltip("If checked, this object can be picked up with two hands")]
+        public bool TwoHanded = false;
+        [HideInInspector]
+        [Tooltip("This will be set to the second NVRHand that grabs the object.")]
+        public NVRHand SecondHand = null;
+        [HideInInspector]
+        public Transform _trans;
+
         protected Collider[] Colliders;
         protected Vector3 ClosestHeldPoint;
 
-        
+
 
         public virtual bool IsAttached
         {
@@ -31,7 +38,7 @@ namespace NewtonVR
         }
 
         protected virtual void Awake()
-        {   
+        {
             if (Rigidbody == null)
                 Rigidbody = this.GetComponent<Rigidbody>();
 
@@ -39,7 +46,7 @@ namespace NewtonVR
             {
                 Debug.LogError("There is no rigidbody attached to this interactable.");
             }
-
+            _trans = transform;  //cached to reduce GetComponent calls
         }
 
         protected virtual void Start()
@@ -148,6 +155,34 @@ namespace NewtonVR
             if (EnableGravityOnDetach == true)
             {
                 Rigidbody.useGravity = true;
+            }
+        }
+
+        public virtual void BeginDualInteration(NVRHand hand)
+        {
+            SecondHand = hand;
+
+        }
+
+        public virtual void EndDualInteraction(NVRHand hand, bool forceFullDrop = false)
+        {
+            //remove hand and promote other hand to primary.
+            NVRHand otherHand;
+            if (AttachedHand == hand)
+            {
+                otherHand = SecondHand;
+                AttachedHand = SecondHand;
+                SecondHand = null;
+            }
+            else
+            {
+                otherHand = AttachedHand;
+                SecondHand = null;
+            }
+            //reset PickupTransform to hand position and parent
+            if (forceFullDrop)
+            {
+                otherHand.EndInteraction(this);  //might not need to call it on 'this', may want null
             }
         }
 
