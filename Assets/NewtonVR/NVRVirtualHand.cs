@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NewtonVR
 {
-	public class NVRVirtualHand : NVRHand
+    public class NVRVirtualHand : NVRHand
     {
 		public enum Handedness
 		{
@@ -12,6 +12,8 @@ namespace NewtonVR
 		}
 
 		public Handedness Hand;
+		
+		public NVRInteractableEvent OnUseInteraction = new NVRInteractableEvent ();
 
 		void Start ()
 		{
@@ -93,6 +95,11 @@ namespace NewtonVR
 			if (CurrentlyInteracting != null)
 			{
 				CurrentlyInteracting.UseButtonDown ();
+				
+				if (OnUseInteraction != null)
+				{
+					OnUseInteraction.Invoke(CurrentlyInteracting);
+				}
 			}
 		}
 
