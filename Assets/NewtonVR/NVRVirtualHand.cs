@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace NewtonVR
@@ -12,8 +12,6 @@ namespace NewtonVR
 		}
 
 		public Handedness Hand;
-		
-		public NVRInteractableEvent OnUseInteraction = new NVRInteractableEvent ();
 
 		void Start ()
 		{
@@ -95,11 +93,6 @@ namespace NewtonVR
 			if (CurrentlyInteracting != null)
 			{
 				CurrentlyInteracting.UseButtonDown ();
-				
-				if (OnUseInteraction != null)
-				{
-					OnUseInteraction.Invoke(CurrentlyInteracting);
-				}
 			}
 		}
 
