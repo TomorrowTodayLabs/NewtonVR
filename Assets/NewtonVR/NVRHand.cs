@@ -55,6 +55,8 @@ namespace NewtonVR
 
         public NVRInteractableEvent OnBeginInteraction = new NVRInteractableEvent();
         public NVRInteractableEvent OnEndInteraction = new NVRInteractableEvent();
+        public NVRInteractableEvent OnBeginUseInteraction = new NVRInteractableEvent ();
+        public NVRInteractableEvent OnEndUseInteraction = new NVRInteractableEvent ();
 
         protected int EstimationSampleIndex;
         protected Vector3[] LastPositions;
