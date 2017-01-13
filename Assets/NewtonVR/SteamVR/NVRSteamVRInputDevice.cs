@@ -172,13 +172,8 @@ namespace NewtonVR
             }
         }
 
-        private void OnNewPosesApplied(params object[] args)
+        private void OnNewPosesApplied()
         {
-            if (args != null && args.Length > 0)
-            {
-                return;
-            }
-
             if (Controller == null)
                 return;
         }
