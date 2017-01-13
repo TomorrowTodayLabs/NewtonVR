@@ -34,7 +34,7 @@ namespace NewtonVR
         private static DateTime startedWaitingForReload;
 
         private static bool hasFMODSDK = false;
-        private static bool hasFMODDefine = false;
+        //private static bool hasFMODDefine = false;
 
         private static string progressBarMessage = null;
 
@@ -44,9 +44,9 @@ namespace NewtonVR
             hasReloaded = true;
             hasFMODSDK = DoesTypeExist("FMODPlatform");
 
-            string scriptingDefine = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
-            string[] scriptingDefines = scriptingDefine.Split(';');
-            hasFMODDefine = scriptingDefines.Contains(FMODDefine);
+            //string scriptingDefine = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
+            //string[] scriptingDefines = scriptingDefine.Split(';');
+            //hasFMODDefine = scriptingDefines.Contains(FMODDefine);
 
             waitingForReload = false;
             ClearProgressBar();

@@ -26,17 +26,13 @@ namespace NewtonVR
             SetupButtonMapping();
 
             base.Initialize(hand);
-            
-            SteamVR_Utils.Event.Listen("render_model_loaded", RenderModelLoaded);
-            SteamVR_Utils.Event.Listen("new_poses_applied", OnNewPosesApplied);
-            //SteamVR_Utils.Event.Listen("ModelSkinSettingsHaveChanged", OnModelSkinSettingsHaveChanged);
+
+            SteamVR_Events.RenderModelLoaded.Listen(RenderModelLoaded);
         }
 
         private void OnDestroy()
         {
-            SteamVR_Utils.Event.Remove("render_model_loaded", RenderModelLoaded);
-            SteamVR_Utils.Event.Remove("new_poses_applied", OnNewPosesApplied);
-            //SteamVR_Utils.Event.Remove("ModelSkinSettingsHaveChanged", OnModelSkinSettingsHaveChanged);
+            SteamVR_Events.RenderModelLoaded.Remove(RenderModelLoaded);
         }
 
         protected virtual void SetupButtonMapping()
@@ -172,17 +168,6 @@ namespace NewtonVR
             }
         }
 
-        private void OnNewPosesApplied(params object[] args)
-        {
-            if (args != null && args.Length > 0)
-            {
-                return;
-            }
-
-            if (Controller == null)
-                return;
-        }
-
         public override GameObject SetupDefaultRenderModel()
         {
             GameObject renderModel = new GameObject("Render Model for " + Hand.gameObject.name);
@@ -201,11 +186,8 @@ namespace NewtonVR
             return (RenderModelInitialized || Hand.HasCustomModel) && DeviceIndex != -1;
         }
 
-        private void RenderModelLoaded(params object[] args)
+        private void RenderModelLoaded(SteamVR_RenderModel renderModel, bool success)
         {
-            SteamVR_RenderModel renderModel = (SteamVR_RenderModel)args[0];
-            bool success = (bool)args[1];
-
             if ((int)renderModel.index == DeviceIndex)
                 RenderModelInitialized = success;
 
@@ -220,14 +202,6 @@ namespace NewtonVR
             DeviceIndex = index;
             Controller = SteamVR_Controller.Input(index);
         }
-        /*
-        private void OnModelSkinSettingsHaveChanged(params object[] args)
-        {
-            if (Hand != null && Hand.CurrentHandState != HandState.Uninitialized)
-            {
-                Hand.Initialize();
-            }
-        }*/
 
         public override string GetDeviceName()
         {
