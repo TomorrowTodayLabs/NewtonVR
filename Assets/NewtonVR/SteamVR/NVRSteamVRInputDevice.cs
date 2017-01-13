@@ -26,17 +26,17 @@ namespace NewtonVR
             SetupButtonMapping();
 
             base.Initialize(hand);
-            
-            SteamVR_Utils.Event.Listen("render_model_loaded", RenderModelLoaded);
-            SteamVR_Utils.Event.Listen("new_poses_applied", OnNewPosesApplied);
-            //SteamVR_Utils.Event.Listen("ModelSkinSettingsHaveChanged", OnModelSkinSettingsHaveChanged);
+
+            SteamVR_Events.RenderModelLoaded.Listen(RenderModelLoaded);
+            SteamVR_Events.NewPosesApplied.Listen(OnNewPosesApplied);
+            //SteamVR_Events.ModelSkinSettingsHaveChanged.Listen(OnModelSkinSettingsHaveChanged);
         }
 
         private void OnDestroy()
         {
-            SteamVR_Utils.Event.Remove("render_model_loaded", RenderModelLoaded);
-            SteamVR_Utils.Event.Remove("new_poses_applied", OnNewPosesApplied);
-            //SteamVR_Utils.Event.Remove("ModelSkinSettingsHaveChanged", OnModelSkinSettingsHaveChanged);
+            SteamVR_Events.RenderModelLoaded.Remove(RenderModelLoaded);
+            SteamVR_Events.NewPosesApplied.Remove(OnNewPosesApplied);
+            //SteamVR_Events.ModelSkinSettingsHaveChanged.Remove(OnModelSkinSettingsHaveChanged);
         }
 
         protected virtual void SetupButtonMapping()
@@ -201,11 +201,8 @@ namespace NewtonVR
             return (RenderModelInitialized || Hand.HasCustomModel) && DeviceIndex != -1;
         }
 
-        private void RenderModelLoaded(params object[] args)
+        private void RenderModelLoaded(SteamVR_RenderModel renderModel, bool success)
         {
-            SteamVR_RenderModel renderModel = (SteamVR_RenderModel)args[0];
-            bool success = (bool)args[1];
-
             if ((int)renderModel.index == DeviceIndex)
                 RenderModelInitialized = success;
 
