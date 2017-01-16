@@ -141,7 +141,7 @@ namespace NewtonVR
             
             SphereCollider Collider = RenderModel.AddComponent<SphereCollider>();
             Collider.isTrigger = true;
-            Collider.radius = 0.15f;
+            Collider.radius = 0.5f;
 
             Colliders = new Collider[] { Collider };
 
