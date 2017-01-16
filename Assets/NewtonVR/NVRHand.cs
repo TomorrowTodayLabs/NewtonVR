@@ -617,6 +617,36 @@ namespace NewtonVR
                 return false;
             }
         }
+        
+        protected bool PickupByName(string withName)
+        {
+            NVRInteractable closest = null;
+            float closestDistance = float.MaxValue;
+			
+
+            foreach (var hovering in CurrentlyHoveringOver)
+            {
+                if (hovering.Key == null)
+                    continue;
+
+                float distance = Vector3.Distance(this.transform.position, hovering.Key.transform.position);
+                if (distance < closestDistance && hovering.Key.name==withName)
+                {
+                    closestDistance = distance;
+                    closest = hovering.Key;
+                }
+            }
+
+            if (closest != null)
+            {
+                BeginInteraction(closest);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         protected virtual void OnTriggerEnter(Collider collider)
         {
