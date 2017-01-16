@@ -71,14 +71,25 @@ namespace NewtonVR
             UpdateVisibilityAndColliders();
         }
 
-		public void Hold ()
-		{
-			PickupClosest ();
-			if (IsInteracting)
+        public void Hold ()
+        {
+            PickupClosest();
+
+            if (IsInteracting)
             {
                 CurrentHandState = HandState.GripToggleOnInteracting;
             }
-		}
+        }
+
+        public void Hold (string withID)
+        {
+            PickupByName(withID);
+
+            if (IsInteracting)
+            {
+                CurrentHandState = HandState.GripToggleOnInteracting;
+            }
+        }
 
 		public void Release ()
 		{
