@@ -6,6 +6,17 @@ using System.Collections.Generic;
 
 namespace NewtonVR
 {
+    //
+    //
+    // The Wwise provider for the Collidion Sound framework.
+    //
+    // The Wwise events for the collision sounds are Play_sfx_collision_ with the Collision Sound material added
+    // to the end, for example Play_sfx_collision_wood and Play_sfx_collision_metal.
+    // The RTPC impactVolume (0 to 100) is used to convey the impact volume to the sound engine.
+    //
+    // The WwiseCollisionSoundPrefab prefab should be on a layer that will only collider with
+    // any Wwise environments set up.
+    //
     public class NVRCollisionSoundProviderWwise : NVRCollisionSoundProvider
     {
         private const string kSoundEventPrefix = "Play_sfx_collision_";
@@ -45,37 +56,6 @@ namespace NewtonVR
                 return eventStrings;
             }
         }
-
-#if false
-        private static Dictionary<NVRCollisionSoundMaterials, uint> eventIds;
-        public static Dictionary<NVRCollisionSoundMaterials, uint> EventIds
-        {
-            get
-            {
-                if (eventIds == null)
-                {
-                    eventIds = new Dictionary<NVRCollisionSoundMaterials, uint>(new EnumEqualityComparer<NVRCollisionSoundMaterials>());
-
-                    foreach (var mat in EventStrings)
-                    {
-                        if (mat.Key == NVRCollisionSoundMaterials.EndNewtonVRMaterials)
-                        {
-                            continue;
-                        }
-
-                        Debug.Log("Would be adding event id for \""+ mat.Key + "\"");
-                        uint event_id = AkSoundEngine.GetIDFromString(mat.Value);
-                        // FIXME: everything is using Play_sfx_brick_scrape for testing.
-                        //uint event_id = AkSoundEngine.GetIDFromString("Play_sfx_brick_scrape");
-                        eventIds.Add(mat.Key, event_id);
-
-                        Debug.Log("Would be adding event id for \"" + mat.Value + "\" " + event_id);
-                    }
-                }
-                return eventIds;
-            }
-        }
-#endif
 
         public override void Awake()
         {
@@ -123,7 +103,6 @@ namespace NewtonVR
             if (material == NVRCollisionSoundMaterials.none)
                 return;
 
-#if true
             string event_name = EventStrings[material];
 
             AkGameObj game_obj = AudioPool[CurrentPoolIndex];
@@ -163,33 +142,16 @@ namespace NewtonVR
 
             //Debug.Log("Position in Unity: " + AudioPool[CurrentPoolIndex].transform.position +
             //    " position in Wise: " + AudioPool[CurrentPoolIndex].GetPosition());
-            AkSoundEngine.PostEvent(event_name, AudioPool[CurrentPoolIndex].gameObject,
+            uint res = AkSoundEngine.PostEvent(event_name, AudioPool[CurrentPoolIndex].gameObject,
                 (uint)AkCallbackType.AK_EndOfEvent, DisableGameObjectCallback, game_obj);
 
-#else
-            uint event_id = EventIds[material];
-            if (event_id != AkSoundEngine.AK_INVALID_UNIQUE_ID)
+            if (res == AkSoundEngine.AK_INVALID_PLAYING_ID)
             {
                 //
-                // Position the object and post the event.
+                // Failed to play the sound
                 //
-                AudioPool[CurrentPoolIndex].transform.position = position;
-
-                //
-                // FIXME: need some sort of control for the impactVolume
-                //
-                //Debug.Log("Position in Unity: " + AudioPool[CurrentPoolIndex].transform.position +
-                //    " position in Wise: " + AudioPool[CurrentPoolIndex].GetPosition());
-                AkSoundEngine.PostEvent(event_id, AudioPool[CurrentPoolIndex].gameObject);
-
-                CurrentPoolIndex++;
-
-                if (CurrentPoolIndex >= AudioPool.Length)
-                {
-                    CurrentPoolIndex = 0;
-                }
+                DisableGameObject(game_obj);
             }
-#endif
         }
 
         void DisableGameObjectCallback(object in_cookie, AkCallbackType in_type, object in_info)
@@ -199,25 +161,30 @@ namespace NewtonVR
             {
                 //Debug.Log("Event has ended");
                 AkGameObj game_obj = in_cookie as AkGameObj;
-                if (game_obj != null)
-                {
-                    //
-                    // Disable the collider and GameObject to save processing the object
-                    // whilst it is not doing anything.
-                    //
-                    Collider collider = game_obj.GetComponent<Collider>();
-                    if (collider != null)
-                    {
-                        collider.enabled = false;
-                    }
+                DisableGameObject(game_obj);
+            }
+        }
 
-                    MeshRenderer renderer = game_obj.GetComponent<MeshRenderer>();
-                    if (renderer != null)
-                    {
-                        renderer.enabled = false;
-                    }
-                    game_obj.gameObject.SetActive(false);
+        void DisableGameObject(AkGameObj game_obj)
+        {
+            if (game_obj != null)
+            {
+                //
+                // Disable the collider and GameObject to save processing the object
+                // whilst it is not doing anything.
+                //
+                Collider collider = game_obj.GetComponent<Collider>();
+                if (collider != null)
+                {
+                    collider.enabled = false;
                 }
+
+                MeshRenderer renderer = game_obj.GetComponent<MeshRenderer>();
+                if (renderer != null)
+                {
+                    renderer.enabled = false;
+                }
+                game_obj.gameObject.SetActive(false);
             }
         }
     }

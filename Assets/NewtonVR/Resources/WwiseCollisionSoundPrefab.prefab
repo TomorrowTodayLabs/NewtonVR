@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 135613616579332808}
   - component: {fileID: 23563966296978462}
   - component: {fileID: 54349115421137502}
-  - component: {fileID: 114061680384917510}
+  - component: {fileID: 114560512069717974}
   m_Layer: 11
   m_Name: WwiseCollisionSoundPrefab
   m_TagString: Untagged
@@ -97,7 +97,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &114061680384917510
+--- !u!114 &114560512069717974
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -105,7 +105,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1482660113103954}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6876619c2c0ac0c41a14a18f04a0a571, type: 3}
+  m_Script: {fileID: 11500000, guid: 82f7efd21bfd38449b524cb45c06a4a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_positionOffsetData:
@@ -114,6 +114,7 @@ MonoBehaviour:
   isEnvironmentAware: 1
   listenerMask: 1
   isStaticObject: 0
+  m_posOffsetData: {fileID: 0}
 --- !u!135 &135613616579332808
 SphereCollider:
   m_ObjectHideFlags: 1
