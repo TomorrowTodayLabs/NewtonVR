@@ -97,12 +97,12 @@ namespace NewtonVR
         {
             get
             {
-                if (IsNearTouchedExpired)
+                if (IsTouchedExpired)
                 {
-                    IsNearTouchedCached = InputDevice.GetTouch(nvrbutton);
-                    IsNearTouchedExpired = false;
+                    IsTouchedCached = InputDevice.GetTouch(nvrbutton);
+                    IsTouchedExpired = false;
                 }
-                return IsNearTouchedCached;
+                return IsTouchedCached;
             }
         }
 
