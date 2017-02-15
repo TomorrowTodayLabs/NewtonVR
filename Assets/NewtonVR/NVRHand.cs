@@ -696,6 +696,14 @@ namespace NewtonVR
 
                     if (Player.AutomaticallySetControllerTransparency == true)
                     {
+                        //---
+                        // Since the colliders are getting disabled
+                        // the OnTriggerExit method will not be called
+                        // so CurrentlyHoveringOver will not be updated.
+                        // Clear CurrentlyHoveringOver here, it will be setup again once the colliders are reenabled.
+                        //---
+                        CurrentlyHoveringOver.Clear();
+
                         for (int index = 0; index < GhostRenderers.Length; index++)
                         {
                             GhostRenderers[index].enabled = false;
