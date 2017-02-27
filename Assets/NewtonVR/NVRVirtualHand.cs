@@ -71,7 +71,7 @@ namespace NewtonVR
             UpdateVisibilityAndColliders();
         }
 
-        public void Hold ()
+        public void Hold()
         {
             PickupClosest();
 
@@ -81,7 +81,7 @@ namespace NewtonVR
             }
         }
 
-        public void Hold (string withID)
+        public void Hold(string withID)
         {
             PickupByName(withID);
 
@@ -91,21 +91,29 @@ namespace NewtonVR
             }
         }
 
-		public void Release ()
-		{
-			if (CurrentlyInteracting != null)
-			{
-				EndInteraction (null);
-			}
-		}
+        public void Release()
+        {
+            if (CurrentlyInteracting != null)
+            {
+                EndInteraction (null);
+            }
+        }
 
-		public void Use ()
-		{
-			if (CurrentlyInteracting != null)
-			{
-				CurrentlyInteracting.UseButtonDown ();
-			}
-		}
+        public void Use()
+        {
+            if (CurrentlyInteracting != null)
+            {
+                CurrentlyInteracting.UseButtonDown ();
+            }
+        }
+
+        public void EndUse()
+        {
+            if (CurrentlyInteracting != null)
+            {
+                CurrentlyInteracting.UseButtonUp();
+            }
+        }
 
         public override void Initialize()
         {
