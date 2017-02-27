@@ -39,7 +39,7 @@ namespace NewtonVR
         {
             if (Initialized == false)
             {
-                Debug.LogError("[NewtonVR] Error: NVRInteractables.Register called before initialization.");
+                Debug.LogError("[NewtonVR] Error: NVRInteractables.Deregister called before initialization.");
             }
 
             NVRPlayer.DeregisterInteractable(interactable);
@@ -52,7 +52,7 @@ namespace NewtonVR
         {
             if (Initialized == false)
             {
-                Debug.LogError("[NewtonVR] Error: NVRInteractables.Register called before initialization.");
+                Debug.LogError("[NewtonVR] Error: NVRInteractables.GetInteractable called before initialization.");
             }
 
             NVRInteractable interactable;
