@@ -9,6 +9,7 @@ namespace NewtonVR
     {
         private static Dictionary<Collider, NVRInteractable> ColliderMapping;
         private static Dictionary<NVRInteractable, Collider[]> NVRInteractableMapping;
+        private static List<NVRInteractable> NVRInteractableList;
 
         private static bool Initialized = false;
 
@@ -16,6 +17,7 @@ namespace NewtonVR
         {
             ColliderMapping = new Dictionary<Collider, NVRInteractable>();
             NVRInteractableMapping = new Dictionary<NVRInteractable, Collider[]>();
+            NVRInteractableList = new List<NVRInteractable>();
 
             Initialized = true;
         }
@@ -33,6 +35,11 @@ namespace NewtonVR
             {
                 ColliderMapping[colliders[index]] = interactable;
             }
+
+            if (NVRInteractableList.Contains(interactable) == false)
+            {
+                NVRInteractableList.Add(interactable);
+            }
         }
 
         public static void Deregister(NVRInteractable interactable)
@@ -46,6 +53,8 @@ namespace NewtonVR
 
             ColliderMapping = ColliderMapping.Where(mapping => mapping.Value != interactable).ToDictionary(mapping => mapping.Key, mapping => mapping.Value);
             NVRInteractableMapping.Remove(interactable);
+
+            NVRInteractableList.Remove(interactable);
         }
 
         public static NVRInteractable GetInteractable(Collider collider)
@@ -58,6 +67,11 @@ namespace NewtonVR
             NVRInteractable interactable;
             ColliderMapping.TryGetValue(collider, out interactable);
             return interactable;
+        }
+
+        public static List<NVRInteractable> GetAllInteractables()
+        {
+            return NVRInteractableList;
         }
     }
 }
