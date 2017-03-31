@@ -45,13 +45,9 @@ namespace NewtonVR
 
             if (Initialized == false)
             {
-                Player = this.GetComponent<NVRPlayer>();
+                StartCoroutine(DelayedCameraInit());
 
-                ControllerCamera = new GameObject("Controller UI Camera").AddComponent<Camera>();
-                ControllerCamera.transform.parent = Player.transform;
-                ControllerCamera.clearFlags = CameraClearFlags.Nothing;
-                ControllerCamera.cullingMask = 0; // 1 << LayerMask.NameToLayer("UI"); 
-                ControllerCamera.stereoTargetEye = StereoTargetEyeMask.None;
+                Player = this.GetComponent<NVRPlayer>();
 
                 Cursors = new RectTransform[Player.Hands.Length];
                 Lasers = new LineRenderer[Cursors.Length];
@@ -98,13 +94,23 @@ namespace NewtonVR
                 CurrentDragging = new GameObject[Cursors.Length];
                 PointEvents = new PointerEventData[Cursors.Length];
 
-                Canvas[] canvases = GameObject.FindObjectsOfType<Canvas>();
-                foreach (Canvas canvas in canvases)
-                {
-                    canvas.worldCamera = ControllerCamera;
-                }
-
                 Initialized = true;
+            }
+        }
+
+        protected IEnumerator DelayedCameraInit()
+        {
+            ControllerCamera = new GameObject("Controller UI Camera").AddComponent<Camera>(); //this is broken up into two steps because of a unity bug. https://issuetracker.unity3d.com/issues/gl-dot-end-error-is-thrown-if-a-cameras-clear-flags-is-set-to-depth-only
+            yield return null;
+
+            ControllerCamera.clearFlags = CameraClearFlags.Nothing;
+            ControllerCamera.cullingMask = 0; // 1 << LayerMask.NameToLayer("UI"); 
+            ControllerCamera.stereoTargetEye = StereoTargetEyeMask.None;
+
+            Canvas[] canvases = GameObject.FindObjectsOfType<Canvas>();
+            foreach (Canvas canvas in canvases)
+            {
+                canvas.worldCamera = ControllerCamera;
             }
         }
 

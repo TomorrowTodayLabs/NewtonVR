@@ -347,7 +347,7 @@ namespace NewtonVR
 
             if (installOculusSDK == true)
             {
-                Application.OpenURL("https://developer3.oculus.com/downloads/game-engines/1.11.0/Oculus_Utilities_for_Unity_5/");
+                Application.OpenURL("https://developer.oculus.com/downloads/package/oculus-utilities-for-unity-5/");
             }
 
             if (installSteamVR == true)
