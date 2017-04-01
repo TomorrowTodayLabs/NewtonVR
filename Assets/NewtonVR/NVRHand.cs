@@ -234,6 +234,7 @@ namespace NewtonVR
 
 
             InputDevice.Initialize(this);
+            UpdateButtonStates();
             InitializeRenderModel();
         }
 
