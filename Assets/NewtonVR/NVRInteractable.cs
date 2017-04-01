@@ -113,11 +113,21 @@ namespace NewtonVR
             if (hand.UseButtonUp == true)
             {
                 UseButtonUp();
+                
+                if (hand.OnEndUseInteraction != null)
+                {
+                    hand.OnEndUseInteraction.Invoke(this);
+                }
             }
 
             if (hand.UseButtonDown == true)
             {
                 UseButtonDown();
+                
+                if (hand.OnBeginUseInteraction != null)
+                {
+                    hand.OnBeginUseInteraction.Invoke(this);
+                }
             }
         }
 
