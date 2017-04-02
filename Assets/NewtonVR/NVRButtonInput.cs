@@ -12,6 +12,8 @@ namespace NewtonVR
         {
             get
             {
+                if (InputDevice == null)
+                    return false;
                 if (PressDownExpired)
                 {
                     PressDownCached = InputDevice.GetPressDown(nvrbutton);
@@ -29,6 +31,8 @@ namespace NewtonVR
         {
             get
             {
+                if (InputDevice == null)
+                    return false;
                 if (PressUpExpired)
                 {
                     PressUpCached = InputDevice.GetPressUp(nvrbutton);
@@ -46,6 +50,8 @@ namespace NewtonVR
         {
             get
             {
+				if (InputDevice == null)
+                    return false;
                 if (IsPressedExpired)
                 {
                     IsPressedCached = InputDevice.GetPress(nvrbutton);
@@ -63,6 +69,8 @@ namespace NewtonVR
         {
             get
             {
+				if (InputDevice == null)
+					return false;
                 if (TouchDownExpired)
                 {
                     TouchDownCached = InputDevice.GetTouchDown(nvrbutton);
@@ -80,6 +88,8 @@ namespace NewtonVR
         {
             get
             {
+				if (InputDevice == null)
+					return false;
                 if (TouchUpExpired)
                 {
                     TouchUpCached = InputDevice.GetTouchUp(nvrbutton);
@@ -97,6 +107,8 @@ namespace NewtonVR
         {
             get
             {
+				if (InputDevice == null)
+					return false;
                 if (IsTouchedExpired)
                 {
                     IsTouchedCached = InputDevice.GetTouch(nvrbutton);
@@ -114,6 +126,8 @@ namespace NewtonVR
         {
             get
             {
+				if (InputDevice == null)
+					return false;
                 if (NearTouchDownExpired)
                 {
                     NearTouchDownCached = InputDevice.GetNearTouchDown(nvrbutton);
@@ -131,6 +145,8 @@ namespace NewtonVR
         {
             get
             {
+				if (InputDevice == null)
+					return false;
                 if (NearTouchUpExpired)
                 {
                     NearTouchUpCached = InputDevice.GetNearTouchUp(nvrbutton);
@@ -148,6 +164,8 @@ namespace NewtonVR
         {
             get
             {
+				if (InputDevice == null)
+					return false;
                 if (IsNearTouchedExpired)
                 {
                     IsNearTouchedCached = InputDevice.GetNearTouch(nvrbutton);
@@ -165,7 +183,7 @@ namespace NewtonVR
         {
             get
             {
-                if (AxisExpired)
+				if (AxisExpired && InputDevice != null)
                 {
                     AxisCached = InputDevice.GetAxis2D(nvrbutton);
                     AxisExpired = false;
@@ -182,7 +200,7 @@ namespace NewtonVR
         {
             get
             {
-                if (SingleAxisExpired)
+				if (SingleAxisExpired && InputDevice != null)
                 {
                     SingleAxisCached = InputDevice.GetAxis1D(nvrbutton);
                     SingleAxisExpired = false;
