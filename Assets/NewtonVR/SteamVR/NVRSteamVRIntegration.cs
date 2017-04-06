@@ -16,7 +16,13 @@ namespace NewtonVR
         public override void Initialize(NVRPlayer player)
         {
             Player = player;
+
+#if UNITY_5_6_OR_NEWER
+            Player.Head.gameObject.AddComponent<SteamVR_UpdatePoses>();
+#endif
+
             Player.gameObject.SetActive(false);
+
 
             SteamVR_ControllerManager controllerManager = Player.gameObject.AddComponent<SteamVR_ControllerManager>();
             controllerManager.left = Player.LeftHand.gameObject;
