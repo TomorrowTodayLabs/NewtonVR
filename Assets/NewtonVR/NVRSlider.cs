@@ -71,9 +71,9 @@ namespace NewtonVR
             PickupTransform.rotation = this.transform.rotation;
         }
 
-        public override void EndInteraction()
+        public override void EndInteraction(NVRHand hand)
         {
-            base.EndInteraction();
+            base.EndInteraction(hand);
 
             if (PickupTransform != null)
                 Destroy(PickupTransform.gameObject);

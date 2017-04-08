@@ -93,9 +93,9 @@ namespace NewtonVR
             HingeJoint.useMotor = false;
         }
 
-        public override void EndInteraction()
+        public override void EndInteraction(NVRHand hand)
         {
-            base.EndInteraction();
+            base.EndInteraction(hand);
 
             HingeJoint.useMotor = true;
 

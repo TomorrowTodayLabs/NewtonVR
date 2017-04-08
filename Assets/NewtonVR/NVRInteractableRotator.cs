@@ -39,9 +39,9 @@ namespace NewtonVR
             InitialAttachPoint.parent = this.transform;
         }
 
-        public override void EndInteraction()
+        public override void EndInteraction(NVRHand hand)
         {
-            base.EndInteraction();
+            base.EndInteraction(hand);
 
             if (InitialAttachPoint != null)
                 Destroy(InitialAttachPoint.gameObject);

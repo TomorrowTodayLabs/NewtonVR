@@ -548,7 +548,10 @@ namespace NewtonVR
             {
                 if (interactable.AttachedHand != null)
                 {
-                    interactable.AttachedHand.EndInteraction(null);
+                    if (interactable.AllowTwoHanded == false)
+                    {
+                        interactable.AttachedHand.EndInteraction(null);
+                    }
                 }
 
                 CurrentlyInteracting = interactable;
@@ -568,7 +571,7 @@ namespace NewtonVR
 
             if (CurrentlyInteracting != null)
             {
-                CurrentlyInteracting.EndInteraction();
+                CurrentlyInteracting.EndInteraction(this);
 
                 if (OnEndInteraction != null)
                 {
