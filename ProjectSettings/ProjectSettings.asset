@@ -353,7 +353,7 @@ PlayerSettings:
   psmSplashimage: {fileID: 0}
   spritePackerPolicy: 
   scriptingDefineSymbols:
-    1: NVR_SteamVR;NVR_Oculus
+    1: 
   metroPackageName: CocaineMountain
   metroPackageVersion: 
   metroCertificatePath: 
