@@ -47,6 +47,11 @@ namespace NewtonVR
                 }
             }
 
+			foreach (Transform child in PhysicalController.transform)
+			{
+				Destroy(child.gameObject);
+			}
+
             PhysicalController.transform.parent = Hand.transform.parent;
             PhysicalController.transform.position = Hand.transform.position;
             PhysicalController.transform.rotation = Hand.transform.rotation;
