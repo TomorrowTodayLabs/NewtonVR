@@ -5,5 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/NewtonVR/Example/NVRExampleScene.unity
+  - enabled: 0
+    path: Assets/NewtonVR/ExamplePhoton/NVRExampleScenePhoton.unity

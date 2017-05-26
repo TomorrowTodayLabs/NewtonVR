@@ -49,11 +49,12 @@ namespace NewtonVR
         {
             base.Start();
 
-            if (NVRPlayer.Instance.VelocityHistorySteps > 0)
-            {
-                VelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
-                AngularVelocityHistory = new Vector3?[NVRPlayer.Instance.VelocityHistorySteps];
-            }
+            StartCoroutine(DelayedInitialization)
+        }
+
+        protected IEnumerator DelayedInitialization()
+        {
+
         }
 
         protected virtual void FixedUpdate()

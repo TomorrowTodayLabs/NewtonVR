@@ -40,37 +40,40 @@ namespace NewtonVR
         [HideInInspector]
         public GameObject CustomPhysicalColliders;
 
-        private VisibilityLevel CurrentVisibility = VisibilityLevel.Visible;
-        private bool VisibilityLocked = false;
+        protected VisibilityLevel CurrentVisibility = VisibilityLevel.Visible;
+        protected bool VisibilityLocked = false;
 
         [HideInInspector]
         public HandState CurrentHandState = HandState.Uninitialized;
 
-        private Dictionary<NVRInteractable, Dictionary<Collider, float>> CurrentlyHoveringOver;
+        protected Dictionary<NVRInteractable, Dictionary<Collider, float>> CurrentlyHoveringOver;
 
         public NVRInteractable CurrentlyInteracting;
 
         [Serializable]
         public class NVRInteractableEvent : UnityEvent<NVRInteractable> { }
+        [Serializable]
+        public class NVRHandEvent : UnityEvent<NVRHand> { }
 
         public NVRInteractableEvent OnBeginInteraction = new NVRInteractableEvent();
         public NVRInteractableEvent OnEndInteraction = new NVRInteractableEvent();
+        public NVRHandEvent OnInitialized = new NVRHandEvent();
 
-        private int EstimationSampleIndex;
-        private Vector3[] LastPositions;
-        private Quaternion[] LastRotations;
-        private float[] LastDeltas;
-        private int EstimationSamples = 5;
+        protected int EstimationSampleIndex;
+        protected Vector3[] LastPositions;
+        protected Quaternion[] LastRotations;
+        protected float[] LastDeltas;
+        protected int EstimationSamples = 5;
 
         [HideInInspector]
         public NVRPhysicalController PhysicalController;
 
-        private Collider[] GhostColliders;
-        private Renderer[] GhostRenderers;
+        protected Collider[] GhostColliders;
+        protected Renderer[] GhostRenderers;
 
-        private NVRInputDevice InputDevice;
+        protected NVRInputDevice InputDevice;
 
-        private GameObject RenderModel;
+        protected GameObject RenderModel;
 
         public bool IsHovering
         {
@@ -137,6 +140,40 @@ namespace NewtonVR
 
         public virtual void PreInitialize(NVRPlayer player)
         {
+            PreInitializeSetup(player);
+
+            bool inputDeviceSetupSuccess = SetupInputDevice();
+            if (inputDeviceSetupSuccess == false)
+            {
+                return;
+            }
+
+            if (Player.OverrideAll)
+            {
+                if (IsLeft)
+                {
+                    CustomModel = Player.OverrideAllLeftHand;
+                    CustomPhysicalColliders = Player.OverrideAllLeftHandPhysicalColliders;
+                }
+                else if (IsRight)
+                {
+                    CustomModel = Player.OverrideAllRightHand;
+                    CustomPhysicalColliders = Player.OverrideAllRightHandPhysicalColliders;
+                }
+                else
+                {
+                    Debug.LogError("[NewtonVR] Error: Unknown hand for SteamVR model override.");
+                    return;
+                }
+            }
+
+
+            InputDevice.Initialize(this);
+            InitializeRenderModel();
+        }
+
+        protected virtual void PreInitializeSetup(NVRPlayer player)
+        {
             Player = player;
 
             IsRight = Player.RightHand == this;
@@ -161,7 +198,10 @@ namespace NewtonVR
                     Inputs.Add(NVRButtonsHelper.Array[buttonIndex], new NVRButtonInputs());
                 }
             }
+        }
 
+        protected virtual bool SetupInputDevice()
+        {
             if (Player.CurrentIntegrationType == NVRSDKIntegrations.Oculus)
             {
                 InputDevice = this.gameObject.AddComponent<NVROculusInputDevice>();
@@ -183,6 +223,8 @@ namespace NewtonVR
                         Debug.LogError("[NewtonVR] Error: Unknown hand for oculus model override.");
                     }
                 }
+
+                return true;
             }
             else if (Player.CurrentIntegrationType == NVRSDKIntegrations.SteamVR)
             {
@@ -205,36 +247,14 @@ namespace NewtonVR
                         Debug.LogError("[NewtonVR] Error: Unknown hand for SteamVR model override.");
                     }
                 }
+
+                return true;
             }
             else
             {
                 //Debug.LogError("[NewtonVR] Critical Error: NVRPlayer.CurrentIntegration not setup.");
-                return;
+                return false;
             }
-
-            if (Player.OverrideAll)
-            {
-
-                if (IsLeft)
-                {
-                    CustomModel = Player.OverrideAllLeftHand;
-                    CustomPhysicalColliders = Player.OverrideAllLeftHandPhysicalColliders;
-                }
-                else if (IsRight)
-                {
-                    CustomModel = Player.OverrideAllRightHand;
-                    CustomPhysicalColliders = Player.OverrideAllRightHandPhysicalColliders;
-                }
-                else
-                {
-                    Debug.LogError("[NewtonVR] Error: Unknown hand for SteamVR model override.");
-                    return;
-                }
-            }
-
-
-            InputDevice.Initialize(this);
-            InitializeRenderModel();
         }
 
         protected virtual void Update()
@@ -752,7 +772,7 @@ namespace NewtonVR
             CurrentVisibility = visibility;
         }
 
-        protected void InitializeRenderModel()
+        protected virtual void InitializeRenderModel()
         {
             if (CustomModel == null)
             {
@@ -769,7 +789,7 @@ namespace NewtonVR
             }
         }
 
-        public void Initialize()
+        public virtual void Initialize()
         {
             Rigidbody = this.GetComponent<Rigidbody>();
             if (Rigidbody == null)
@@ -843,6 +863,11 @@ namespace NewtonVR
             }
 
             CurrentHandState = HandState.Idle;
+
+            if (OnInitialized != null)
+            {
+                OnInitialized.Invoke(this);
+            }
         }
 
         public void ForceGhost()

@@ -353,7 +353,7 @@ PlayerSettings:
   psmSplashimage: {fileID: 0}
   spritePackerPolicy: 
   scriptingDefineSymbols:
-    1: 
+    1: NVR_SteamVR;NVR_Oculus
   metroPackageName: CocaineMountain
   metroPackageVersion: 
   metroCertificatePath: 
@@ -542,8 +542,8 @@ PlayerSettings:
   PSP2::VR::enabledDevices: []
   SamsungTV::VR::enabledDevices: []
   Standalone::VR::enabledDevices:
-  - Oculus
   - OpenVR
+  - Oculus
   Tizen::VR::enabledDevices: []
   WebGL::VR::enabledDevices: []
   WebPlayer::VR::enabledDevices: []

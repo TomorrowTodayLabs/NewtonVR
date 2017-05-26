@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Reflection;
+using System.IO;
 
 namespace NewtonVR
 {
@@ -173,6 +174,204 @@ namespace NewtonVR
             {
                 return true;
             }
+        }
+
+        public static byte[] SerializeMesh(Mesh mesh)
+        {
+            MemoryStream stream = new MemoryStream();
+            BinaryWriter writer = new BinaryWriter(stream);
+
+            writer.Write(mesh.name);
+            WriteVector3Array(writer, mesh.vertices);
+            WriteVector3Array(writer, mesh.normals);
+            WriteVector4Array(writer, mesh.tangents);
+            WriteVector2Array(writer, mesh.uv);
+            WriteVector2Array(writer, mesh.uv2);
+            WriteVector2Array(writer, mesh.uv3);
+            WriteVector2Array(writer, mesh.uv4);
+            WriteColor32Array(writer, mesh.colors32);
+
+            byte[] bytes = stream.ToArray();
+            writer.Close();
+            return bytes;
+        }
+
+        public static Mesh DeserializeMesh(byte[] bytes)
+        {
+            MemoryStream stream = new MemoryStream(bytes);
+            BinaryReader reader = new BinaryReader(stream);
+
+            string name = reader.ReadString();
+            Vector3[] vertices = ReadVector3Array(reader);
+            Vector3[] normals = ReadVector3Array(reader);
+            Vector4[] tangents = ReadVector4Array(reader);
+            Vector2[] uv = ReadVector2Array(reader);
+            Vector2[] uv2 = ReadVector2Array(reader);
+            Vector2[] uv3 = ReadVector2Array(reader);
+            Vector2[] uv4 = ReadVector2Array(reader);
+            Color32[] colors32 = ReadColor32Array(reader);
+
+            Mesh mesh = new Mesh();
+            mesh.name = name;
+            mesh.vertices = vertices;
+            mesh.normals = normals;
+            mesh.tangents = tangents;
+            mesh.uv = uv;
+            mesh.uv2 = uv2;
+            mesh.uv3 = uv3;
+            mesh.uv4 = uv4;
+            mesh.colors32 = colors32;
+
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+
+            return mesh;
+        }
+
+        public static void WriteVector2Array(BinaryWriter writer, Vector2[] array)
+        {
+            writer.Write(array.Length);
+            for (int arrayIndex = 0; arrayIndex < array.Length; arrayIndex++)
+            {
+                WriteVector2(writer, array[arrayIndex]);
+            }
+        }
+        public static Vector2[] ReadVector2Array(BinaryReader reader)
+        {
+            int length = reader.ReadInt32();
+            Vector2[] array = new Vector2[length];
+
+            for (int arrayIndex = 0; arrayIndex < length; arrayIndex++)
+            {
+                array[arrayIndex] = ReadVector2(reader);
+            }
+
+            return array;
+        }
+
+        public static void WriteVector2(BinaryWriter writer, Vector2 vector)
+        {
+            writer.Write(vector.x);
+            writer.Write(vector.y);
+        }
+        public static Vector2 ReadVector2(BinaryReader reader)
+        {
+            Vector2 vector = new Vector2();
+            vector.x = reader.ReadSingle();
+            vector.y = reader.ReadSingle();
+            return vector;
+        }
+
+        public static void WriteVector3Array(BinaryWriter writer, Vector3[] array)
+        {
+            writer.Write(array.Length);
+            for (int arrayIndex = 0; arrayIndex < array.Length; arrayIndex++)
+            {
+                WriteVector3(writer, array[arrayIndex]);
+            }
+        }
+        public static Vector3[] ReadVector3Array(BinaryReader reader)
+        {
+            int length = reader.ReadInt32();
+            Vector3[] array = new Vector3[length];
+
+            for (int arrayIndex = 0; arrayIndex < length; arrayIndex++)
+            {
+                array[arrayIndex] = ReadVector3(reader);
+            }
+
+            return array;
+        }
+
+        public static void WriteVector3(BinaryWriter writer, Vector3 vector)
+        {
+            writer.Write(vector.x);
+            writer.Write(vector.y);
+            writer.Write(vector.z);
+        }
+        public static Vector3 ReadVector3(BinaryReader reader)
+        {
+            Vector3 vector = new Vector3();
+            vector.x = reader.ReadSingle();
+            vector.y = reader.ReadSingle();
+            vector.z = reader.ReadSingle();
+            return vector;
+        }
+
+        public static void WriteVector4Array(BinaryWriter writer, Vector4[] array)
+        {
+            writer.Write(array.Length);
+            for (int arrayIndex = 0; arrayIndex < array.Length; arrayIndex++)
+            {
+                WriteVector4(writer, array[arrayIndex]);
+            }
+        }
+        public static Vector4[] ReadVector4Array(BinaryReader reader)
+        {
+            int length = reader.ReadInt32();
+            Vector4[] array = new Vector4[length];
+
+            for (int arrayIndex = 0; arrayIndex < length; arrayIndex++)
+            {
+                array[arrayIndex] = ReadVector4(reader);
+            }
+
+            return array;
+        }
+
+        public static void WriteVector4(BinaryWriter writer, Vector4 vector)
+        {
+            writer.Write(vector.x);
+            writer.Write(vector.y);
+            writer.Write(vector.z);
+            writer.Write(vector.w);
+        }
+        public static Vector4 ReadVector4(BinaryReader reader)
+        {
+            Vector4 vector = new Vector4();
+            vector.x = reader.ReadSingle();
+            vector.y = reader.ReadSingle();
+            vector.z = reader.ReadSingle();
+            vector.w = reader.ReadSingle();
+            return vector;
+        }
+
+        public static void WriteColor32Array(BinaryWriter writer, Color32[] array)
+        {
+            writer.Write(array.Length);
+            for (int arrayIndex = 0; arrayIndex < array.Length; arrayIndex++)
+            {
+                WriteColor32(writer, array[arrayIndex]);
+            }
+        }
+        public static Color32[] ReadColor32Array(BinaryReader reader)
+        {
+            int length = reader.ReadInt32();
+            Color32[] colors = new Color32[length];
+
+            for (int arrayIndex = 0; arrayIndex < length; arrayIndex++)
+            {
+                colors[arrayIndex] = ReadColor32(reader);
+            }
+
+            return colors;
+        }
+
+        public static void WriteColor32(BinaryWriter writer, Color32 color)
+        {
+            writer.Write(color.a);
+            writer.Write(color.r);
+            writer.Write(color.g);
+            writer.Write(color.b);
+        }
+        public static Color32 ReadColor32(BinaryReader reader)
+        {
+            Color32 color = new Color32();
+            color.a = reader.ReadByte();
+            color.r = reader.ReadByte();
+            color.g = reader.ReadByte();
+            color.b = reader.ReadByte();
+            return color;
         }
     }
 }

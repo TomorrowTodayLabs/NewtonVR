@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace NewtonVR
 {
@@ -13,13 +14,27 @@ namespace NewtonVR
 
         private static bool Initialized = false;
 
+        public delegate void NVROnInteractableRegistration(NVRInteractable interactable, Collider[] colliders);
+        public delegate void NVROnInteractableDeregistration(NVRInteractable interactable);
+
+        public static event NVROnInteractableRegistration OnInteractableRegistration;
+        public static event NVROnInteractableDeregistration OnInteractableDeregistration;
+
+        private void Awake()
+        {
+            Initialize();
+        }
+
         public static void Initialize()
         {
-            ColliderMapping = new Dictionary<Collider, NVRInteractable>();
-            NVRInteractableMapping = new Dictionary<NVRInteractable, Collider[]>();
-            NVRInteractableList = new List<NVRInteractable>();
+            if (Initialized == false)
+            {
+                ColliderMapping = new Dictionary<Collider, NVRInteractable>();
+                NVRInteractableMapping = new Dictionary<NVRInteractable, Collider[]>();
+                NVRInteractableList = new List<NVRInteractable>();
 
-            Initialized = true;
+                Initialized = true;
+            }
         }
 
         public static void Register(NVRInteractable interactable, Collider[] colliders)
@@ -40,6 +55,11 @@ namespace NewtonVR
             {
                 NVRInteractableList.Add(interactable);
             }
+
+            if (OnInteractableRegistration != null)
+            {
+                OnInteractableRegistration.Invoke(interactable, colliders);
+            }
         }
 
         public static void Deregister(NVRInteractable interactable)
@@ -55,6 +75,11 @@ namespace NewtonVR
             NVRInteractableMapping.Remove(interactable);
 
             NVRInteractableList.Remove(interactable);
+
+            if (OnInteractableDeregistration != null)
+            {
+                OnInteractableDeregistration.Invoke(interactable);
+            }
         }
 
         public static NVRInteractable GetInteractable(Collider collider)

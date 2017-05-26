@@ -17,7 +17,14 @@ namespace NewtonVR
         {
             get
             {
-                return Instances.First(player => player != null && player.gameObject != null);
+                if (Instances.Count > 0)
+                {
+                    return Instances.First(player => player != null && player.gameObject != null);
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -151,7 +158,7 @@ namespace NewtonVR
         public bool AutoSetFixedDeltaTime = true;
         public bool NotifyOnVersionUpdate = true;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             if (AutoSetFixedDeltaTime)
             {
@@ -198,7 +205,7 @@ namespace NewtonVR
             }
         }
 
-        private void SetupIntegration(bool logOutput = true)
+        protected virtual void SetupIntegration(bool logOutput = true)
         {
             CurrentIntegrationType = DetermineCurrentIntegration(logOutput);
 
@@ -228,7 +235,7 @@ namespace NewtonVR
             }
         }
 
-        private NVRSDKIntegrations DetermineCurrentIntegration(bool logOutput = true)
+        protected virtual NVRSDKIntegrations DetermineCurrentIntegration(bool logOutput = true)
         {
             NVRSDKIntegrations currentIntegration = NVRSDKIntegrations.None;
             string resultLog = "[NewtonVR] Version : " + NewtonVRVersion + ". ";
@@ -279,7 +286,7 @@ namespace NewtonVR
             return currentIntegration;
         }
 
-        public void RegisterHand(NVRHand hand)
+        public virtual void RegisterHand(NVRHand hand)
         {
             Collider[] colliders = hand.GetComponentsInChildren<Collider>();
 
@@ -292,7 +299,7 @@ namespace NewtonVR
             }
         }
 
-        public NVRHand GetHand(Collider collider)
+        public virtual NVRHand GetHand(Collider collider)
         {
             return ColliderToHandMapping[collider];
         }
@@ -314,12 +321,12 @@ namespace NewtonVR
             }
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             Instances.Remove(this);
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (DEBUGDropFrames == true)
             {
