@@ -24,7 +24,7 @@ using UnityEngine.SceneManagement;
 namespace NewtonVR
 {
 
-    [CustomEditor(typeof(NVRPlayer))]
+    [CustomEditor(typeof(NVRPlayer), true)]
     public class NVRPlayerEditor : Editor
     {
         private const string SteamVRDefine = "NVR_SteamVR";

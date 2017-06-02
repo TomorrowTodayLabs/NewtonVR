@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 4000010931665690}
-  - 114: {fileID: 114000013994616318}
+  - 114: {fileID: 114000011939902470}
   - 114: {fileID: 114000010791637160}
   - 114: {fileID: 114000012696415052}
   - 114: {fileID: 114000012288801204}
@@ -39,7 +39,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 4000010718766838}
-  - 114: {fileID: 114000012575478636}
+  - 114: {fileID: 114000012553912640}
   - 20: {fileID: 20000010799292342}
   - 92: {fileID: 92000011385539402}
   - 124: {fileID: 124000011506277194}
@@ -61,7 +61,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 4000012734262196}
-  - 114: {fileID: 114000013111616046}
+  - 114: {fileID: 114000010417274962}
   - 114: {fileID: 114000011396654680}
   - 114: {fileID: 114000012214656248}
   m_Layer: 0
@@ -79,7 +79,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 4000013886419480}
-  - 114: {fileID: 114000013754297442}
+  - 114: {fileID: 114000013643214428}
   - 114: {fileID: 114000012510580186}
   - 114: {fileID: 114000011422958276}
   m_Layer: 0
@@ -192,6 +192,54 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012251280632}
   m_Enabled: 1
+--- !u!114 &114000010417274962
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012827672876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58dd4f453c5659f4aa605a53ddfb011c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HoldButton: 2
+  UseButton: 17
+  IsRight: 0
+  IsLeft: 0
+  Player: {fileID: 0}
+  CurrentInteractionStyle: 0
+  Rigidbody: {fileID: 0}
+  CustomModel: {fileID: 0}
+  CustomPhysicalColliders: {fileID: 0}
+  CurrentHandState: 0
+  CurrentlyInteracting: {fileID: 0}
+  OnBeginInteraction:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: NewtonVR.NVRHand+NVRInteractableEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnEndInteraction:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: NewtonVR.NVRHand+NVRInteractableEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnInitialized:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: NewtonVR.NVRHand+NVRHandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  PhysicalController: {fileID: 0}
+  OnBeginInteractionRemote:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: NewtonVR.NVRHand+NVRInteractableEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnEndInteractionRemote:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: NewtonVR.NVRHand+NVRInteractableEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &114000010661735358
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -451,6 +499,60 @@ MonoBehaviour:
     InterpolateOption: 0
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 0
+--- !u!114 &114000011939902470
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011640759006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e901af1e75534488484e8cf2d152f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SteamVREnabled: 1
+  OculusSDKEnabled: 1
+  InteractionStyle: 0
+  PhysicalHands: 1
+  MakeControllerInvisibleOnInteraction: 0
+  AutomaticallySetControllerTransparency: 1
+  VibrateOnHover: 1
+  VelocityHistorySteps: 3
+  OnInitialized:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  EnableEditorPlayerPreview: 1
+  EditorPlayerPreview: {fileID: 0}
+  EditorPlayspacePreview: {fileID: 0}
+  EditorPlayspaceOverride: 0
+  EditorPlayspaceDefault: {x: 2, y: 1.5}
+  OverrideAll: 0
+  OverrideAllLeftHand: {fileID: 0}
+  OverrideAllLeftHandPhysicalColliders: {fileID: 0}
+  OverrideAllRightHand: {fileID: 0}
+  OverrideAllRightHandPhysicalColliders: {fileID: 0}
+  OverrideSteamVR: 0
+  OverrideSteamVRLeftHand: {fileID: 0}
+  OverrideSteamVRLeftHandPhysicalColliders: {fileID: 0}
+  OverrideSteamVRRightHand: {fileID: 0}
+  OverrideSteamVRRightHandPhysicalColliders: {fileID: 0}
+  OverrideOculus: 0
+  OverrideOculusLeftHand: {fileID: 0}
+  OverrideOculusLeftHandPhysicalColliders: {fileID: 0}
+  OverrideOculusRightHand: {fileID: 0}
+  OverrideOculusRightHandPhysicalColliders: {fileID: 0}
+  Head: {fileID: 114000012553912640}
+  LeftHand: {fileID: 114000013643214428}
+  RightHand: {fileID: 114000010417274962}
+  Hands: []
+  CurrentIntegrationType: 0
+  DEBUGEnableFallback2D: 0
+  DEBUGDropFrames: 0
+  DEBUGSleepPerFrame: 13
+  AutoSetFixedDeltaTime: 1
+  NotifyOnVersionUpdate: 1
 --- !u!114 &114000012214656248
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -564,7 +666,7 @@ MonoBehaviour:
   instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
---- !u!114 &114000012575478636
+--- !u!114 &114000012553912640
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -572,7 +674,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000012251280632}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dd93dbead6c28e42b0408c298a10966, type: 3}
+  m_Script: {fileID: 11500000, guid: e4cdae74269909d42b98335c568541bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &114000012696415052
@@ -589,45 +691,7 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 5
---- !u!114 &114000013111616046
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012827672876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1487c36fb75d2924e8bff712895f43c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HoldButton: 2
-  UseButton: 17
-  IsRight: 0
-  IsLeft: 0
-  Player: {fileID: 0}
-  CurrentInteractionStyle: 0
-  Rigidbody: {fileID: 0}
-  CustomModel: {fileID: 0}
-  CustomPhysicalColliders: {fileID: 0}
-  CurrentHandState: 0
-  CurrentlyInteracting: {fileID: 0}
-  OnBeginInteraction:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: NewtonVR.NVRHand+NVRInteractableEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  OnEndInteraction:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: NewtonVR.NVRHand+NVRInteractableEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  OnInitialized:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: NewtonVR.NVRHand+NVRHandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  PhysicalController: {fileID: 0}
---- !u!114 &114000013754297442
+--- !u!114 &114000013643214428
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -635,7 +699,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000013513498478}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1487c36fb75d2924e8bff712895f43c3, type: 3}
+  m_Script: {fileID: 11500000, guid: 58dd4f453c5659f4aa605a53ddfb011c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   HoldButton: 2
@@ -665,80 +729,16 @@ MonoBehaviour:
     m_TypeName: NewtonVR.NVRHand+NVRHandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   PhysicalController: {fileID: 0}
---- !u!114 &114000013994616318
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011640759006}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 692596da9ff9cdd4aa3dd605c1e0df5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SteamVREnabled: 1
-  OculusSDKEnabled: 1
-  InteractionStyle: 0
-  PhysicalHands: 1
-  MakeControllerInvisibleOnInteraction: 1
-  AutomaticallySetControllerTransparency: 1
-  VibrateOnHover: 1
-  VelocityHistorySteps: 3
-  OnInitialized:
+  OnBeginInteractionRemote:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: OnNVRPlayerInitialize
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  EnableEditorPlayerPreview: 1
-  EditorPlayerPreview: {fileID: 4300000, guid: 4c5ee852bb16638409bc37f8004f52a2, type: 3}
-  EditorPlayspacePreview: {fileID: 4300000, guid: 53999722e4cf33d40b85a5c7a0c317fd,
-    type: 2}
-  EditorPlayspaceOverride: 0
-  EditorPlayspaceDefault: {x: 2, y: 1.5}
-  OverrideAll: 0
-  OverrideAllLeftHand: {fileID: 56742944, guid: 55e83fd42960be248a3e117078f3da8b,
-    type: 2}
-  OverrideAllLeftHandPhysicalColliders: {fileID: 54487328, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
-    type: 2}
-  OverrideAllRightHand: {fileID: 56745632, guid: 55e83fd42960be248a3e117078f3da8b,
-    type: 2}
-  OverrideAllRightHandPhysicalColliders: {fileID: 56746656, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
-    type: 2}
-  OverrideSteamVR: 0
-  OverrideSteamVRLeftHand: {fileID: 0}
-  OverrideSteamVRLeftHandPhysicalColliders: {fileID: 0}
-  OverrideSteamVRRightHand: {fileID: 0}
-  OverrideSteamVRRightHandPhysicalColliders: {fileID: 0}
-  OverrideOculus: 0
-  OverrideOculusLeftHand: {fileID: 56752288, guid: 55e83fd42960be248a3e117078f3da8b,
-    type: 2}
-  OverrideOculusLeftHandPhysicalColliders: {fileID: 56753312, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
-    type: 2}
-  OverrideOculusRightHand: {fileID: 54486560, guid: 55e83fd42960be248a3e117078f3da8b,
-    type: 2}
-  OverrideOculusRightHandPhysicalColliders: {fileID: 56641824, guid: 7c3b57f429838f14a8a2c2c179e9e9e9,
-    type: 2}
-  Head: {fileID: 114000012575478636}
-  LeftHand: {fileID: 114000013754297442}
-  RightHand: {fileID: 114000013111616046}
-  Hands: []
-  CurrentIntegrationType: 0
-  DEBUGEnableFallback2D: 0
-  DEBUGDropFrames: 0
-  DEBUGSleepPerFrame: 13
-  AutoSetFixedDeltaTime: 1
-  NotifyOnVersionUpdate: 1
+      m_Calls: []
+    m_TypeName: NewtonVR.NVRHand+NVRInteractableEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnEndInteractionRemote:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: NewtonVR.NVRHand+NVRInteractableEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!124 &124000011506277194
 Behaviour:
   m_ObjectHideFlags: 1

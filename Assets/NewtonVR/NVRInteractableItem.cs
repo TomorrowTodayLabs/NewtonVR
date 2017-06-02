@@ -48,13 +48,6 @@ namespace NewtonVR
         protected override void Start()
         {
             base.Start();
-
-            StartCoroutine(DelayedInitialization)
-        }
-
-        protected IEnumerator DelayedInitialization()
-        {
-
         }
 
         protected virtual void FixedUpdate()

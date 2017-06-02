@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using NewtonVR.Network;
+using System;
 
 namespace NewtonVR.NetworkPhoton
 {
