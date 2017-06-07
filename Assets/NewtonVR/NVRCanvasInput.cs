@@ -34,6 +34,7 @@ namespace NewtonVR
         private PointerEventData[] PointEvents;
 
         private bool Initialized = false;
+        private bool DelayedInitialized = false;
         
         private Camera ControllerCamera;
 
@@ -45,12 +46,13 @@ namespace NewtonVR
 
             if (Initialized == false)
             {
-                StartCoroutine(DelayedCameraInit());
-
                 Player = this.GetComponent<NVRPlayer>();
 
                 Cursors = new RectTransform[Player.Hands.Length];
                 Lasers = new LineRenderer[Cursors.Length];
+
+                ControllerCamera = new GameObject("Controller UI Camera").AddComponent<Camera>();
+                ControllerCamera.transform.parent = this.transform;
 
                 for (int index = 0; index < Cursors.Length; index++)
                 {
@@ -98,11 +100,9 @@ namespace NewtonVR
             }
         }
 
-        protected IEnumerator DelayedCameraInit()
+        //this is broken up into two steps because of a unity bug. https://issuetracker.unity3d.com/issues/gl-dot-end-error-is-thrown-if-a-cameras-clear-flags-is-set-to-depth-only
+        protected void DelayedCameraInit()
         {
-            ControllerCamera = new GameObject("Controller UI Camera").AddComponent<Camera>(); //this is broken up into two steps because of a unity bug. https://issuetracker.unity3d.com/issues/gl-dot-end-error-is-thrown-if-a-cameras-clear-flags-is-set-to-depth-only
-            yield return null;
-
             ControllerCamera.clearFlags = CameraClearFlags.Nothing;
             ControllerCamera.cullingMask = 0; // 1 << LayerMask.NameToLayer("UI"); 
             ControllerCamera.stereoTargetEye = StereoTargetEyeMask.None;
@@ -112,6 +112,8 @@ namespace NewtonVR
             {
                 canvas.worldCamera = ControllerCamera;
             }
+
+            DelayedInitialized = true;
         }
 
         // use screen midpoint as locked pointer location, enabling look location to be the "mouse"
@@ -136,11 +138,14 @@ namespace NewtonVR
             if (PointEvents[index].pointerCurrentRaycast.gameObject != null)
             {
                 OnCanvas = true; //gets set to false at the beginning of the process event
+                m_RaycastResultCache.Clear();
+                return true;
             }
-
-            m_RaycastResultCache.Clear();
-
-            return true;
+            else
+            {
+                m_RaycastResultCache.Clear();
+                return false;
+            }
         }
 
         // update the cursor location and whether it is enabled
@@ -233,6 +238,13 @@ namespace NewtonVR
             OnCanvas = false;
             CanvasUsed = false;
 
+            if (Initialized == false)
+                return;
+            if (DelayedInitialized == false)
+            {
+                DelayedCameraInit();
+            }
+
             // send update events if there is a selected object - this is important for InputField to receive keyboard events
             SendUpdateEventToSelectedObject();
 
@@ -251,8 +263,6 @@ namespace NewtonVR
                 UpdateCameraPosition(index);
 
                 bool hit = GetLookPointerEventData(index);
-                if (hit == false)
-                    continue;
 
                 CurrentPoint[index] = PointEvents[index].pointerCurrentRaycast.gameObject;
 
@@ -261,6 +271,9 @@ namespace NewtonVR
 
                 // update cursor
                 bool cursorActive = UpdateCursor(index, PointEvents[index]);
+
+                if (hit == false)
+                    continue;
 
                 if (Player.Hands[index] != null && cursorActive == true)
                 {
@@ -290,10 +303,6 @@ namespace NewtonVR
                             else
                             {
                                 CurrentPressed[index] = newPressed;
-                                // we want to do click on button down at same time, unlike regular mouse processing
-                                // which does click when mouse goes up over same object it went down on
-                                // reason to do this is head tracking might be jittery and this makes it easier to click buttons
-                                ExecuteEvents.Execute(newPressed, PointEvents[index], ExecuteEvents.pointerClickHandler);
                             }
 
                             if (newPressed != null)
@@ -324,6 +333,9 @@ namespace NewtonVR
                         }
                         if (CurrentPressed[index])
                         {
+                            //todo maybe mouse up and click should go in different places / times?
+                            ExecuteEvents.Execute(CurrentPressed[index], PointEvents[index], ExecuteEvents.pointerClickHandler);
+
                             ExecuteEvents.Execute(CurrentPressed[index], PointEvents[index], ExecuteEvents.pointerUpHandler);
                             PointEvents[index].rawPointerPress = null;
                             PointEvents[index].pointerPress = null;
