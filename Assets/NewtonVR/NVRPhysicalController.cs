@@ -9,13 +9,13 @@ namespace NewtonVR
 {
     public class NVRPhysicalController : MonoBehaviour
     {
-        private NVRHand Hand;
+        protected NVRHand Hand;
         public bool State = false;
-        private Rigidbody Rigidbody;
+        protected Rigidbody Rigidbody;
 
         [HideInInspector]
         public GameObject PhysicalController;
-        private Collider[] Colliders;
+        protected Collider[] Colliders;
 
         protected float DropDistance { get { return 1f; } }
         protected Vector3 ClosestHeldPoint;
@@ -23,36 +23,22 @@ namespace NewtonVR
         protected float AttachedRotationMagic = 20f;
         protected float AttachedPositionMagic = 3000f;
 
-        private Type[] KeepTypes = new Type[] {typeof(MeshFilter), typeof(Renderer), typeof(Transform), typeof(Rigidbody)};
+        protected Type[] KeepTypes = new Type[] {typeof(MeshFilter), typeof(Renderer), typeof(Transform), typeof(Rigidbody)};
 
-        public void Initialize(NVRHand trackingHand, bool initialState)
+        public virtual void Initialize(NVRHand trackingHand, bool initialState)
         {
             Hand = trackingHand;
 
-            Hand.gameObject.SetActive(false);
+            PhysicalController = InstantiatePhysicalControllerGameobject();
 
-            PhysicalController = GameObject.Instantiate(Hand.gameObject);
-            PhysicalController.name = PhysicalController.name.Replace("(Clone)", " [Physical]");
+            NVRHelpers.CopyRenderModel(Hand.gameObject, PhysicalController, true);
 
-            Hand.gameObject.SetActive(true);
-
-            Component[] components = PhysicalController.GetComponentsInChildren<Component>(true);
-
-            for (int componentIndex = 0; componentIndex < components.Length; componentIndex++)
-            {
-                Type componentType = components[componentIndex].GetType();
-                if (KeepTypes.Any(keepType => keepType == componentType || componentType.IsSubclassOf(keepType)) == false)
-                {
-                    DestroyImmediate(components[componentIndex]);
-                }
-            }
+            SetupRigidbody(PhysicalController);
 
             PhysicalController.transform.parent = Hand.transform.parent;
             PhysicalController.transform.position = Hand.transform.position;
             PhysicalController.transform.rotation = Hand.transform.rotation;
             PhysicalController.transform.localScale = Hand.transform.localScale;
-
-            PhysicalController.SetActive(true);
 
             if (Hand.HasCustomModel)
             {
@@ -67,10 +53,6 @@ namespace NewtonVR
             {
                 Debug.LogError("[NewtonVR] Error: Physical colliders on hand not setup properly.");
             }
-
-            Rigidbody = PhysicalController.GetComponent<Rigidbody>();
-            Rigidbody.isKinematic = false;
-            Rigidbody.maxAngularVelocity = float.MaxValue;
 
             if (trackingHand.Player.AutomaticallySetControllerTransparency)
             {
@@ -89,6 +71,29 @@ namespace NewtonVR
             {
                 On();
             }
+        }
+
+        protected virtual GameObject InstantiatePhysicalControllerGameobject()
+        {
+            return new GameObject(string.Format("{0} [Physical]", Hand.name));
+        }
+
+        protected virtual void SetupRigidbody(GameObject onObject)
+        {
+            Rigidbody rigidbody = onObject.GetComponent<Rigidbody>();
+            if (rigidbody == null)
+            {
+                rigidbody = onObject.AddComponent<Rigidbody>();
+            }
+
+            rigidbody.isKinematic = false;
+            rigidbody.mass = 1;
+            rigidbody.useGravity = false;
+            rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+            rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rigidbody.maxAngularVelocity = float.MaxValue;
+
+            Rigidbody = rigidbody;
         }
 
         public void Kill()

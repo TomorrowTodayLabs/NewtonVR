@@ -24,5 +24,41 @@ namespace NewtonVR.NetworkPhoton
         {
             return this.photonView.isMine;
         }
+
+        private bool cachedInitialState;
+        public override void Initialize(NVRHand trackingHand, bool initialState)
+        {
+            if (IsMine())
+            {
+                base.Initialize(trackingHand, initialState);
+            }
+            else
+            {
+                Hand = trackingHand;
+                cachedInitialState = initialState;
+                photonView.RPC("PhotonInitializePhysicalHand", PhotonTargets.Others, PhotonNetwork.player.ID, photonView.viewID);
+            }
+        }
+
+        [PunRPC]
+        private void PhotonInitializePhysicalHand(int playerID, int handID)
+        {
+            PhotonView physicalHandView = PhotonView.Find(handID);
+            PhysicalController = physicalHandView.gameObject;
+
+            base.Initialize(Hand, cachedInitialState);
+        }
+
+        protected override GameObject InstantiatePhysicalControllerGameobject()
+        {
+            if (IsMine())
+            {
+                return PhotonNetwork.Instantiate("NVRPhysicalHand", Hand.transform.position, Hand.transform.rotation, 0);
+            }
+            else
+            {
+                return PhysicalController;
+            }
+        }
     }
 }

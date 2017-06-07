@@ -48,4 +48,5 @@ MonoBehaviour:
   - PhotonEndInteraction
   - PhotonForceDrop
   - PhotonLoadRemoteRenderModel
+  - PhotonInitializePhysicalHand
   DisableAutoOpenWizard: 1

@@ -94,7 +94,7 @@ namespace NewtonVR
     }
 }
 #else
-namespace NewtonVR
+    namespace NewtonVR
 {
     public class NVRSteamVRIntegration : NVRIntegration
     {

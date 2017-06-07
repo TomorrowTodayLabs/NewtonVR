@@ -8790,88 +8790,6 @@ MonoBehaviour:
   instantiationId: 10
   currentMasterID: -1
   isRuntimeInstantiated: 0
---- !u!1001 &692197657
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4000010931665690, guid: e45d900b8555d814c93954deb9c8f047, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000010931665690, guid: e45d900b8555d814c93954deb9c8f047, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000010931665690, guid: e45d900b8555d814c93954deb9c8f047, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000010931665690, guid: e45d900b8555d814c93954deb9c8f047, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000010931665690, guid: e45d900b8555d814c93954deb9c8f047, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000010931665690, guid: e45d900b8555d814c93954deb9c8f047, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000010931665690, guid: e45d900b8555d814c93954deb9c8f047, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000010931665690, guid: e45d900b8555d814c93954deb9c8f047, type: 2}
-      propertyPath: m_RootOrder
-      value: 24
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000011396654680, guid: e45d900b8555d814c93954deb9c8f047,
-        type: 2}
-      propertyPath: viewIdField
-      value: 27
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000011396654680, guid: e45d900b8555d814c93954deb9c8f047,
-        type: 2}
-      propertyPath: instantiationId
-      value: 27
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000012510580186, guid: e45d900b8555d814c93954deb9c8f047,
-        type: 2}
-      propertyPath: viewIdField
-      value: 66
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000012510580186, guid: e45d900b8555d814c93954deb9c8f047,
-        type: 2}
-      propertyPath: instantiationId
-      value: 66
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000011339252248, guid: e45d900b8555d814c93954deb9c8f047,
-        type: 2}
-      propertyPath: viewIdField
-      value: 67
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000011339252248, guid: e45d900b8555d814c93954deb9c8f047,
-        type: 2}
-      propertyPath: instantiationId
-      value: 67
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000012288801204, guid: e45d900b8555d814c93954deb9c8f047,
-        type: 2}
-      propertyPath: viewIdField
-      value: 68
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000012288801204, guid: e45d900b8555d814c93954deb9c8f047,
-        type: 2}
-      propertyPath: instantiationId
-      value: 68
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: e45d900b8555d814c93954deb9c8f047, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &698973714
 GameObject:
   m_ObjectHideFlags: 0
@@ -11895,8 +11813,8 @@ MonoBehaviour:
   - {fileID: 1005110309}
   - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 35
-  instantiationId: 35
+  viewIdField: 27
+  instantiationId: 27
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &1005110312
@@ -21016,6 +20934,10 @@ Prefab:
     - target: {fileID: 5483954, guid: 5c5c2eaab005afe40b5d7a9cb6aa2b72, type: 2}
       propertyPath: m_Mass
       value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 2307870, guid: 5c5c2eaab005afe40b5d7a9cb6aa2b72, type: 2}
+      propertyPath: m_LightProbeUsage
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 11435602, guid: 5c5c2eaab005afe40b5d7a9cb6aa2b72, type: 2}

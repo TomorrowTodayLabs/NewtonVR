@@ -82,6 +82,95 @@ namespace NewtonVR
             fieldInfo.SetValue(obj, value);
         }
 
+        public static void CopyRenderModel(GameObject fromObject, GameObject toObject, bool copyChildren = false)
+        {
+            if (copyChildren == true)
+            {
+                for (int childIndex = 0; childIndex < fromObject.transform.childCount; childIndex++)
+                {
+                    GameObject fromChild;
+                    GameObject toChild;
+                    if (toObject.transform.childCount < (childIndex + 1))
+                    {
+                        fromChild = fromObject.transform.GetChild(childIndex).gameObject;
+                        toChild = new GameObject(fromChild.name);
+                        toChild.transform.parent = toObject.transform;
+                        toChild.transform.localPosition = fromChild.transform.localPosition;
+                        toChild.transform.localRotation = fromChild.transform.localRotation;
+                        toChild.transform.localScale = fromChild.transform.localScale;
+                    }
+                    else
+                    {
+                        fromChild = fromObject.transform.GetChild(childIndex).gameObject;
+                        toChild = toObject.transform.GetChild(childIndex).gameObject;
+                    }
+
+                    CopyRenderModel(fromChild, toChild, copyChildren);
+                }
+            }
+
+            CopyRenderModelComponents(fromObject, toObject);
+        }
+
+        public static void CopyRenderModelComponents(GameObject fromObject, GameObject toObject)
+        {
+            CopyRenderModelMeshFilter(fromObject, toObject);
+            CopyRenderModelMeshRenderer(fromObject, toObject);
+        }
+
+        public static void CopyRenderModelMeshFilter(GameObject fromObject, GameObject toObject)
+        {
+            MeshFilter[] fromFilters = fromObject.GetComponents<MeshFilter>();
+            MeshFilter[] toFilters = toObject.GetComponents<MeshFilter>();
+
+            for (int filterIndex = 0; filterIndex < fromFilters.Length; filterIndex++)
+            {
+                MeshFilter fromFilter = fromFilters[filterIndex];
+                MeshFilter toFilter;
+
+                if (toFilters.Length > filterIndex)
+                {
+                    toFilter = toFilters[filterIndex];
+                }
+                else
+                {
+                    toFilter = toObject.AddComponent<MeshFilter>();
+                }
+
+                toFilter.sharedMesh = fromFilter.sharedMesh;
+            }
+        }
+
+        public static void CopyRenderModelMeshRenderer(GameObject fromObject, GameObject toObject)
+        {
+            MeshRenderer[] fromRenderers = fromObject.GetComponents<MeshRenderer>();
+            MeshRenderer[] toRenderers = toObject.GetComponents<MeshRenderer>();
+
+            for (int rendererIndex = 0; rendererIndex < fromRenderers.Length; rendererIndex++)
+            {
+                MeshRenderer fromRenderer = fromRenderers[rendererIndex];
+                MeshRenderer toRenderer;
+
+                if (toRenderers.Length > rendererIndex)
+                {
+                    toRenderer = toRenderers[rendererIndex];
+                }
+                else
+                {
+                    toRenderer = toObject.AddComponent<MeshRenderer>();
+                }
+
+                toRenderer.shadowCastingMode = fromRenderer.shadowCastingMode;
+                toRenderer.receiveShadows = fromRenderer.receiveShadows;
+                toRenderer.motionVectors = fromRenderer.motionVectors;
+                toRenderer.sharedMaterials = fromRenderer.sharedMaterials;
+                toRenderer.lightProbeProxyVolumeOverride = fromRenderer.lightProbeProxyVolumeOverride;
+                toRenderer.lightProbeUsage = fromRenderer.lightProbeUsage;
+                toRenderer.reflectionProbeUsage = fromRenderer.reflectionProbeUsage;
+                toRenderer.probeAnchor = fromRenderer.probeAnchor;
+            }
+        }
+
         public static void LineRendererSetColor(LineRenderer lineRenderer, Color startColor, Color endColor)
         {
             #if UNITY_5_5_OR_NEWER
