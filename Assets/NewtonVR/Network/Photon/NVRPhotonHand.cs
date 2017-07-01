@@ -21,7 +21,7 @@ namespace NewtonVR.NetworkPhoton
             }
         }
 
-        public override bool IsMine()
+        public override bool isMine()
         {
             return this.photonView.isMine;
         }
@@ -30,7 +30,7 @@ namespace NewtonVR.NetworkPhoton
         {
             base.PreInitialize(player);
 
-            if (IsMine() == false)
+            if (isMine() == false)
             {
                 int handID = photonView.viewID;
                 if (photonView.owner.CustomProperties.ContainsKey(handID))
@@ -103,7 +103,7 @@ namespace NewtonVR.NetworkPhoton
         [PunRPC]
         private void PhotonForceDrop(int interactableViewId)
         {
-            if (IsMine())
+            if (isMine())
             {
                 PhotonView interactableView = PhotonView.Find(interactableViewId);
                 EndInteraction(interactableView.GetComponent<NVRInteractable>());

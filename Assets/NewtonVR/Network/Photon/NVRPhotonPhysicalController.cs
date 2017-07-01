@@ -20,7 +20,7 @@ namespace NewtonVR.NetworkPhoton
             }
         }
 
-        public override bool IsMine()
+        public override bool isMine()
         {
             return this.photonView.isMine;
         }
@@ -28,7 +28,7 @@ namespace NewtonVR.NetworkPhoton
         private bool cachedInitialState;
         public override void Initialize(NVRHand trackingHand, bool initialState)
         {
-            if (IsMine())
+            if (isMine())
             {
                 base.Initialize(trackingHand, initialState);
             }
@@ -51,7 +51,7 @@ namespace NewtonVR.NetworkPhoton
 
         protected override GameObject InstantiatePhysicalControllerGameobject()
         {
-            if (IsMine())
+            if (isMine())
             {
                 return PhotonNetwork.Instantiate("NVRPhysicalHand", Hand.transform.position, Hand.transform.rotation, 0);
             }

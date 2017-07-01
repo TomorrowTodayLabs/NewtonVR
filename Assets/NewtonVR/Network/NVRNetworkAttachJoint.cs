@@ -7,7 +7,7 @@ namespace NewtonVR.Network
 {
     public abstract class NVRNetworkAttachJoint : NVRAttachJoint, NVRNetworkObject
     {
-        public abstract bool IsMine();
+        public abstract bool isMine();
 
         protected override void OnTriggerStay(Collider col)
         {

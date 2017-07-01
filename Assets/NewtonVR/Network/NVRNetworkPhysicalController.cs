@@ -5,6 +5,6 @@ namespace NewtonVR.Network
 {
     public abstract class NVRNetworkPhysicalController : NVRPhysicalController, NVRNetworkObject
     {
-        public abstract bool IsMine();
+        public abstract bool isMine();
     }
 }

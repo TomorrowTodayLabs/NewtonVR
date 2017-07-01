@@ -30,14 +30,16 @@ namespace NewtonVR.Network
             else
             {
                 writer.Write(true);
-                
-                NVRNetworkHelpers.SerializeMesh(writer, meshFilter.sharedMesh);
+
+                string meshHash = NVRNetworkCache.instance.AddAsset(meshFilter.sharedMesh);
+                writer.Write(meshHash);
 
                 Material[] materials = meshRenderer.sharedMaterials;
                 writer.Write(materials.Length);
                 for (int materialIndex = 0; materialIndex < materials.Length; materialIndex++)
                 {
-                    NVRNetworkHelpers.SerializeMaterial(writer, materials[materialIndex]);
+                    string materialHash = NVRNetworkCache.instance.AddAsset(materials[materialIndex]);
+                    writer.Write(materialHash);
                 }
             }
 
@@ -68,6 +70,10 @@ namespace NewtonVR.Network
                     {
                         colliderType = NVRColliderTypes.Box;
                     }
+                    else if (collider is MeshCollider)
+                    {
+                        colliderType = NVRColliderTypes.Mesh;
+                    }
 
                     writer.Write((int)colliderType);
                     NVRNetworkHelpers.SerializeCollider(writer, collider);
@@ -96,21 +102,36 @@ namespace NewtonVR.Network
 
             if (hasMesh)
             {
-                Mesh mesh = NVRNetworkHelpers.DeserializeMesh(reader);
+                string meshHash = reader.ReadString();
 
                 int materialsCount = reader.ReadInt32();
-                Material[] materials = new Material[materialsCount];
+                string[] materialHashes = new string[materialsCount];
 
-                for (int materialIndex = 0; materialIndex < materials.Length; materialIndex++)
+                MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
+                meshRenderer.sharedMaterials = new Material[materialsCount];
+                for (int materialIndex = 0; materialIndex < materialsCount; materialIndex++)
                 {
-                    materials[materialIndex] = NVRNetworkHelpers.DeserializeMaterial(reader);
+                    string materialHash = reader.ReadString();
+                    int matIndex = materialIndex;
+
+                    if (string.IsNullOrEmpty(materialHash) == false)
+                    {
+                        NVRCacheJob job = new NVRCacheJob(materialHash);
+                        job.assignment = () =>
+                        {
+                            meshRenderer.sharedMaterials[matIndex] = NVRNetworkCache.instance.GetCache<Material>(materialHash);
+                        };
+                        NVRNetworkCache.instance.AddCacheJob(job);
+                    }
                 }
 
                 MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
-                meshFilter.sharedMesh = mesh;
-
-                MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
-                meshRenderer.sharedMaterials = materials;
+                if (string.IsNullOrEmpty(meshHash) == false)
+                {
+                    NVRCacheJob job = new NVRCacheJob(meshHash);
+                    job.assignment = () => meshFilter.sharedMesh = NVRNetworkCache.instance.GetCache<Mesh>(meshHash);
+                    NVRNetworkCache.instance.AddCacheJob(job);
+                }
             }
 
             if (hasColliders)

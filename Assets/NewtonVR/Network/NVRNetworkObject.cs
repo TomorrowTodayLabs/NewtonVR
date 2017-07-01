@@ -6,6 +6,6 @@ namespace NewtonVR.Network
 {
     public interface NVRNetworkObject
     {
-        bool IsMine();
+        bool isMine();
     }
 }

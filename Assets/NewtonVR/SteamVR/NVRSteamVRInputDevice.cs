@@ -237,7 +237,7 @@ namespace NewtonVR
                     break;
 
                 case "vr_controller_vive_1_5":
-                    Transform dk2TrackhatColliders = ModelParent.transform.FindChild("ViveColliders");
+                    Transform dk2TrackhatColliders = ModelParent.transform.Find("ViveColliders");
                     if (dk2TrackhatColliders == null)
                     {
                         dk2TrackhatColliders = GameObject.Instantiate(Resources.Load<GameObject>("ViveControllers/ViveColliders")).transform;
@@ -301,7 +301,7 @@ namespace NewtonVR
                     break;
 
                 case "vr_controller_vive_1_5":
-                    Transform dk2Trackhat = renderModel.transform.FindChild("trackhat");
+                    Transform dk2Trackhat = renderModel.transform.Find("trackhat");
                     if (dk2Trackhat == null)
                     {
                         dk2Trackhat = new GameObject("trackhat").transform;
@@ -381,7 +381,7 @@ namespace NewtonVR
             }
             name += "Colliders";
 
-            Transform touchColliders = ModelParent.FindChild(name);
+            Transform touchColliders = ModelParent.Find(name);
             if (touchColliders == null)
             {
                 touchColliders = GameObject.Instantiate(Resources.Load<GameObject>("TouchControllers/" + name)).transform;

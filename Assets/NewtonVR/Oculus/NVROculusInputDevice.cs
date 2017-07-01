@@ -251,7 +251,7 @@ namespace NewtonVR
             }
             name += "Colliders";
 
-            Transform touchColliders = ModelParent.transform.FindChild(name);
+            Transform touchColliders = ModelParent.transform.Find(name);
             if (touchColliders == null)
             {
                 touchColliders = GameObject.Instantiate(Resources.Load<GameObject>("TouchControllers/" + name)).transform;

@@ -22,7 +22,7 @@ namespace NewtonVR.NetworkPhoton
             }
         }
 
-        public override bool IsMine()
+        public override bool isMine()
         {
             return this.photonView.isMine;
         }

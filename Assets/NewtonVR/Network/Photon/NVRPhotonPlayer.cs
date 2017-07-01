@@ -21,7 +21,7 @@ namespace NewtonVR.NetworkPhoton
             }
         }
 
-        public override bool IsMine()
+        public override bool isMine()
         {
             return this.photonView.isMine;
         }
@@ -30,7 +30,7 @@ namespace NewtonVR.NetworkPhoton
         {
             base.Awake();
 
-            if (IsMine() == false)
+            if (isMine() == false)
             {
                 Destroy(gameObject.GetComponentInChildren<AudioListener>());
             }

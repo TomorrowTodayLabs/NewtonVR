@@ -6,7 +6,7 @@ namespace NewtonVR.Network
 {
     public abstract class NVRNetworkInteractableItem : NVRInteractableItem, NVRNetworkInteractable
     {
-        public abstract bool IsMine();
+        public abstract bool isMine();
         
         public virtual bool IsRemotelyAttached()
         {
@@ -18,7 +18,7 @@ namespace NewtonVR.Network
                     NVRHand hand = AttachedHands[handIndex];
                     if (hand is NVRNetworkHand)
                     {
-                        remotelyAttached |= ((NVRNetworkHand)hand).IsMine() == false;
+                        remotelyAttached |= ((NVRNetworkHand)hand).isMine() == false;
                     }
                 }
                 return remotelyAttached;
@@ -50,7 +50,7 @@ namespace NewtonVR.Network
 
         protected override void FixedUpdate()
         {
-            if (IsMine())
+            if (isMine())
             {
                 base.FixedUpdate();
             }

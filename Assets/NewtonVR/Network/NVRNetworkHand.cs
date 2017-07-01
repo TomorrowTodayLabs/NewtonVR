@@ -2,12 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace NewtonVR.Network
 {
     public abstract class NVRNetworkHand : NVRHand, NVRNetworkObject
     {
-        public abstract bool IsMine();
+        public abstract bool isMine();
         protected abstract void SelfOnBeginInteraction(NVRInteractable interactable);
         protected abstract void SelfOnEndInteraction(NVRInteractable interactable);
         protected abstract void ForceRemoteDrop(NVRInteractable interactable);
@@ -15,9 +16,10 @@ namespace NewtonVR.Network
         public NVRInteractableEvent OnBeginInteractionRemote = new NVRInteractableEvent();
         public NVRInteractableEvent OnEndInteractionRemote = new NVRInteractableEvent();
 
+
         public override void PreInitialize(NVRPlayer player)
         {
-            if (IsMine())
+            if (isMine())
             {
                 base.PreInitialize(player);
                 OnBeginInteraction.AddListener(new UnityEngine.Events.UnityAction<NVRInteractable>(SelfOnBeginInteraction));
@@ -29,10 +31,9 @@ namespace NewtonVR.Network
             }
         }
 
-
         protected override void Update()
         {
-            if (IsMine())
+            if (isMine())
             {
                 base.Update();
             }
@@ -40,7 +41,7 @@ namespace NewtonVR.Network
 
         public override void BeginInteraction(NVRInteractable interactable)
         {
-            if (IsMine())
+            if (isMine())
             {
                 if (interactable.CanAttach == true)
                 {
@@ -78,7 +79,7 @@ namespace NewtonVR.Network
                         }
                     }
 
-                    if (networkInteractable != null && networkInteractable.IsMine() == false)
+                    if (networkInteractable != null && networkInteractable.isMine() == false)
                     {
                         NVRNetworkOwnership.Instance.RequestOwnership(interactable);
                     }
@@ -96,7 +97,7 @@ namespace NewtonVR.Network
 
         public override void EndInteraction(NVRInteractable item)
         {
-            if (IsMine())
+            if (isMine())
             {
                 base.EndInteraction(item);
             }
@@ -104,7 +105,7 @@ namespace NewtonVR.Network
 
         public override void Initialize()
         {
-            if (IsMine())
+            if (isMine())
             {
                 InitializeRemoteRenderModel();
             }
@@ -129,7 +130,13 @@ namespace NewtonVR.Network
             List<NVRNetworkGameObjectSerialization> serializedList = new List<NVRNetworkGameObjectSerialization>();
             GetTransformHierarchy(RenderModel.transform.parent, ref serializedList); //todo hopefully this works - I think rendermodel shouldn't have any siblings
             byte[] bytes = GetSerializedHierarchy(serializedList);
-            SendRenderModelData(bytes);
+        }
+
+        protected abstract void SendAskIfNeeded(string handHash);
+
+        protected virtual void RecieveAskIfNeeded(string handHash)
+        {
+
         }
 
         protected abstract void SendRenderModelData(byte[] data);

@@ -10,7 +10,7 @@ namespace NewtonVR.ExamplePhoton
         {
             base.InteractingUpdate(hand);
 
-            if (IsMine())
+            if (isMine())
             {
                 if (hand.Inputs[NVRButtons.Touchpad].PressUp == true)
                 {

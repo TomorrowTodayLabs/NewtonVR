@@ -2,11 +2,20 @@
 using System.Collections;
 using System.Reflection;
 using System.IO;
+using System.Security.Cryptography;
+using NewtonVR.Network;
 
 namespace NewtonVR
 {
     public class NVRNetworkHelpers
     {
+        public static string GetHash(byte[] bytes)
+        {
+            MD5CryptoServiceProvider md5Provider = new MD5CryptoServiceProvider();
+            string hash = System.BitConverter.ToString(md5Provider.ComputeHash(bytes));
+            return hash;
+        }
+
         public static void SerializeMaterial(BinaryWriter writer, Material material)
         {
             Shader shader = material.shader;
@@ -28,6 +37,26 @@ namespace NewtonVR
             return material;
         }
 
+        public static void SerializePhysicMaterial(BinaryWriter writer, PhysicMaterial material)
+        {
+            writer.Write(material.name);
+            writer.Write((int)material.bounceCombine);
+            writer.Write(material.bounciness);
+            writer.Write(material.dynamicFriction);
+            writer.Write((int)material.frictionCombine);
+            writer.Write(material.staticFriction);
+        }
+        public static PhysicMaterial DeserializePhysicMaterial(BinaryReader reader)
+        {
+            PhysicMaterial material = new PhysicMaterial(reader.ReadString());
+            material.bounceCombine = (PhysicMaterialCombine)reader.ReadInt32();
+            material.bounciness = reader.ReadSingle();
+            material.dynamicFriction = reader.ReadSingle();
+            material.frictionCombine = (PhysicMaterialCombine)reader.ReadInt32();
+            material.staticFriction = reader.ReadSingle();
+
+            return material;
+        }
 
         public static void SerializeMesh(BinaryWriter writer, Mesh mesh)
         {
@@ -72,7 +101,10 @@ namespace NewtonVR
 
         public static void SerializeCollider(BinaryWriter writer, Collider collider)
         {
+            writer.Write(collider.enabled);
             writer.Write(collider.isTrigger);
+            string materialHash = NVRNetworkCache.instance.AddAsset(collider.sharedMaterial);
+            writer.Write(materialHash);
 
             if (collider is SphereCollider)
             {
@@ -86,10 +118,22 @@ namespace NewtonVR
             {
                 WriteBoxCollider(writer, (BoxCollider)collider);
             }
+            else if (collider is MeshCollider)
+            {
+                WriteMeshCollider(writer, (MeshCollider)collider);
+            }
         }
         public static void DeserializeCollider(BinaryReader reader, Collider collider)
         {
+            collider.enabled = reader.ReadBoolean();
             collider.isTrigger = reader.ReadBoolean();
+            string materialHash = reader.ReadString();
+            if (string.IsNullOrEmpty(materialHash) == false)
+            {
+                NVRCacheJob job = new NVRCacheJob(materialHash);
+                job.assignment = () => collider.sharedMaterial = NVRNetworkCache.instance.GetCache<PhysicMaterial>(materialHash);
+                NVRNetworkCache.instance.AddCacheJob(job);
+            }
 
             if (collider is SphereCollider)
             {
@@ -140,6 +184,36 @@ namespace NewtonVR
         {
             collider.center = ReadVector3(reader);
             collider.size = ReadVector3(reader);
+        }
+
+        public static void WriteMeshCollider(BinaryWriter writer, MeshCollider collider)
+        {
+            writer.Write(collider.convex);
+            writer.Write(collider.inflateMesh);
+            writer.Write(collider.skinWidth);
+
+            string meshHash = NVRNetworkCache.instance.AddAsset(collider.sharedMesh);
+            writer.Write(meshHash);
+        }
+        public static void ReadMeshCollider(BinaryReader reader, MeshCollider collider)
+        {
+            bool convex = reader.ReadBoolean();
+            bool inflate = reader.ReadBoolean();
+            float width = reader.ReadSingle();
+
+            string meshHash = reader.ReadString();
+            if (string.IsNullOrEmpty(meshHash) == false)
+            {
+                NVRCacheJob job = new NVRCacheJob(meshHash);
+                job.assignment = () =>
+                {
+                    collider.sharedMesh = NVRNetworkCache.instance.GetCache<Mesh>(meshHash);
+                    collider.convex = convex;
+                    collider.inflateMesh = inflate;
+                    collider.skinWidth = width;
+                };
+                NVRNetworkCache.instance.AddCacheJob(job);
+            }
         }
 
         public static void WriteTexture(BinaryWriter writer, Texture texture)

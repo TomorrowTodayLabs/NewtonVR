@@ -16,7 +16,7 @@ namespace NewtonVR.PhotonExample
         {
             base.UseButtonDown();
 
-            if (IsMine())
+            if (isMine())
             {
                 GameObject bullet = PhotonNetwork.Instantiate(BulletPrefab.name, FirePoint.position, FirePoint.rotation, 0);
 

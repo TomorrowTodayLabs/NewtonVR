@@ -12,7 +12,7 @@ namespace NewtonVR.Network
         {
             base.HoveringUpdate(hand, forTime);
 
-            if (hand is NVRNetworkHand && ((NVRNetworkHand)hand).IsMine())
+            if (hand is NVRNetworkHand && ((NVRNetworkHand)hand).isMine())
             {
                 if (IsAttached == false || (IsRemotelyAttached() && NVRNetworkOwnership.Instance.AllowStealingInteraction))
                 {
