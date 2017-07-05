@@ -23,12 +23,12 @@ GameObject:
   - 135: {fileID: 135999121819691904}
   - 23: {fileID: 23486069400554426}
   m_Layer: 0
-  m_Name: 
+  m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1440912094202784
 GameObject:
   m_ObjectHideFlags: 0
@@ -41,12 +41,12 @@ GameObject:
   - 65: {fileID: 65408357458668294}
   - 23: {fileID: 23750464177788574}
   m_Layer: 0
-  m_Name: 
+  m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1674381524359478
 GameObject:
   m_ObjectHideFlags: 0
@@ -59,12 +59,12 @@ GameObject:
   - 65: {fileID: 65627240185366642}
   - 23: {fileID: 23875783090452044}
   m_Layer: 0
-  m_Name: 
+  m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1731562161787186
 GameObject:
   m_ObjectHideFlags: 0
@@ -77,12 +77,12 @@ GameObject:
   - 65: {fileID: 65095296490970840}
   - 23: {fileID: 23949779228190288}
   m_Layer: 0
-  m_Name: 
+  m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1753383432004678
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,12 +95,12 @@ GameObject:
   - 65: {fileID: 65223421569873102}
   - 23: {fileID: 23416352584880460}
   m_Layer: 0
-  m_Name: 
+  m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1779003302828486
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,12 +128,12 @@ GameObject:
   - 65: {fileID: 65337286610749752}
   - 23: {fileID: 23179661895493186}
   m_Layer: 0
-  m_Name: 
+  m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4074444592329326
 Transform:
   m_ObjectHideFlags: 1
@@ -171,8 +171,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
-  - {fileID: 4789686520910350}
   - {fileID: 4948267832727958}
+  - {fileID: 4789686520910350}
   - {fileID: 4074444592329326}
   - {fileID: 4926501677130990}
   - {fileID: 4417191663131676}
@@ -191,7 +191,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: -30.000002, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 4740066088965436}
-  m_RootOrder: 0
+  m_RootOrder: 1
 --- !u!4 &4824424378912344
 Transform:
   m_ObjectHideFlags: 1
@@ -230,7 +230,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 4740066088965436}
-  m_RootOrder: 1
+  m_RootOrder: 0
 --- !u!23 &23179661895493186
 MeshRenderer:
   m_ObjectHideFlags: 1
