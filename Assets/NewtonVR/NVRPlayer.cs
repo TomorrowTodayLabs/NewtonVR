@@ -9,7 +9,7 @@ namespace NewtonVR
 {
     public class NVRPlayer : MonoBehaviour
     {
-        public const decimal NewtonVRVersion = 1.22m;
+        public const decimal NewtonVRVersion = 1.23m;
         public const float NewtonVRExpectedDeltaTime = 0.0111f;
 
         public static List<NVRPlayer> Instances = new List<NVRPlayer>();
