@@ -148,10 +148,11 @@ namespace NewtonVR
             }
             else
             {
-                for (int handIndex = 0; handIndex < AttachedHands.Count; handIndex++)
+                for (int handIndex = (AttachedHands.Count-1); handIndex >= 0; handIndex--)
                 {
-                    AttachedHands[handIndex].EndInteraction(this);
-                    this.EndInteraction(AttachedHands[handIndex]);
+                    NVRHand detaching = AttachedHands[handIndex];
+                    detaching.EndInteraction(this);
+                    this.EndInteraction(detaching);
                 }
             }
         }
