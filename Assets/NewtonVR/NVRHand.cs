@@ -595,16 +595,19 @@ namespace NewtonVR
             NVRInteractable closest = null;
             float closestDistance = float.MaxValue;
 
-            foreach (var hovering in CurrentlyHoveringOver)
+            foreach (var collider in GhostColliders)
             {
-                if (hovering.Key == null)
-                    continue;
-
-                float distance = Vector3.Distance(this.transform.position, hovering.Key.transform.position);
-                if (distance < closestDistance)
+                foreach (var hovering in CurrentlyHoveringOver)
                 {
-                    closestDistance = distance;
-                    closest = hovering.Key;
+                    if (hovering.Key == null)
+                        continue;
+
+                    float distance = Vector3.Distance(collider.transform.position, hovering.Key.transform.position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closest = hovering.Key;
+                    }
                 }
             }
 
