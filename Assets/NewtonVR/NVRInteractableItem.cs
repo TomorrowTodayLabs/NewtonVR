@@ -8,10 +8,10 @@ namespace NewtonVR
 {
     public class NVRInteractableItem : NVRInteractable
     {
-        private const float MaxVelocityChange = 10f;
-        private const float MaxAngularVelocityChange = 20f;
-        private const float VelocityMagic = 6000f;
-        private const float AngularVelocityMagic = 50f;
+        protected const float MaxVelocityChange = 10f;
+        protected const float MaxAngularVelocityChange = 20f;
+        protected const float VelocityMagic = 6000f;
+        protected const float AngularVelocityMagic = 50f;
 
         [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
         public Transform InteractionPoint;

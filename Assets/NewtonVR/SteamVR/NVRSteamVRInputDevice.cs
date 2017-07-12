@@ -21,6 +21,13 @@ namespace NewtonVR
 
         private Dictionary<NVRButtons, EVRButtonId> ButtonMapping = new Dictionary<NVRButtons, EVRButtonId>(new NVRButtonsComparer());
 
+        protected bool isKnuckles = false;
+        protected float indexCurl;
+        protected float middleCurl;
+        protected float ringCurl;
+        protected float pinkyCurl;
+        protected bool thumbTouch;
+
         public override void Initialize(NVRHand hand)
         {
             SetupButtonMapping();
@@ -89,7 +96,18 @@ namespace NewtonVR
         public override bool GetPressDown(NVRButtons button)
         {
             if (Controller != null)
+            {
+                if (isKnuckles == true)
+                {
+                    if (button == NVRButtons.Grip)
+                    {
+                        UpdateKnucklesFingerCurl();
+                        return (wasGripped == false) && (isGripped == true);
+                    }
+                }
+
                 return Controller.GetPressDown(GetButton(button));
+            }
 
             return false;
         }
@@ -97,7 +115,18 @@ namespace NewtonVR
         public override bool GetPressUp(NVRButtons button)
         {
             if (Controller != null)
+            {
+                if (isKnuckles == true)
+                {
+                    if (button == NVRButtons.Grip)
+                    {
+                        UpdateKnucklesFingerCurl();
+                        return (wasGripped == true) && (isGripped == false);
+                    }
+                }
+
                 return Controller.GetPressUp(GetButton(button));
+            }
 
             return false;
         }
@@ -105,7 +134,18 @@ namespace NewtonVR
         public override bool GetPress(NVRButtons button)
         {
             if (Controller != null)
+            {
+                if (isKnuckles == true)
+                {
+                    if (button == NVRButtons.Grip)
+                    {
+                        UpdateKnucklesFingerCurl();
+                        return isGripped;
+                    }
+                }
+
                 return Controller.GetPress(GetButton(button));
+            }
 
             return false;
         }
@@ -166,6 +206,32 @@ namespace NewtonVR
             {
                 return DeviceIndex != -1;
             }
+        }
+
+        protected bool wasGripped;
+        protected bool isGripped;
+        protected float lastChecked;
+        protected void UpdateKnucklesFingerCurl()
+        {
+            if (Time.unscaledTime != lastChecked)
+            {
+                wasGripped = isGripped;
+
+                indexCurl = Controller.GetAxis(EVRButtonId.k_EButton_Axis3).x;
+                middleCurl = Controller.GetAxis(EVRButtonId.k_EButton_Axis3).y;
+                ringCurl = Controller.GetAxis(EVRButtonId.k_EButton_Axis4).x;
+                pinkyCurl = Controller.GetAxis(EVRButtonId.k_EButton_Axis4).y;
+                thumbTouch = Controller.GetTouch(EVRButtonId.k_EButton_SteamVR_Touchpad);
+
+                isGripped = IsKnucklesGripped();
+            }
+            lastChecked = Time.unscaledTime;
+        }
+
+        protected float curlAmountNeeded = 0.7f;
+        protected bool IsKnucklesGripped()
+        {
+            return (indexCurl > curlAmountNeeded) || (middleCurl > curlAmountNeeded) || (ringCurl > curlAmountNeeded) || (pinkyCurl > curlAmountNeeded);
         }
 
         public override GameObject SetupDefaultRenderModel()
@@ -237,7 +303,7 @@ namespace NewtonVR
                     break;
 
                 case "vr_controller_vive_1_5":
-                    Transform dk2TrackhatColliders = ModelParent.transform.FindChild("ViveColliders");
+                    Transform dk2TrackhatColliders = ModelParent.transform.Find("ViveColliders");
                     if (dk2TrackhatColliders == null)
                     {
                         dk2TrackhatColliders = GameObject.Instantiate(Resources.Load<GameObject>("ViveControllers/ViveColliders")).transform;
@@ -248,6 +314,31 @@ namespace NewtonVR
                     }
 
                     colliders = dk2TrackhatColliders.GetComponentsInChildren<Collider>();
+                    break;
+
+                case "{knuckles}valve_controller_knu_ev1_3_left":
+                case "{knuckles}valve_controller_knu_ev1_3_right":
+                    string name = "KnucklesPhysicalHand";
+                    if (Hand.IsLeft == true)
+                    {
+                        name += "Left";
+                    }
+                    else
+                    {
+                        name += "Right";
+                    }
+
+                    Transform knucklesColliders = ModelParent.transform.Find(name);
+                    if (knucklesColliders == null)
+                    {
+                        knucklesColliders = GameObject.Instantiate(Resources.Load<GameObject>("ViveControllers/" + name)).transform;
+                        knucklesColliders.parent = ModelParent.transform;
+                        knucklesColliders.localPosition = Vector3.zero;
+                        knucklesColliders.localRotation = Quaternion.identity;
+                        knucklesColliders.localScale = Vector3.one;
+                    }
+
+                    colliders = knucklesColliders.GetComponentsInChildren<Collider>();
                     break;
 
                 case "external_controllers":
@@ -301,7 +392,7 @@ namespace NewtonVR
                     break;
 
                 case "vr_controller_vive_1_5":
-                    Transform dk2Trackhat = renderModel.transform.FindChild("trackhat");
+                    Transform dk2Trackhat = renderModel.transform.Find("trackhat");
                     if (dk2Trackhat == null)
                     {
                         dk2Trackhat = new GameObject("trackhat").transform;
@@ -325,6 +416,22 @@ namespace NewtonVR
                     }
 
                     colliders = new Collider[] { dk2TrackhatCollider };
+                    break;
+                case "{knuckles}valve_controller_knu_ev1_3_left":
+                case "{knuckles}valve_controller_knu_ev1_3_right":
+                    isKnuckles = true;
+
+                    Transform knucklesTrackpad = renderModel.transform.Find("trackpad").GetChild(0);
+
+                    SphereCollider knucklesTrackpadCollider = knucklesTrackpad.gameObject.GetComponent<SphereCollider>();
+                    if (knucklesTrackpadCollider == null)
+                    {
+                        knucklesTrackpadCollider = knucklesTrackpad.gameObject.AddComponent<SphereCollider>();
+                        knucklesTrackpadCollider.isTrigger = true;
+                        knucklesTrackpadCollider.radius = 0.04f;
+                    }
+
+                    colliders = new Collider[] { knucklesTrackpadCollider };
                     break;
 
                 case "external_controllers":
@@ -381,7 +488,7 @@ namespace NewtonVR
             }
             name += "Colliders";
 
-            Transform touchColliders = ModelParent.FindChild(name);
+            Transform touchColliders = ModelParent.Find(name);
             if (touchColliders == null)
             {
                 touchColliders = GameObject.Instantiate(Resources.Load<GameObject>("TouchControllers/" + name)).transform;
