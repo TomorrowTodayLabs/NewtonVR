@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NewtonVR
 {
@@ -8,6 +9,8 @@ namespace NewtonVR
         public Rigidbody Rigidbody;
 
         public bool CanAttach = true;
+
+        public bool AllowTwoHanded = false;
         
         public bool DisableKinematicOnAttach = true;
         public bool EnableKinematicOnDetach = false;
@@ -15,9 +18,19 @@ namespace NewtonVR
 
         public bool EnableGravityOnDetach = true;
 
-        public NVRHand AttachedHand = null;
+        public List<NVRHand> AttachedHands = new List<NVRHand>();
+        public NVRHand AttachedHand
+        {
+            get
+            {
+                if (AttachedHands.Count == 0)
+                    return null;
 
-        protected Collider[] Colliders;
+                return AttachedHands[0];
+            }
+        }
+
+        protected Collider[] Colliders = new Collider[0];
         protected Vector3 ClosestHeldPoint;
 
         
@@ -51,7 +64,7 @@ namespace NewtonVR
         {
             Awake();
             Start();
-            AttachedHand = null;
+            AttachedHands.Clear();
         }
 
         public virtual void UpdateColliders()
@@ -62,45 +75,45 @@ namespace NewtonVR
 
         protected virtual bool CheckForDrop()
         {
-            float shortestDistance = float.MaxValue;
 
-            for (int index = 0; index < Colliders.Length; index++)
+			for (int handIndex = 0; handIndex < AttachedHands.Count; handIndex++)
             {
-                //todo: this does not do what I think it does.
-                Vector3 closest = Colliders[index].ClosestPointOnBounds(AttachedHand.transform.position);
-                float distance = Vector3.Distance(AttachedHand.transform.position, closest);
-
-                if (distance < shortestDistance)
+                float shortestDistance = float.MaxValue;
+                NVRHand hand = AttachedHands[handIndex];
+                for (int index = 0; index < Colliders.Length; index++)
                 {
-                    shortestDistance = distance;
-                    ClosestHeldPoint = closest;
-                }
-            }
+                    //todo: this does not do what I think it does.
+                    Vector3 closest = Colliders[index].ClosestPointOnBounds(hand.transform.position);
+                    float distance = Vector3.Distance(hand.transform.position, closest);
 
-            if (DropDistance != -1 && AttachedHand.CurrentInteractionStyle != InterationStyle.ByScript && shortestDistance > DropDistance)
-            {
-                DroppedBecauseOfDistance();
-                return true;
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        ClosestHeldPoint = closest;
+                    }
+                }
+
+                if (DropDistance != -1 && hand.CurrentInteractionStyle != InterationStyle.ByScript && shortestDistance > DropDistance)
+                {
+                    DroppedBecauseOfDistance(hand);
+
+                    if (IsAttached == false)
+                    {
+                        return true;
+                    }
+                }
             }
 
             return false;
         }
 
-        //Remove items that go too high or too low.
         protected virtual void Update()
         {
-            if (this.transform.position.y > 10000 || this.transform.position.y < -10000)
-            {
-                if (AttachedHand != null)
-                    AttachedHand.EndInteraction(this);
-
-                Destroy(this.gameObject);
-            }
         }
 
         public virtual void BeginInteraction(NVRHand hand)
         {
-            AttachedHand = hand;
+            AttachedHands.Add(hand);
 
             if (DisableKinematicOnAttach == true)
             {
@@ -136,18 +149,26 @@ namespace NewtonVR
 
         }
 
-        public void ForceDetach()
+        public void ForceDetach(NVRHand hand = null)
         {
-            if (AttachedHand != null)
-                AttachedHand.EndInteraction(this);
-
-            if (AttachedHand != null)
-                EndInteraction();
+            if (hand != null)
+            {
+                hand.EndInteraction(this);
+                this.EndInteraction(hand); //hand should call this in most cases, but rarely hand / item gets disconnected on force detach
+            }
+            else
+            {
+                for (int handIndex = 0; handIndex < AttachedHands.Count; handIndex++)
+                {
+                    AttachedHands[handIndex].EndInteraction(this);
+                    this.EndInteraction(AttachedHands[handIndex]);
+                }
+            }
         }
 
-        public virtual void EndInteraction()
+        public virtual void EndInteraction(NVRHand hand)
         {
-            AttachedHand = null;
+            AttachedHands.Remove(hand);
             ClosestHeldPoint = Vector3.zero;
 
             if (EnableKinematicOnDetach == true)
@@ -161,9 +182,9 @@ namespace NewtonVR
             }
         }
 
-        protected virtual void DroppedBecauseOfDistance()
+        protected virtual void DroppedBecauseOfDistance(NVRHand hand)
         {
-            AttachedHand.EndInteraction(this);
+            hand.EndInteraction(this);
         }
 
         public virtual void UseButtonUp()

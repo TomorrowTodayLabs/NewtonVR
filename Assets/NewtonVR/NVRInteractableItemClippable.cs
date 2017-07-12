@@ -7,40 +7,20 @@ namespace NewtonVR
     /// This interactable item script clips through other colliders. If you don't want your item to respect other object's positions 
     /// and have it go through walls/floors/etc then you can use this.
     /// </summary>
-    public class NVRInteractableItemClippable : NVRInteractable
+    public class NVRInteractableItemClippable : NVRInteractableItem
     {
-        [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
-        public Transform InteractionPoint;
-        
-        protected Transform PickupTransform;
-
-        protected override void Awake()
+        protected override void UpdateVelocities()
         {
-            base.Awake();
-            this.Rigidbody.maxAngularVelocity = 100f;
-        }
+            Vector3 targetItemPosition;
+            Quaternion targetItemRotation;
 
-        protected void FixedUpdate()
-        {
-            if (IsAttached == true)
-            {
-                Vector3 TargetPosition;
-                Quaternion TargetRotation;
+            Vector3 targetHandPosition;
+            Quaternion targetHandRotation;
 
-                if (InteractionPoint != null)
-                {
-                    TargetRotation = AttachedHand.transform.rotation * Quaternion.Inverse(InteractionPoint.localRotation);
-                    TargetPosition = this.transform.position + (AttachedHand.transform.position - InteractionPoint.position);
-                }
-                else
-                {
-                    TargetRotation = PickupTransform.rotation;
-                    TargetPosition = PickupTransform.position;
-                }
+            GetTargetValues(out targetHandPosition, out targetHandRotation, out targetItemPosition, out targetItemRotation);
 
-                this.Rigidbody.MovePosition(TargetPosition);
-                this.Rigidbody.MoveRotation(TargetRotation);
-            }
+            this.Rigidbody.MovePosition(targetHandPosition);
+            this.Rigidbody.MoveRotation(targetHandRotation);
         }
 
         public override void BeginInteraction(NVRHand hand)
@@ -48,21 +28,13 @@ namespace NewtonVR
             base.BeginInteraction(hand);
 
             this.Rigidbody.isKinematic = true;
-
-            PickupTransform = new GameObject(string.Format("[{0}] NVRPickupTransform", this.gameObject.name)).transform;
-            PickupTransform.parent = hand.transform;
-            PickupTransform.position = this.transform.position;
-            PickupTransform.rotation = this.transform.rotation;
         }
 
-        public override void EndInteraction()
+        public override void EndInteraction(NVRHand hand)
         {
-            base.EndInteraction();
+            base.EndInteraction(hand);
 
             this.Rigidbody.isKinematic = false;
-
-            if (PickupTransform != null)
-                Destroy(PickupTransform.gameObject);
         }
 
     }

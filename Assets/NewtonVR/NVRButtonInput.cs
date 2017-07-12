@@ -14,7 +14,7 @@ namespace NewtonVR
             {
                 if (PressDownExpired)
                 {
-                    PressDownCached = (InputDevice != null) ? InputDevice.GetPressDown(nvrbutton) : false;
+                    PressDownCached = (InputDevice != null) ? InputDevice.GetPressDown(NVRbutton) : false;
                     PressDownExpired = false;
                 }
                 return PressDownCached;
@@ -31,7 +31,7 @@ namespace NewtonVR
             {
                 if (PressUpExpired)
                 {
-                    PressUpCached = (InputDevice != null) ? InputDevice.GetPressUp(nvrbutton) : false;
+                    PressUpCached = (InputDevice != null) ? InputDevice.GetPressUp(NVRbutton) : false;
                     PressUpExpired = false;
                 }
                 return PressUpCached;
@@ -48,7 +48,7 @@ namespace NewtonVR
             {
                 if (IsPressedExpired)
                 {
-                    IsPressedCached = (InputDevice != null) ? InputDevice.GetPress(nvrbutton) : false;
+                    IsPressedCached = (InputDevice != null) ? InputDevice.GetPress(NVRbutton) : false;
                     IsPressedExpired = false;
                 }
                 return IsPressedCached;
@@ -65,7 +65,7 @@ namespace NewtonVR
             {
                 if (TouchDownExpired)
                 {
-                    TouchDownCached = (InputDevice != null) ? InputDevice.GetTouchDown(nvrbutton) : false;
+                    TouchDownCached = (InputDevice != null) ? InputDevice.GetTouchDown(NVRbutton) : false;
                     TouchDownExpired = false;
                 }
                 return TouchDownCached;
@@ -82,7 +82,7 @@ namespace NewtonVR
             {
                 if (TouchUpExpired)
                 {
-                    TouchUpCached = (InputDevice != null) ? InputDevice.GetTouchUp(nvrbutton) : false;
+                    TouchUpCached = (InputDevice != null) ? InputDevice.GetTouchUp(NVRbutton) : false;
                     TouchUpExpired = false;
                 }
                 return TouchUpCached;
@@ -99,7 +99,7 @@ namespace NewtonVR
             {
                 if (IsTouchedExpired)
                 {
-                    IsTouchedCached = (InputDevice != null) ? InputDevice.GetTouch(nvrbutton) : false;
+                    IsTouchedCached = (InputDevice != null) ? InputDevice.GetTouch(NVRbutton) : false;
                     IsTouchedExpired = false;
                 }
                 return IsTouchedCached;
@@ -116,7 +116,7 @@ namespace NewtonVR
             {
                 if (NearTouchDownExpired)
                 {
-                    NearTouchDownCached = (InputDevice != null) ? InputDevice.GetNearTouchDown(nvrbutton) : false;
+                    NearTouchDownCached = (InputDevice != null) ? InputDevice.GetNearTouchDown(NVRbutton) : false;
                     NearTouchDownExpired = false;
                 }
                 return NearTouchDownCached;
@@ -133,7 +133,7 @@ namespace NewtonVR
             {
                 if (NearTouchUpExpired)
                 {
-                    NearTouchUpCached = (InputDevice != null) ? InputDevice.GetNearTouchUp(nvrbutton) : false;
+                    NearTouchUpCached = (InputDevice != null) ? InputDevice.GetNearTouchUp(NVRbutton) : false;
                     NearTouchUpExpired = false;
                 }
                 return NearTouchUpCached;
@@ -150,7 +150,7 @@ namespace NewtonVR
             {
                 if (IsNearTouchedExpired)
                 {
-                    IsNearTouchedCached = (InputDevice != null) ? InputDevice.GetNearTouch(nvrbutton) : false;
+                    IsNearTouchedCached = (InputDevice != null) ? InputDevice.GetNearTouch(NVRbutton) : false;
                     IsNearTouchedExpired = false;
                 }
                 return IsNearTouchedCached;
@@ -167,7 +167,7 @@ namespace NewtonVR
             {
                 if (AxisExpired)
                 {
-                    AxisCached = (InputDevice != null) ? InputDevice.GetAxis2D(nvrbutton) : Vector2.zero;
+                    AxisCached = (InputDevice != null) ? InputDevice.GetAxis2D(NVRbutton) : Vector2.zero;
                     AxisExpired = false;
                 }
                 return AxisCached;
@@ -184,7 +184,7 @@ namespace NewtonVR
             {
                 if (SingleAxisExpired)
                 {
-                    SingleAxisCached = (InputDevice != null) ? InputDevice.GetAxis1D(nvrbutton) : 0f;
+                    SingleAxisCached = (InputDevice != null) ? InputDevice.GetAxis1D(NVRbutton) : 0f;
                     SingleAxisExpired = false;
                 }
                 return SingleAxisCached;
@@ -195,7 +195,7 @@ namespace NewtonVR
         private bool SingleAxisExpired = true;
 
         private NVRInputDevice InputDevice;
-        private NVRButtons nvrbutton;
+        private NVRButtons NVRbutton;
 
         /// <summary>
         /// Reset the cached values for a new frame.
@@ -205,7 +205,7 @@ namespace NewtonVR
         public void FrameReset(NVRInputDevice inputDevice, NVRButtons button)
         {
             InputDevice = inputDevice;
-            nvrbutton = button;
+            NVRbutton = button;
 
             PressDownExpired = true;
             PressUpExpired = true;

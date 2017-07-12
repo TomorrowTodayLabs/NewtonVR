@@ -277,6 +277,14 @@ namespace NewtonVR
                     }
                 }
             }
+
+            if (InputDevice != null && IsInteracting == false && IsHovering == true)
+            {
+                if (Player.VibrateOnHover == true)
+                {
+                    InputDevice.TriggerHapticPulse(100);
+                }
+            }
         }
 
         protected void UpdateButtonStates()
@@ -534,14 +542,6 @@ namespace NewtonVR
 
             if (EstimationSampleIndex >= LastPositions.Length)
                 EstimationSampleIndex = 0;
-
-            if (InputDevice != null && IsInteracting == false && IsHovering == true)
-            {
-                if (Player.VibrateOnHover == true)
-                {
-                    InputDevice.TriggerHapticPulse(100);
-                }
-            }
         }
 
         public virtual void BeginInteraction(NVRInteractable interactable)
@@ -550,7 +550,10 @@ namespace NewtonVR
             {
                 if (interactable.AttachedHand != null)
                 {
-                    interactable.AttachedHand.EndInteraction(null);
+                    if (interactable.AllowTwoHanded == false)
+                    {
+                        interactable.AttachedHand.EndInteraction(null);
+                    }
                 }
 
                 CurrentlyInteracting = interactable;
@@ -570,7 +573,7 @@ namespace NewtonVR
 
             if (CurrentlyInteracting != null)
             {
-                CurrentlyInteracting.EndInteraction();
+                CurrentlyInteracting.EndInteraction(this);
 
                 if (OnEndInteraction != null)
                 {
@@ -731,11 +734,6 @@ namespace NewtonVR
                         for (int index = 0; index < GhostRenderers.Length; index++)
                         {
                             GhostRenderers[index].enabled = false;
-                        }
-
-                        for (int index = 0; index < GhostColliders.Length; index++)
-                        {
-                            GhostColliders[index].enabled = false;
                         }
                     }
                 }
