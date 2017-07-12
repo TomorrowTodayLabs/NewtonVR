@@ -19,3 +19,11 @@
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+
+Assets/Plugins.meta
+Assets/Plugins/
+Assets/OVR.meta
+Assets/OVR/
+Assets/SteamVR.meta
+Assets/SteamVR/
+
