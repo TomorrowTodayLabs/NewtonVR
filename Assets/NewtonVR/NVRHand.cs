@@ -766,7 +766,10 @@ namespace NewtonVR
                 RenderModel = GameObject.Instantiate(CustomModel);
 
                 RenderModel.transform.parent = this.transform;
-                RenderModel.transform.localScale = RenderModel.transform.localScale;
+                // there was a bug here. The sympton we have: When we modify the scale of the NVRPlayer on the scene to 6, the result is a tiny hand 6 times smaller than it should.
+                // also, the previous line had no effect on the localScale, so it must be buggy.
+                // This change works fine in my project
+                RenderModel.transform.localScale = CustomModel.transform.localScale;
                 RenderModel.transform.localPosition = Vector3.zero;
                 RenderModel.transform.localRotation = Quaternion.identity;
             }
