@@ -23,7 +23,7 @@ namespace NewtonVR
         protected float AttachedRotationMagic = 20f;
         protected float AttachedPositionMagic = 3000f;
 
-        private Type[] KeepTypes = new Type[] {typeof(MeshFilter), typeof(Renderer), typeof(Transform), typeof(Rigidbody)};
+        private Type[] KeepTypes = new Type[] {typeof(MeshFilter), typeof(Renderer), typeof(Transform), typeof(Rigidbody), typeof(CanvasRenderer)};
 
         public void Initialize(NVRHand trackingHand, bool initialState)
         {
