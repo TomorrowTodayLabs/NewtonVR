@@ -12,9 +12,11 @@ namespace NewtonVR
     {
         private GameObject RenderModel;
 
+		public float radius = 0.5f;
+		
         public override void Initialize(NVRHand hand)
         {
-            base.Initialize(hand);
+			base.Initialize(hand);
         }
 
         public override float GetAxis1D(NVRButtons button)
@@ -141,7 +143,7 @@ namespace NewtonVR
             
             SphereCollider Collider = RenderModel.AddComponent<SphereCollider>();
             Collider.isTrigger = true;
-            Collider.radius = 0.5f;
+            Collider.radius = radius;
 
             Colliders = new Collider[] { Collider };
 

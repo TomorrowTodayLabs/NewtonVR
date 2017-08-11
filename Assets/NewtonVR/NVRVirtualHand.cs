@@ -12,6 +12,8 @@ namespace NewtonVR
 		}
 
 		public Handedness Hand;
+		
+		public float radius = 0.5f;
 
 		void Start ()
 		{
@@ -45,7 +47,9 @@ namespace NewtonVR
                 }
             }
 
-			InputDevice = this.gameObject.AddComponent<NVRVirtualInputDevice> ();
+			var virtualInputDevice = this.gameObject.AddComponent<NVRVirtualInputDevice> ();
+			virtualInputDevice.radius = radius;
+			InputDevice = virtualInputDevice;
 			InputDevice.Initialize (this);
 
 			InitializeRenderModel();
