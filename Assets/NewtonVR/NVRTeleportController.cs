@@ -4,8 +4,10 @@ namespace NewtonVR
 {
 	public class NVRTeleportController : MonoBehaviour
 	{
+		NVRTeleporter teleporter;
+
 		//NVRHand sometimes gets destroyed. Pull it each time.
-		private NVRHand _nvrHand
+		private NVRHand nvrHand
 		{
 			get
 			{
@@ -18,41 +20,46 @@ namespace NewtonVR
 			}
 		}
 
-		private int _controllerIndex = 0;
-		private bool _held = false;
+		private int controllerIndex = 0;
+		private bool held = false;
 
-		private Vector3? _validTeleportPosition;
+		private Vector3? validTeleportPosition;
 
 		private void Awake()
 		{
-			_controllerIndex = System.Convert.ToInt32(_nvrHand.IsLeft);
+			teleporter = transform.parent.GetComponentInChildren<NVRTeleporter>();
+			if (teleporter == null)
+			{
+				Debug.LogError("NVRTeleporter is Missing");
+			}
+		}
+
+		private void Start()
+		{ 
+			controllerIndex = System.Convert.ToInt32(nvrHand.IsLeft);
 		}
 
 		private void FixedUpdate()
 		{
-			if (NVRTeleporter.Instance != null)
+			if (teleporter != null)
 			{
-				if (_nvrHand.Inputs[NVRTeleporter.Instance.TeleportButton].IsPressed)
+				if (nvrHand.Inputs[teleporter.TeleportButton].IsPressed)
 				{
 					//Show Arc Teleport Preview
-					_validTeleportPosition = NVRTeleporter.Instance.UpdateArcTeleport(transform, _controllerIndex);
-					_held = true;
+					validTeleportPosition = teleporter.UpdateArcTeleport(transform, controllerIndex);
+					held = true;
 				}
-				else if (_held == true)
+				else if (held == true)
 				{
 					//Was held on the last frame. Kill teleport preview
-					NVRTeleporter.Instance.HideArcTeleport(_controllerIndex);
-					_held = false;
+					teleporter.HideArcTeleport(controllerIndex);
+					held = false;
 
-					if (_validTeleportPosition != null)
+					if (validTeleportPosition != null)
 					{
-						NVRTeleporter.Instance.TeleportPlayer((Vector3)_validTeleportPosition);
+						teleporter.TeleportPlayer((Vector3)validTeleportPosition);
 					}
 				}
-			}
-			else
-			{
-				Debug.LogWarning("NVRTeleporter is Missing");
 			}
 		}
 	}

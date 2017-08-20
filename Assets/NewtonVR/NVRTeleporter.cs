@@ -5,8 +5,6 @@ namespace NewtonVR
 {
 	public class NVRTeleporter : MonoBehaviour
 	{
-		public static NVRTeleporter Instance;
-
 		public LineRenderer ArcRendererTemplate;
 		public LineRenderer PlaySpaceRendererTemplate;
 		public LineRenderer InvalidRendererTemplate;
@@ -18,39 +16,47 @@ namespace NewtonVR
 
 		public LayerMask TeleportSurfaceMask;
 		public LayerMask TeleportBlockMask;
-		private LayerMask _fullMask;
+		private LayerMask fullMask;
 
-		public float Velocity = 5;
-		public float Acceleration = -5;
+		public float ArcDistance = 5;
 		public int SamplePoints = 150;
-		public float SampleDistance = 0.2f;
+		public float SampleFrequency = 0.2f;
 
-		private float _curveMod = 0.25f;
-		private float _arcLineDisplayOffset = 0.1f;
+		private float curveMod = 0.25f;
+		private float acceleration = -5;
+		private float arcLineDisplayOffset = 0.1f;
 
-		private Dictionary<int, TeleportPreview> _teleportPreviews;
-
+		private Dictionary<int, TeleportPreview> teleportPreviews;
+		private NVRPlayer player;
 
 		private void Awake()
 		{
-			Instance = this;
-			_fullMask = TeleportSurfaceMask | TeleportBlockMask;
-			_teleportPreviews = new Dictionary<int, TeleportPreview>();
+			fullMask = TeleportSurfaceMask | TeleportBlockMask;
+			teleportPreviews = new Dictionary<int, TeleportPreview>();
 		}
 
 		private void Start()
-		{ 
-			if (NVRPlayer.Instance != null)
+		{
+			player = GetComponentInParent<NVRPlayer>();
+			if (player != null)
 			{
-				Vector3 scale = NVRPlayer.Instance.PlayspaceSize / 2;
+				Vector3 scale = player.PlayspaceSize / 2;
 				scale.y = 1;
 
+				//Render Playspace
 				PlaySpaceRendererTemplate.gameObject.transform.localScale = scale;
 			}
 			else
 			{
 				Debug.Log("NVR Player is Null");
 			}
+		}
+
+		private void OnValidate()
+		{
+			ArcDistance = Mathf.Max(0.01f, ArcDistance);
+			SamplePoints = Mathf.Max(2, SamplePoints);
+			SampleFrequency = Mathf.Max(0.01f, SampleFrequency);
 		}
 
 		/// <summary>
@@ -61,12 +67,12 @@ namespace NewtonVR
 		public Vector3? UpdateArcTeleport(Transform origin, int controllerIndex)
 		{
 			//Controller is not currently paired with a line. Assign
-			if (!_teleportPreviews.ContainsKey(controllerIndex))
+			if (!teleportPreviews.ContainsKey(controllerIndex))
 			{
 				TeleportPreview tp = new TeleportPreview();
 
 				//Default line is not being used. Assign it.
-				if (_teleportPreviews.Count == 0)
+				if (teleportPreviews.Count == 0)
 				{
 					tp.ArcLine = ArcRendererTemplate;
 					tp.PlaySpaceLine = PlaySpaceRendererTemplate;
@@ -85,25 +91,25 @@ namespace NewtonVR
 					tp.InvalidLine = newInavalid.GetComponent<LineRenderer>();
 				}
 
-				_teleportPreviews.Add(controllerIndex, tp);
+				teleportPreviews.Add(controllerIndex, tp);
 			}
-			_teleportPreviews[controllerIndex].ArcLine.enabled = true;
+			teleportPreviews[controllerIndex].ArcLine.enabled = true;
 
 			//Update start position to be a little away from the controller
-			Vector3 startPosition = origin.position + (origin.transform.forward * _arcLineDisplayOffset);
+			Vector3 startPosition = origin.position + (origin.transform.forward * arcLineDisplayOffset);
 
+			//Check for Valid Teleport. Returns Points along curve until (possible) hit
 			List<Vector3> points;
 			bool hit;
 			RaycastHit hitInfo;
-			bool validTeleport = CheckTeleportCurve(startPosition, origin.TransformDirection(Vector3.forward * Velocity), Vector3.up * Acceleration, out points, out hit, out hitInfo);
+			bool validTeleport = CheckTeleportCurve(startPosition, origin.TransformDirection(Vector3.forward * ArcDistance), Vector3.up * acceleration, out points, out hit, out hitInfo);
 
 			//Render Line to second to last point (small gap for display)
-			_teleportPreviews[controllerIndex].ArcLine.SetVertexCount(points.Count - 1);
+			teleportPreviews[controllerIndex].ArcLine.numPositions = points.Count - 1;
 			for (int i = 0; i < points.Count - 1; i++)
 			{
-				_teleportPreviews[controllerIndex].ArcLine.SetPosition(i, points[i]);
+				teleportPreviews[controllerIndex].ArcLine.SetPosition(i, points[i]);
 			}
-
 
 			if (hit)
 			{
@@ -111,11 +117,14 @@ namespace NewtonVR
 				if (validTeleport)
 				{
 					//Render Plasypace
-					_teleportPreviews[controllerIndex].PlaySpaceLine.enabled = true;
-					_teleportPreviews[controllerIndex].PlaySpaceLine.gameObject.transform.position = hitInfo.point;
+					Vector3 offset = player.Head.transform.localPosition;
+					offset.y = 0;
+
+					teleportPreviews[controllerIndex].PlaySpaceLine.enabled = true;
+					teleportPreviews[controllerIndex].PlaySpaceLine.gameObject.transform.position = hitInfo.point - offset;
 
 					//Hide Invalid
-					_teleportPreviews[controllerIndex].InvalidLine.enabled = false;
+					teleportPreviews[controllerIndex].InvalidLine.enabled = false;
 
 					//Hit point is final point in curve
 					return hitInfo.point;
@@ -123,31 +132,35 @@ namespace NewtonVR
 				else
 				{
 					//Show Invalid
-					_teleportPreviews[controllerIndex].InvalidLine.enabled = true;
-					_teleportPreviews[controllerIndex].InvalidLine.gameObject.transform.position = hitInfo.point + (hitInfo.normal * 0.05f);
-					_teleportPreviews[controllerIndex].InvalidLine.gameObject.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
+					teleportPreviews[controllerIndex].InvalidLine.enabled = true;
+					teleportPreviews[controllerIndex].InvalidLine.gameObject.transform.position = hitInfo.point + (hitInfo.normal * 0.05f);
+					teleportPreviews[controllerIndex].InvalidLine.gameObject.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
 
 					//Hide Playspace
-					_teleportPreviews[controllerIndex].PlaySpaceLine.enabled = false;
+					teleportPreviews[controllerIndex].PlaySpaceLine.enabled = false;
 				}
 			}
 			else
 			{
 				//Hide Playspace and Invalid Marker
-				_teleportPreviews[controllerIndex].PlaySpaceLine.enabled = false;
-				_teleportPreviews[controllerIndex].InvalidLine.enabled = false;
+				teleportPreviews[controllerIndex].PlaySpaceLine.enabled = false;
+				teleportPreviews[controllerIndex].InvalidLine.enabled = false;
 			}
 
 			//No valid teleport data. Return null
 			return null;
 		}
 
+		/// <summary>
+		/// Hide the arc teleporter (button release)
+		/// </summary>
+		/// <param name="controllerIndex"></param>
 		public void HideArcTeleport(int controllerIndex)
 		{
-			_teleportPreviews[controllerIndex].ArcLine.SetVertexCount(0);
-			_teleportPreviews[controllerIndex].ArcLine.enabled = false;
-			_teleportPreviews[controllerIndex].PlaySpaceLine.enabled = false;
-			_teleportPreviews[controllerIndex].InvalidLine.enabled = false;
+			teleportPreviews[controllerIndex].ArcLine.numPositions = 0;
+			teleportPreviews[controllerIndex].ArcLine.enabled = false;
+			teleportPreviews[controllerIndex].PlaySpaceLine.enabled = false;
+			teleportPreviews[controllerIndex].InvalidLine.enabled = false;
 		}
 
 
@@ -156,7 +169,7 @@ namespace NewtonVR
 		/// </summary>
 		/// <param name="startingPoint">Starting point of your parabolic curve</param>
 		/// <param name="initialVelocity">Initial velocity of your parabolic curve</param>
-		/// <param name="initialAcceleration">Initial accelleration of your parabolic curve</param>
+		/// <param name="initialAcceleration">Initial acceleration of your parabolic curve</param>
 		/// <returns></returns>
 		private bool CheckTeleportCurve(Vector3 startingPoint, Vector3 initialVelocity, Vector3 initialAcceleration,
 			out List<Vector3> points, out bool hit, out RaycastHit hitInfo)
@@ -171,11 +184,11 @@ namespace NewtonVR
 
 			for (int i = 0; i < SamplePoints; i++)
 			{
-				t += SampleDistance / CurveDerivitive(initialVelocity, initialAcceleration, t).magnitude;
+				t += SampleFrequency / CurveDerivitive(initialVelocity, initialAcceleration, t).magnitude;
 				Vector3 nextPoint = Curve(startingPoint, initialVelocity, initialAcceleration, t);
 
 				//Check for a valid teleport collision
-				if (Physics.Linecast(lastPoint, nextPoint, out hitInfo, _fullMask))
+				if (Physics.Linecast(lastPoint, nextPoint, out hitInfo, fullMask))
 				{
 					//Register the Hit
 					hit = true;
@@ -187,7 +200,7 @@ namespace NewtonVR
 					if (TeleportSurfaceMask == (TeleportSurfaceMask | 1 << hitInfo.collider.gameObject.layer))
 					{
 
-						if (!LimitToHorizontal || Vector3.Angle(hitInfo.normal, Vector3.up) < LimitSensitivity)
+						if (!LimitToHorizontal || Vector3.Angle(hitInfo.normal, Vector3.up) <= LimitSensitivity)
 						{
 							validTeleport = true;
 						}
@@ -212,52 +225,54 @@ namespace NewtonVR
 		/// <param name="teleportPosition"></param>
 		public void TeleportPlayer(Vector3 teleportPosition)
 		{
-			if (NVRPlayer.Instance != null)
+			if (player != null)
 			{
-				Vector3 offset = NVRPlayer.Instance.Head.transform.position - NVRPlayer.Instance.transform.position;
+				Vector3 offset = player.Head.transform.position - player.transform.position;
 				offset.y = 0;
 
 				//Move Player
-				NVRPlayer.Instance.transform.position = teleportPosition - offset;
+				player.transform.position = teleportPosition - offset;
 
 				//Teleport any objects in left hand to new hand position
-				if (NVRPlayer.Instance.LeftHand.CurrentlyInteracting != null)
+				if (player.LeftHand.CurrentlyInteracting != null)
 				{
-					NVRPlayer.Instance.LeftHand.CurrentlyInteracting.transform.position = NVRPlayer.Instance.LeftHand.transform.position;
+					player.LeftHand.CurrentlyInteracting.transform.position = player.LeftHand.transform.position;
 				}
 
 				//Teleport any objects in left hand to new hand position
-				if (NVRPlayer.Instance.RightHand.CurrentlyInteracting != null)
+				if (player.RightHand.CurrentlyInteracting != null)
 				{
-					NVRPlayer.Instance.RightHand.CurrentlyInteracting.transform.position = NVRPlayer.Instance.RightHand.transform.position;
+					player.RightHand.CurrentlyInteracting.transform.position = player.RightHand.transform.position;
 				}
 			}
 		}
 
-		private Vector3 CurveDerivitive(Vector3 v0, Vector3 a, float t)
+		private Vector3 CurveDerivitive(Vector3 velocity, Vector3 acceleration, float time)
 		{
-			Vector3 point = new Vector3();
-			for (int x = 0; x < 3; x++)
-				point[x] = CurveDerivitive(v0[x], a[x], t);
-			return point;
+			Vector3 result = new Vector3();
+			result.x = CurveDerivitive(velocity.x, acceleration.x, time);
+			result.y = CurveDerivitive(velocity.y, acceleration.y, time);
+			result.z = CurveDerivitive(velocity.z, acceleration.z, time);
+			return result;
 		}
 
-		private float CurveDerivitive(float v0, float a, float t)
+		private float CurveDerivitive(float velocity, float acceleration, float time)
 		{
-			return v0 + a * t;
+			return velocity + acceleration * time;
 		}
 
-		private Vector3 Curve(Vector3 p0, Vector3 v0, Vector3 a, float t)
+		private Vector3 Curve(Vector3 point, Vector3 velocity, Vector3 acceleration, float time)
 		{
-			Vector3 point = new Vector3();
-			for (int x = 0; x < 3; x++)
-				point[x] = Curve(p0[x], v0[x], a[x], t);
-			return point;
+			Vector3 result = new Vector3();
+			result.x = Curve(point.x, velocity.x, acceleration.x, time);
+			result.y = Curve(point.y, velocity.y, acceleration.y, time);
+			result.z = Curve(point.z, velocity.z, acceleration.z, time);
+			return result;
 		}
 
-		private float Curve(float p0, float v0, float a, float t)
+		private float Curve(float point, float velocity, float acceleration, float time)
 		{
-			return p0 + v0 * t + _curveMod * a * t * t;
+			return point + velocity * time + curveMod * acceleration * time * time;
 		}
 
 		public class TeleportPreview

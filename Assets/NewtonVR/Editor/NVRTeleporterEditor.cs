@@ -9,24 +9,23 @@ namespace NewtonVR
 	public class NVRTeleporterEditor : Editor
 	{
 		//Options
-		private SerializedProperty _limitToHorizontalProp;
-		private SerializedProperty _limitSensitivityProp;
-		private bool _limitToHorizontal;
+		private SerializedProperty limitToHorizontalProp;
+		private SerializedProperty limitSensitivityProp;
+		private bool limitToHorizontal;
 
 		//Masks
-		private SerializedProperty _teleportSurfaceMask;
-		private SerializedProperty _teleportBlockMask;
+		private SerializedProperty teleportSurfaceMask;
+		private SerializedProperty teleportBlockMask;
 
 		//Arc Properties
-		private SerializedProperty _velocityProp;
-		private SerializedProperty _accelerationProp;
-		private SerializedProperty _sampleDistanceProp;
+		private SerializedProperty arcDistanceProp;
+		private SerializedProperty sampleFrequencyProp;
 
 		//Line Renderers
 		private bool _showRenderers = false;
-		private SerializedProperty _arcRendererTemplateProp;
-		private SerializedProperty _playSpaceRendererTemplateProp;
-		private SerializedProperty _invalidRendererTemplateProp;
+		private SerializedProperty arcRendererTemplateProp;
+		private SerializedProperty playSpaceRendererTemplateProp;
+		private SerializedProperty invalidRendererTemplateProp;
 
 		//Hands
 		private enum Hand { Left, Right };
@@ -35,28 +34,27 @@ namespace NewtonVR
 		//Styles
 		private GUIStyle _boldFoldout;
 
-		private float _arcLength;
+		private float arcLength;
 
 		public void OnEnable()
 		{
 			NVRTeleporter teleporter = (NVRTeleporter)target;
 
-			_limitToHorizontalProp = serializedObject.FindProperty("LimitToHorizontal");
-			_limitSensitivityProp = serializedObject.FindProperty("LimitSensitivity");
-			_limitToHorizontal = _limitToHorizontalProp.boolValue;
+			limitToHorizontalProp = serializedObject.FindProperty("LimitToHorizontal");
+			limitSensitivityProp = serializedObject.FindProperty("LimitSensitivity");
+			limitToHorizontal = limitToHorizontalProp.boolValue;
 
-			_teleportSurfaceMask = serializedObject.FindProperty("TeleportSurfaceMask");
-			_teleportBlockMask = serializedObject.FindProperty("TeleportBlockMask");
+			teleportSurfaceMask = serializedObject.FindProperty("TeleportSurfaceMask");
+			teleportBlockMask = serializedObject.FindProperty("TeleportBlockMask");
 
-			_arcRendererTemplateProp = serializedObject.FindProperty("ArcRendererTemplate");
-			_playSpaceRendererTemplateProp = serializedObject.FindProperty("PlaySpaceRendererTemplate");
-			_invalidRendererTemplateProp = serializedObject.FindProperty("InvalidRendererTemplate");
+			arcRendererTemplateProp = serializedObject.FindProperty("ArcRendererTemplate");
+			playSpaceRendererTemplateProp = serializedObject.FindProperty("PlaySpaceRendererTemplate");
+			invalidRendererTemplateProp = serializedObject.FindProperty("InvalidRendererTemplate");
 
-			_velocityProp = serializedObject.FindProperty("Velocity");
-			_accelerationProp = serializedObject.FindProperty("Acceleration");
-			_sampleDistanceProp = serializedObject.FindProperty("SampleDistance");
+			arcDistanceProp = serializedObject.FindProperty("ArcDistance");
+			sampleFrequencyProp = serializedObject.FindProperty("SampleFrequency");
 
-			_arcLength = (float)teleporter.SamplePoints * teleporter.SampleDistance;
+			arcLength = (float)teleporter.SamplePoints * teleporter.SampleFrequency;
 
 			NVRPlayer player = teleporter.gameObject.GetComponentInParent<NVRPlayer>();
 			if (player != null)
@@ -77,16 +75,16 @@ namespace NewtonVR
 			HandCheck(Hand.Right);
 
 			GUILayout.Space(6);
-			_limitToHorizontal = GUILayout.Toggle(_limitToHorizontal, " Limit to Vertical");
-			if (_limitToHorizontal != _limitToHorizontalProp.boolValue)
+			limitToHorizontal = GUILayout.Toggle(limitToHorizontal, " Limit to Vertical");
+			if (limitToHorizontal != limitToHorizontalProp.boolValue)
 			{
-				_limitToHorizontalProp.boolValue = _limitToHorizontal;
+				limitToHorizontalProp.boolValue = limitToHorizontal;
 			}
 			EditorGUILayout.LabelField("This property will limit your teleports to only flat surfaces", EditorStyles.miniLabel);
 
-			if (_limitToHorizontal)
+			if (limitToHorizontal)
 			{
-				EditorGUILayout.PropertyField(_limitSensitivityProp);
+				EditorGUILayout.PropertyField(limitSensitivityProp);
 			}
 
 
@@ -98,17 +96,17 @@ namespace NewtonVR
 				+ "Find the LineRenderer Component and update accordingly", EditorStyles.miniLabel);
 			GUILayout.Space(4);
 
-			EditorGUILayout.PropertyField(_velocityProp);
-			EditorGUILayout.PropertyField(_accelerationProp);
-			_arcLength = EditorGUILayout.FloatField("Arc Length", _arcLength);
-			EditorGUILayout.PropertyField(_sampleDistanceProp);
+			EditorGUILayout.PropertyField(arcDistanceProp);
+			arcLength = EditorGUILayout.FloatField("Arc Length", arcLength);
+			arcLength = Mathf.Max(0.01f, arcLength);
+			EditorGUILayout.PropertyField(sampleFrequencyProp);
 
 			GUILayout.Space(10);
 
 			//Layer Masks
 			GUILayout.Label("Layer Masks", EditorStyles.boldLabel);
-			EditorGUILayout.PropertyField(_teleportSurfaceMask);
-			EditorGUILayout.PropertyField(_teleportBlockMask);
+			EditorGUILayout.PropertyField(teleportSurfaceMask);
+			EditorGUILayout.PropertyField(teleportBlockMask);
 
 			GUILayout.Space(10);
 
@@ -117,20 +115,20 @@ namespace NewtonVR
 			_showRenderers = EditorGUILayout.Foldout(_showRenderers, "Line Renderers");
 			if (_showRenderers)
 			{
-				EditorGUILayout.PropertyField(_arcRendererTemplateProp);
-				EditorGUILayout.PropertyField(_playSpaceRendererTemplateProp);
-				EditorGUILayout.PropertyField(_invalidRendererTemplateProp);
+				EditorGUILayout.PropertyField(arcRendererTemplateProp);
+				EditorGUILayout.PropertyField(playSpaceRendererTemplateProp);
+				EditorGUILayout.PropertyField(invalidRendererTemplateProp);
 			}
 
 			serializedObject.ApplyModifiedProperties();
 
 			//Adjust arc length based on density and desired length
-			if ((float)teleporter.SamplePoints * teleporter.SampleDistance != teleporter.SamplePoints)
+			if ((float)teleporter.SamplePoints * teleporter.SampleFrequency != teleporter.SamplePoints)
 			{
 				//Distance might be off by a litttle, because it moves in increments of sample distance
 				//Adjust user input to nearest point
-				teleporter.SamplePoints = Mathf.CeilToInt(_arcLength / teleporter.SampleDistance);
-				_arcLength = (float)teleporter.SamplePoints * teleporter.SampleDistance;
+				teleporter.SamplePoints = Mathf.RoundToInt(arcLength / teleporter.SampleFrequency);
+				arcLength = (float)teleporter.SamplePoints * teleporter.SampleFrequency;
 			}
 		}
 
