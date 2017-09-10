@@ -6,8 +6,9 @@ namespace NewtonVR
 	public class NVRTeleporter : MonoBehaviour
 	{
 		public LineRenderer ArcRendererTemplate;
-		public LineRenderer PlaySpaceRendererTemplate;
-		public LineRenderer InvalidRendererTemplate;
+		public GameObject PlaySpaceDisplayTemplate;
+		public GameObject InvalidPointDisplayTemplate;
+		public GameObject TeleportTargetDisplayTemplate;
 
 		public bool LimitToHorizontal = false;
 		public float LimitSensitivity = 0f;
@@ -44,7 +45,7 @@ namespace NewtonVR
 				scale.y = 1;
 
 				//Render Playspace
-				PlaySpaceRendererTemplate.gameObject.transform.localScale = scale;
+				PlaySpaceDisplayTemplate.gameObject.transform.localScale = scale;
 			}
 			else
 			{
@@ -75,8 +76,9 @@ namespace NewtonVR
 				if (teleportPreviews.Count == 0)
 				{
 					tp.ArcLine = ArcRendererTemplate;
-					tp.PlaySpaceLine = PlaySpaceRendererTemplate;
-					tp.InvalidLine = InvalidRendererTemplate;
+					tp.PlaySpaceDisplay = PlaySpaceDisplayTemplate;
+					tp.InvalidPointDisplay = InvalidPointDisplayTemplate;
+					tp.TeleportTargetDisplay = TeleportTargetDisplayTemplate;
 				}
 				//Default line is already in use. Create another one.
 				else
@@ -84,11 +86,9 @@ namespace NewtonVR
 					GameObject newLine = Instantiate(ArcRendererTemplate.gameObject, transform) as GameObject;
 					tp.ArcLine = newLine.GetComponent<LineRenderer>();
 
-					GameObject newSpace = Instantiate(PlaySpaceRendererTemplate.gameObject, transform) as GameObject;
-					tp.PlaySpaceLine = newSpace.GetComponent<LineRenderer>();
-
-					GameObject newInavalid = Instantiate(InvalidRendererTemplate.gameObject, transform) as GameObject;
-					tp.InvalidLine = newInavalid.GetComponent<LineRenderer>();
+					tp.PlaySpaceDisplay = Instantiate(PlaySpaceDisplayTemplate, transform);
+					tp.InvalidPointDisplay = Instantiate(InvalidPointDisplayTemplate, transform);
+					tp.TeleportTargetDisplay = Instantiate(TeleportTargetDisplayTemplate, transform);
 				}
 
 				teleportPreviews.Add(controllerIndex, tp);
@@ -116,15 +116,18 @@ namespace NewtonVR
 				//Line hit a surface
 				if (validTeleport)
 				{
-					//Render Plasypace
+					//Render Plasypace and target
 					Vector3 offset = player.Head.transform.localPosition;
 					offset.y = 0;
 
-					teleportPreviews[controllerIndex].PlaySpaceLine.enabled = true;
-					teleportPreviews[controllerIndex].PlaySpaceLine.gameObject.transform.position = hitInfo.point - offset;
+					teleportPreviews[controllerIndex].PlaySpaceDisplay.SetActive(true);
+					teleportPreviews[controllerIndex].PlaySpaceDisplay.transform.position = hitInfo.point - offset;
+
+					teleportPreviews[controllerIndex].TeleportTargetDisplay.SetActive(true);
+					teleportPreviews[controllerIndex].TeleportTargetDisplay.transform.position = hitInfo.point;
 
 					//Hide Invalid
-					teleportPreviews[controllerIndex].InvalidLine.enabled = false;
+					teleportPreviews[controllerIndex].InvalidPointDisplay.SetActive(false);
 
 					//Hit point is final point in curve
 					return hitInfo.point;
@@ -132,19 +135,21 @@ namespace NewtonVR
 				else
 				{
 					//Show Invalid
-					teleportPreviews[controllerIndex].InvalidLine.enabled = true;
-					teleportPreviews[controllerIndex].InvalidLine.gameObject.transform.position = hitInfo.point + (hitInfo.normal * 0.05f);
-					teleportPreviews[controllerIndex].InvalidLine.gameObject.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
+					teleportPreviews[controllerIndex].InvalidPointDisplay.SetActive(true);
+					teleportPreviews[controllerIndex].InvalidPointDisplay.gameObject.transform.position = hitInfo.point + (hitInfo.normal * 0.05f);
+					teleportPreviews[controllerIndex].InvalidPointDisplay.gameObject.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
 
-					//Hide Playspace
-					teleportPreviews[controllerIndex].PlaySpaceLine.enabled = false;
+					//Hide Playspace and target
+					teleportPreviews[controllerIndex].PlaySpaceDisplay.SetActive(false);
+					teleportPreviews[controllerIndex].TeleportTargetDisplay.SetActive(false);
 				}
 			}
 			else
 			{
-				//Hide Playspace and Invalid Marker
-				teleportPreviews[controllerIndex].PlaySpaceLine.enabled = false;
-				teleportPreviews[controllerIndex].InvalidLine.enabled = false;
+				//Hide Playspace, Target, and Invalid Marker
+				teleportPreviews[controllerIndex].PlaySpaceDisplay.SetActive(false);
+				teleportPreviews[controllerIndex].InvalidPointDisplay.SetActive(false);
+				teleportPreviews[controllerIndex].TeleportTargetDisplay.SetActive(false);
 			}
 
 			//No valid teleport data. Return null
@@ -159,8 +164,9 @@ namespace NewtonVR
 		{
 			teleportPreviews[controllerIndex].ArcLine.numPositions = 0;
 			teleportPreviews[controllerIndex].ArcLine.enabled = false;
-			teleportPreviews[controllerIndex].PlaySpaceLine.enabled = false;
-			teleportPreviews[controllerIndex].InvalidLine.enabled = false;
+			teleportPreviews[controllerIndex].PlaySpaceDisplay.SetActive(false);
+			teleportPreviews[controllerIndex].InvalidPointDisplay.SetActive(false);
+			teleportPreviews[controllerIndex].TeleportTargetDisplay.SetActive(false);
 		}
 
 
@@ -278,8 +284,9 @@ namespace NewtonVR
 		public class TeleportPreview
 		{
 			public LineRenderer ArcLine;
-			public LineRenderer PlaySpaceLine;
-			public LineRenderer InvalidLine;
+			public GameObject PlaySpaceDisplay;
+			public GameObject InvalidPointDisplay;
+			public GameObject TeleportTargetDisplay;
 		}
 	}
 }

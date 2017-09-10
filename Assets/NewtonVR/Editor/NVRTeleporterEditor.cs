@@ -26,6 +26,7 @@ namespace NewtonVR
 		private SerializedProperty arcRendererTemplateProp;
 		private SerializedProperty playSpaceRendererTemplateProp;
 		private SerializedProperty invalidRendererTemplateProp;
+		private SerializedProperty teleportTargetTemplateProp;
 
 		//Hands
 		private enum Hand { Left, Right };
@@ -48,8 +49,9 @@ namespace NewtonVR
 			teleportBlockMask = serializedObject.FindProperty("TeleportBlockMask");
 
 			arcRendererTemplateProp = serializedObject.FindProperty("ArcRendererTemplate");
-			playSpaceRendererTemplateProp = serializedObject.FindProperty("PlaySpaceRendererTemplate");
-			invalidRendererTemplateProp = serializedObject.FindProperty("InvalidRendererTemplate");
+			playSpaceRendererTemplateProp = serializedObject.FindProperty("PlaySpaceDisplayTemplate");
+			invalidRendererTemplateProp = serializedObject.FindProperty("InvalidPointDisplayTemplate");
+			teleportTargetTemplateProp = serializedObject.FindProperty("TeleportTargetDisplayTemplate");
 
 			arcDistanceProp = serializedObject.FindProperty("ArcDistance");
 			sampleFrequencyProp = serializedObject.FindProperty("SampleFrequency");
@@ -112,12 +114,13 @@ namespace NewtonVR
 
 			//Line Renderers
 			GUILayout.Label("Overrides", EditorStyles.boldLabel);
-			_showRenderers = EditorGUILayout.Foldout(_showRenderers, "Line Renderers");
+			_showRenderers = EditorGUILayout.Foldout(_showRenderers, "Displays");
 			if (_showRenderers)
 			{
 				EditorGUILayout.PropertyField(arcRendererTemplateProp);
 				EditorGUILayout.PropertyField(playSpaceRendererTemplateProp);
 				EditorGUILayout.PropertyField(invalidRendererTemplateProp);
+				EditorGUILayout.PropertyField(teleportTargetTemplateProp);
 			}
 
 			serializedObject.ApplyModifiedProperties();
