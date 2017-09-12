@@ -118,5 +118,10 @@ namespace NewtonVR {
 				AngularVelocityHistory[CurrentVelocityHistoryStep] = this.Rigidbody.angularVelocity;
 			}
 		}
+
+		public override void BeginInteraction (NVRHand hand) {
+			snap = false;
+			base.BeginInteraction (hand);
+		}
 	}
 }
