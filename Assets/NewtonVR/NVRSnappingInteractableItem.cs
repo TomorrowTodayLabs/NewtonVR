@@ -9,6 +9,46 @@ namespace NewtonVR {
 		public float snapToDegrees = 45f;
 
 		private bool snap = false;
+		private bool set = false;
+		private Vector3 lastSnappedPosition;
+		private Vector3 lastSnappedRotation;
+
+		private Vector3 SnapPosition (Vector3 pos) {
+			if (set) {
+				var weighted = snapToMeters / 5f;
+				pos.x = (pos.x >= lastSnappedPosition.x) ? pos.x -= weighted : pos.x += weighted;
+				pos.y = (pos.y >= lastSnappedPosition.y) ? pos.y -= weighted : pos.y += weighted;
+				pos.z = (pos.z >= lastSnappedPosition.z) ? pos.z -= weighted : pos.z += weighted;
+			}
+
+			pos.x = Mathf.Round (pos.x / snapToMeters) * snapToMeters;
+			pos.y = Mathf.Round (pos.y / snapToMeters) * snapToMeters;
+			pos.z = Mathf.Round (pos.z / snapToMeters) * snapToMeters;
+
+			lastSnappedPosition = pos;
+			set = true;
+			return pos;
+		}
+
+		private Quaternion SnapRotation (Quaternion rot) {
+			var rounded = rot.eulerAngles;
+
+			if (set) {
+				var weighted = snapToDegrees / 10f;
+				rounded.x = (rounded.x >= lastSnappedRotation.x) ? rounded.x -= weighted : rounded.x += weighted;
+				rounded.y = (rounded.y >= lastSnappedRotation.y) ? rounded.y -= weighted : rounded.y += weighted;
+				rounded.z = (rounded.z >= lastSnappedRotation.z) ? rounded.z -= weighted : rounded.z += weighted;
+			}
+
+			rounded.x = Mathf.Round (rounded.x / snapToDegrees) * snapToDegrees;
+			rounded.y = Mathf.Round (rounded.y / snapToDegrees) * snapToDegrees;
+			rounded.z = Mathf.Round (rounded.z / snapToDegrees) * snapToDegrees;
+			rot.eulerAngles = rounded;
+
+			lastSnappedRotation = rounded;
+			//set = true;
+			return rot;
+		}
 
 		protected override void UpdateVelocities () {
 			foreach (var hand in AttachedHands) {
@@ -41,18 +81,12 @@ namespace NewtonVR {
 			Vector3 axis;
 
 			// Snap to nearest meters
-			targetHandPosition.x = Mathf.Round (targetHandPosition.x / snapToMeters) * snapToMeters;
-			targetHandPosition.y = Mathf.Round (targetHandPosition.y / snapToMeters) * snapToMeters;
-			targetHandPosition.z = Mathf.Round (targetHandPosition.z / snapToMeters) * snapToMeters;
+			targetHandPosition = SnapPosition (targetHandPosition);
 
 			positionDelta = (targetHandPosition - targetItemPosition);
 
 			// Snap to nearest degrees
-			var rounded = targetHandRotation.eulerAngles;
-			rounded.x = Mathf.Round (rounded.x / snapToDegrees) * snapToDegrees;
-			rounded.y = Mathf.Round (rounded.y / snapToDegrees) * snapToDegrees;
-			rounded.z = Mathf.Round (rounded.z / snapToDegrees) * snapToDegrees;
-			targetHandRotation.eulerAngles = rounded;
+			targetHandRotation = SnapRotation (targetHandRotation);
 
 			rotationDelta = targetHandRotation * Quaternion.Inverse (targetItemRotation);
 
