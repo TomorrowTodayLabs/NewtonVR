@@ -26,6 +26,7 @@ namespace NewtonVR
 		private float curveMod = 0.25f;
 		private float acceleration = -5;
 		private float arcLineDisplayOffset = 0.1f;
+		private float playspaceVerticalOffset = 0.025f;
 
 		private Dictionary<int, TeleportPreview> teleportPreviews;
 		private NVRPlayer player;
@@ -121,7 +122,10 @@ namespace NewtonVR
 					offset.y = 0;
 
 					teleportPreviews[controllerIndex].PlaySpaceDisplay.SetActive(true);
-					teleportPreviews[controllerIndex].PlaySpaceDisplay.transform.position = hitInfo.point - offset;
+
+					Vector3 playSpacePos = hitInfo.point - offset;
+					playSpacePos.y += playspaceVerticalOffset;
+					teleportPreviews[controllerIndex].PlaySpaceDisplay.transform.position = playSpacePos;
 
 					teleportPreviews[controllerIndex].TeleportTargetDisplay.SetActive(true);
 					teleportPreviews[controllerIndex].TeleportTargetDisplay.transform.position = hitInfo.point;
