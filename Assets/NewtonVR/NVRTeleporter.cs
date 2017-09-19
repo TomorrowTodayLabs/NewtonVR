@@ -5,10 +5,10 @@ namespace NewtonVR
 {
 	public class NVRTeleporter : MonoBehaviour
 	{
-		public LineRenderer ArcRendererTemplate;
-		public GameObject PlaySpaceDisplayTemplate;
-		public GameObject InvalidPointDisplayTemplate;
-		public GameObject TeleportTargetDisplayTemplate;
+		public LineRenderer ArcRendererDisplay;
+		public GameObject PlaySpaceDisplay;
+		public GameObject InvalidPointDisplay;
+		public GameObject TargetDisplay;
 
 		public bool LimitToHorizontal = false;
 		public float LimitSensitivity = 0f;
@@ -46,7 +46,7 @@ namespace NewtonVR
 				scale.y = 1;
 
 				//Render Playspace
-				PlaySpaceDisplayTemplate.gameObject.transform.localScale = scale;
+				PlaySpaceDisplay.gameObject.transform.localScale = scale;
 			}
 			else
 			{
@@ -76,20 +76,20 @@ namespace NewtonVR
 				//Default line is not being used. Assign it.
 				if (teleportPreviews.Count == 0)
 				{
-					tp.ArcLine = ArcRendererTemplate;
-					tp.PlaySpaceDisplay = PlaySpaceDisplayTemplate;
-					tp.InvalidPointDisplay = InvalidPointDisplayTemplate;
-					tp.TeleportTargetDisplay = TeleportTargetDisplayTemplate;
+					tp.ArcLine = ArcRendererDisplay;
+					tp.PlaySpaceDisplay = PlaySpaceDisplay;
+					tp.InvalidPointDisplay = InvalidPointDisplay;
+					tp.TeleportTargetDisplay = TargetDisplay;
 				}
 				//Default line is already in use. Create another one.
 				else
 				{
-					GameObject newLine = Instantiate(ArcRendererTemplate.gameObject, transform) as GameObject;
+					GameObject newLine = Instantiate(ArcRendererDisplay.gameObject, transform) as GameObject;
 					tp.ArcLine = newLine.GetComponent<LineRenderer>();
 
-					tp.PlaySpaceDisplay = Instantiate(PlaySpaceDisplayTemplate, transform);
-					tp.InvalidPointDisplay = Instantiate(InvalidPointDisplayTemplate, transform);
-					tp.TeleportTargetDisplay = Instantiate(TeleportTargetDisplayTemplate, transform);
+					tp.PlaySpaceDisplay = Instantiate(PlaySpaceDisplay, transform);
+					tp.InvalidPointDisplay = Instantiate(InvalidPointDisplay, transform);
+					tp.TeleportTargetDisplay = Instantiate(TargetDisplay, transform);
 				}
 
 				teleportPreviews.Add(controllerIndex, tp);

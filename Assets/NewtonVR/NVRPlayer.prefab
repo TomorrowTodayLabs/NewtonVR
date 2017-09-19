@@ -557,10 +557,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e55ac3d8a610cf64cad0de126442c8ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ArcRendererTemplate: {fileID: 120000014010457926}
-  PlaySpaceDisplayTemplate: {fileID: 1000011782565264}
-  InvalidPointDisplayTemplate: {fileID: 1000013590611312}
-  TeleportTargetDisplayTemplate: {fileID: 1796728774068190}
+  ArcRendererDisplay: {fileID: 120000014010457926}
+  PlaySpaceDisplay: {fileID: 1000011782565264}
+  InvalidPointDisplay: {fileID: 1000013590611312}
+  TargetDisplay: {fileID: 1796728774068190}
   LimitToHorizontal: 0
   LimitSensitivity: 0
   TeleportButton: 16

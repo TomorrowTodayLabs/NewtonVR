@@ -11,6 +11,7 @@ namespace NewtonVR
 		//Options
 		private SerializedProperty limitToHorizontalProp;
 		private SerializedProperty limitSensitivityProp;
+		
 		private bool limitToHorizontal;
 
 		//Masks
@@ -48,10 +49,10 @@ namespace NewtonVR
 			teleportSurfaceMask = serializedObject.FindProperty("TeleportSurfaceMask");
 			teleportBlockMask = serializedObject.FindProperty("TeleportBlockMask");
 
-			arcRendererTemplateProp = serializedObject.FindProperty("ArcRendererTemplate");
-			playSpaceRendererTemplateProp = serializedObject.FindProperty("PlaySpaceDisplayTemplate");
-			invalidRendererTemplateProp = serializedObject.FindProperty("InvalidPointDisplayTemplate");
-			teleportTargetTemplateProp = serializedObject.FindProperty("TeleportTargetDisplayTemplate");
+			arcRendererTemplateProp = serializedObject.FindProperty("ArcRendererDisplay");
+			playSpaceRendererTemplateProp = serializedObject.FindProperty("PlaySpaceDisplay");
+			invalidRendererTemplateProp = serializedObject.FindProperty("InvalidPointDisplay");
+			teleportTargetTemplateProp = serializedObject.FindProperty("TargetDisplay");
 
 			arcDistanceProp = serializedObject.FindProperty("ArcDistance");
 			sampleFrequencyProp = serializedObject.FindProperty("SampleFrequency");
@@ -77,16 +78,19 @@ namespace NewtonVR
 			HandCheck(Hand.Right);
 
 			GUILayout.Space(6);
-			limitToHorizontal = GUILayout.Toggle(limitToHorizontal, " Limit to Vertical");
+			GUIContent limitToHorizTooltip = new GUIContent(" Limit Surfaces to Horizontal", "This property will limit your teleports to only flat surfaces");
+			limitToHorizontal = GUILayout.Toggle(limitToHorizontal, limitToHorizTooltip);
 			if (limitToHorizontal != limitToHorizontalProp.boolValue)
 			{
 				limitToHorizontalProp.boolValue = limitToHorizontal;
 			}
-			EditorGUILayout.LabelField("This property will limit your teleports to only flat surfaces", EditorStyles.miniLabel);
 
 			if (limitToHorizontal)
 			{
-				EditorGUILayout.PropertyField(limitSensitivityProp);
+				EditorGUI.indentLevel = 2;
+				GUIContent limitSensitivityTooltip = new GUIContent("Tolerance", "Tolerance for horizontal surface limit. 0 limits to only perfectly flat surfaces.");
+				EditorGUILayout.PropertyField(limitSensitivityProp, limitSensitivityTooltip);
+				EditorGUI.indentLevel = 0;
 			}
 
 
@@ -94,33 +98,54 @@ namespace NewtonVR
 
 			//Arc Stuff
 			GUILayout.Label("Arc Editor", EditorStyles.boldLabel);
-			GUILayout.Label("To edit the appearance of the different line renderers,\n the templates are all children of the NVRTeleporter GameObject.\n"
-				+ "Find the LineRenderer Component and update accordingly", EditorStyles.miniLabel);
-			GUILayout.Space(4);
 
-			EditorGUILayout.PropertyField(arcDistanceProp);
-			arcLength = EditorGUILayout.FloatField("Arc Length", arcLength);
+			GUIContent arcDistanceTooltip = new GUIContent("Arc Distance", "How far the teleport arc reaches");
+			EditorGUILayout.PropertyField(arcDistanceProp, arcDistanceTooltip);
+
+			GUIContent arcLengthTooltip = new GUIContent("Arc Length", "The length of the teleport arc line");
+			arcLength = EditorGUILayout.FloatField(arcLengthTooltip, arcLength);
 			arcLength = Mathf.Max(0.01f, arcLength);
-			EditorGUILayout.PropertyField(sampleFrequencyProp);
+
+			GUIContent sampleFrequencyTooltip = new GUIContent("Sample Frequency", "How many points the teleport arc has");
+			EditorGUILayout.PropertyField(sampleFrequencyProp, sampleFrequencyTooltip);
 
 			GUILayout.Space(10);
 
 			//Layer Masks
 			GUILayout.Label("Layer Masks", EditorStyles.boldLabel);
-			EditorGUILayout.PropertyField(teleportSurfaceMask);
-			EditorGUILayout.PropertyField(teleportBlockMask);
+
+			GUIContent surfacaeMaskTooltip = new GUIContent("Teleport Surface Mask", "Layer Mask of Valid Teleport Surfaces");
+			EditorGUILayout.PropertyField(teleportSurfaceMask, surfacaeMaskTooltip);
+
+			GUIContent blockMaskTooltip = new GUIContent("Teleport Block Mask", "Layer Mask of Invalid Teleport Surfaces");
+			EditorGUILayout.PropertyField(teleportBlockMask, blockMaskTooltip);
 
 			GUILayout.Space(10);
 
 			//Line Renderers
 			GUILayout.Label("Overrides", EditorStyles.boldLabel);
+			GUILayout.Label("The default displays are all children of the NVRTeleporter GameObject and can be edited. They can also be replaced and overidden below."
+				+ "The arc must be a line renderer, but the other displays can be any GameObject."
+				, EditorStyles.wordWrappedMiniLabel);
+			GUILayout.Space(4);
+
 			_showRenderers = EditorGUILayout.Foldout(_showRenderers, "Displays");
 			if (_showRenderers)
 			{
-				EditorGUILayout.PropertyField(arcRendererTemplateProp);
-				EditorGUILayout.PropertyField(playSpaceRendererTemplateProp);
-				EditorGUILayout.PropertyField(invalidRendererTemplateProp);
-				EditorGUILayout.PropertyField(teleportTargetTemplateProp);
+				GUIContent arcRendererTooltip = new GUIContent("Arc Renderer Display", "Line Renderer that represents the Teleport Arc");
+				EditorGUILayout.PropertyField(arcRendererTemplateProp, arcRendererTooltip);
+
+				GUIContent playSpaceRendererTooltip = new GUIContent("Play Space Display", 
+					"GameObject that represents the Play Space for a valid teleport. Scales with play space area, default should have a scale of 1,1,1.");
+				EditorGUILayout.PropertyField(playSpaceRendererTemplateProp, playSpaceRendererTooltip);
+
+				GUIContent invalidRendererTooltip = new GUIContent("Invalid Point Display", 
+					"GameObject that represents an invalid teleport. Rotates with invalid surface, default should face forward along z");
+				EditorGUILayout.PropertyField(invalidRendererTemplateProp, invalidRendererTooltip);
+
+				GUIContent teleportTargetTooltip = new GUIContent("Teleport Target Display", 
+					"GameObject that represents player's position within the playspace of a valid teleport. Appears at the end of the teleport arc.");
+				EditorGUILayout.PropertyField(teleportTargetTemplateProp, teleportTargetTooltip);
 			}
 
 			serializedObject.ApplyModifiedProperties();
