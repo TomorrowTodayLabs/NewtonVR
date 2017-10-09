@@ -273,7 +273,7 @@ namespace NewtonVR
             
             SphereCollider OculusCollider = RenderModel.AddComponent<SphereCollider>();
             OculusCollider.isTrigger = true;
-            OculusCollider.radius = 0.15f;
+            OculusCollider.radius = 0.05f;
 
             Colliders = new Collider[] { OculusCollider };
 
