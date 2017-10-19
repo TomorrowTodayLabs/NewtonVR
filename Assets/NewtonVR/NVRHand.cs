@@ -604,8 +604,8 @@ namespace NewtonVR
                     if (hovering.Key == null)
                         continue;
 					
-					if (!hovering.Key.gameObject.activeInHierarchy)
-						continue;
+                    if (!hovering.Key.gameObject.activeInHierarchy)
+                        continue;
 
                     float distance = Vector3.Distance(collider.transform.position, hovering.Key.transform.position);
                     if (distance < closestDistance)
