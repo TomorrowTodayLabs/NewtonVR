@@ -52,7 +52,8 @@ namespace NewtonVR
             ButtonMapping.Add(NVRButtons.Trigger, OVRInput.Button.PrimaryIndexTrigger);
             ButtonMapping.Add(NVRButtons.Grip, OVRInput.Button.PrimaryHandTrigger);
             ButtonMapping.Add(NVRButtons.System, OVRInput.Button.Back);
-
+            ButtonMapping.Add(NVRButtons.ApplicationMenu, OVRInput.Button.Start);
+            
             TouchMapping.Add(NVRButtons.A, OVRInput.Touch.One);
             TouchMapping.Add(NVRButtons.B, OVRInput.Touch.Two);
             TouchMapping.Add(NVRButtons.X, OVRInput.Touch.One);
@@ -272,7 +273,7 @@ namespace NewtonVR
             
             SphereCollider OculusCollider = RenderModel.AddComponent<SphereCollider>();
             OculusCollider.isTrigger = true;
-            OculusCollider.radius = 0.15f;
+            OculusCollider.radius = 0.05f;
 
             Colliders = new Collider[] { OculusCollider };
 
