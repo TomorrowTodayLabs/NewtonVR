@@ -40,13 +40,13 @@ namespace NewtonVR
         [HideInInspector]
         public GameObject CustomPhysicalColliders;
 
-        private VisibilityLevel CurrentVisibility = VisibilityLevel.Visible;
-        private bool VisibilityLocked = false;
+        protected VisibilityLevel CurrentVisibility = VisibilityLevel.Visible;
+        protected bool VisibilityLocked = false;
 
         [HideInInspector]
         public HandState CurrentHandState = HandState.Uninitialized;
 
-        private Dictionary<NVRInteractable, Dictionary<Collider, float>> CurrentlyHoveringOver;
+        protected Dictionary<NVRInteractable, Dictionary<Collider, float>> CurrentlyHoveringOver;
 
         public NVRInteractable CurrentlyInteracting;
 
@@ -55,22 +55,24 @@ namespace NewtonVR
 
         public NVRInteractableEvent OnBeginInteraction = new NVRInteractableEvent();
         public NVRInteractableEvent OnEndInteraction = new NVRInteractableEvent();
+        public NVRInteractableEvent OnBeginUseInteraction = new NVRInteractableEvent ();
+        public NVRInteractableEvent OnEndUseInteraction = new NVRInteractableEvent ();
 
-        private int EstimationSampleIndex;
-        private Vector3[] LastPositions;
-        private Quaternion[] LastRotations;
-        private float[] LastDeltas;
-        private int EstimationSamples = 5;
+        protected int EstimationSampleIndex;
+        protected Vector3[] LastPositions;
+        protected Quaternion[] LastRotations;
+        protected float[] LastDeltas;
+        protected int EstimationSamples = 5;
 
         [HideInInspector]
         public NVRPhysicalController PhysicalController;
 
-        private Collider[] GhostColliders;
-        private Renderer[] GhostRenderers;
+        protected Collider[] GhostColliders;
+        protected Renderer[] GhostRenderers;
 
-        private NVRInputDevice InputDevice;
+        protected NVRInputDevice InputDevice;
 
-        private GameObject RenderModel;
+        protected GameObject RenderModel;
 
         public bool IsHovering
         {
@@ -356,7 +358,7 @@ namespace NewtonVR
             }
         }
 
-        private void UpdateVisibilityAndColliders()
+        protected void UpdateVisibilityAndColliders()
         {
             if (Player.PhysicalHands == true)
             {
@@ -590,7 +592,7 @@ namespace NewtonVR
             }
         }
 
-        private bool PickupClosest()
+        protected bool PickupClosest()
         {
             NVRInteractable closest = null;
             float closestDistance = float.MaxValue;
@@ -601,6 +603,9 @@ namespace NewtonVR
                 {
                     if (hovering.Key == null)
                         continue;
+					
+                    if (!hovering.Key.gameObject.activeInHierarchy)
+                        continue;
 
                     float distance = Vector3.Distance(collider.transform.position, hovering.Key.transform.position);
                     if (distance < closestDistance)
@@ -608,6 +613,36 @@ namespace NewtonVR
                         closestDistance = distance;
                         closest = hovering.Key;
                     }
+                }
+            }
+
+            if (closest != null)
+            {
+                BeginInteraction(closest);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        protected bool PickupByName(string withName)
+        {
+            NVRInteractable closest = null;
+            float closestDistance = float.MaxValue;
+			
+
+            foreach (var hovering in CurrentlyHoveringOver)
+            {
+                if (hovering.Key == null)
+                    continue;
+
+                float distance = Vector3.Distance(this.transform.position, hovering.Key.transform.position);
+                if (distance < closestDistance && hovering.Key.name==withName)
+                {
+                    closestDistance = distance;
+                    closest = hovering.Key;
                 }
             }
 
@@ -772,7 +807,7 @@ namespace NewtonVR
             }
         }
 
-        public void Initialize()
+        public virtual void Initialize()
         {
             Rigidbody = this.GetComponent<Rigidbody>();
             if (Rigidbody == null)

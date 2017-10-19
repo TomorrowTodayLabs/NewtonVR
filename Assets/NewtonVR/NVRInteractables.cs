@@ -15,10 +15,13 @@ namespace NewtonVR
 
         public static void Initialize()
         {
-            ColliderMapping = new Dictionary<Collider, NVRInteractable>();
-            NVRInteractableMapping = new Dictionary<NVRInteractable, Collider[]>();
-            NVRInteractableList = new List<NVRInteractable>();
-
+            if (! Initialized)
+            {
+                ColliderMapping = new Dictionary<Collider, NVRInteractable>();
+                NVRInteractableMapping = new Dictionary<NVRInteractable, Collider[]>();
+				NVRInteractableList = new List<NVRInteractable>();
+            }
+            
             Initialized = true;
         }
 
@@ -26,7 +29,8 @@ namespace NewtonVR
         {
             if (Initialized == false)
             {
-                Debug.LogError("[NewtonVR] Error: NVRInteractables.Register called before initialization.");
+                Debug.LogWarning("[NewtonVR] Warning: NVRInteractables.Register called before initialization.");
+                Initialize();
             }
 
             NVRInteractableMapping[interactable] = colliders;
@@ -46,7 +50,8 @@ namespace NewtonVR
         {
             if (Initialized == false)
             {
-                Debug.LogError("[NewtonVR] Error: NVRInteractables.Register called before initialization.");
+                Debug.LogWarning("[NewtonVR] Warning: NVRInteractables.Deregister called before initialization.");
+                Initialize();
             }
 
             NVRPlayer.DeregisterInteractable(interactable);
@@ -61,7 +66,8 @@ namespace NewtonVR
         {
             if (Initialized == false)
             {
-                Debug.LogError("[NewtonVR] Error: NVRInteractables.Register called before initialization.");
+                Debug.LogWarning("[NewtonVR] Warning: NVRInteractables.GetInteractable called before initialization.");
+                Initialize();
             }
 
             NVRInteractable interactable;
