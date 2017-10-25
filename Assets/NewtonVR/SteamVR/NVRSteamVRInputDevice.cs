@@ -286,76 +286,83 @@ namespace NewtonVR
             Collider[] colliders = null;
 
             string controllerModel = GetDeviceName();
-            switch (controllerModel)
+            if (controllerModel.Contains("Windows"))
             {
-                case "vr_controller_05_wireless_b":
-                    Transform dk1Trackhat = ModelParent.transform.Find("trackhat");
-                    Collider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<BoxCollider>();
-                    if (dk1TrackhatCollider == null)
-                        dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<BoxCollider>();
+                colliders = AddAcerPhysicalColliders(ModelParent, controllerModel);
+            }
+            else
+            {
+                switch (controllerModel)
+                {
+                    case "vr_controller_05_wireless_b":
+                        Transform dk1Trackhat = ModelParent.transform.Find("trackhat");
+                        Collider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<BoxCollider>();
+                        if (dk1TrackhatCollider == null)
+                            dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<BoxCollider>();
 
-                    Transform dk1Body = ModelParent.transform.Find("body");
-                    Collider dk1BodyCollider = dk1Body.gameObject.GetComponent<BoxCollider>();
-                    if (dk1BodyCollider == null)
-                        dk1BodyCollider = dk1Body.gameObject.AddComponent<BoxCollider>();
+                        Transform dk1Body = ModelParent.transform.Find("body");
+                        Collider dk1BodyCollider = dk1Body.gameObject.GetComponent<BoxCollider>();
+                        if (dk1BodyCollider == null)
+                            dk1BodyCollider = dk1Body.gameObject.AddComponent<BoxCollider>();
 
-                    colliders = new Collider[] { dk1TrackhatCollider, dk1BodyCollider };
-                    break;
+                        colliders = new Collider[] { dk1TrackhatCollider, dk1BodyCollider };
+                        break;
 
-                case "vr_controller_vive_1_5":
-                    Transform dk2TrackhatColliders = ModelParent.transform.Find("ViveColliders");
-                    if (dk2TrackhatColliders == null)
-                    {
-                        dk2TrackhatColliders = GameObject.Instantiate(Resources.Load<GameObject>("ViveControllers/ViveColliders")).transform;
-                        dk2TrackhatColliders.parent = ModelParent.transform;
-                        dk2TrackhatColliders.localPosition = Vector3.zero;
-                        dk2TrackhatColliders.localRotation = Quaternion.identity;
-                        dk2TrackhatColliders.localScale = Vector3.one;
-                    }
+                    case "vr_controller_vive_1_5":
+                        Transform dk2TrackhatColliders = ModelParent.transform.Find("ViveColliders");
+                        if (dk2TrackhatColliders == null)
+                        {
+                            dk2TrackhatColliders = GameObject.Instantiate(Resources.Load<GameObject>("ViveControllers/ViveColliders")).transform;
+                            dk2TrackhatColliders.parent = ModelParent.transform;
+                            dk2TrackhatColliders.localPosition = Vector3.zero;
+                            dk2TrackhatColliders.localRotation = Quaternion.identity;
+                            dk2TrackhatColliders.localScale = Vector3.one;
+                        }
 
-                    colliders = dk2TrackhatColliders.GetComponentsInChildren<Collider>();
-                    break;
+                        colliders = dk2TrackhatColliders.GetComponentsInChildren<Collider>();
+                        break;
 
-                case "{knuckles}valve_controller_knu_ev1_3_left":
-                case "{knuckles}valve_controller_knu_ev1_3_right":
-                    string name = "KnucklesPhysicalHand";
-                    if (Hand.IsLeft == true)
-                    {
-                        name += "Left";
-                    }
-                    else
-                    {
-                        name += "Right";
-                    }
+                    case "{knuckles}valve_controller_knu_ev1_3_left":
+                    case "{knuckles}valve_controller_knu_ev1_3_right":
+                        string name = "KnucklesPhysicalHand";
+                        if (Hand.IsLeft == true)
+                        {
+                            name += "Left";
+                        }
+                        else
+                        {
+                            name += "Right";
+                        }
 
-                    Transform knucklesColliders = ModelParent.transform.Find(name);
-                    if (knucklesColliders == null)
-                    {
-                        knucklesColliders = GameObject.Instantiate(Resources.Load<GameObject>("ViveControllers/" + name)).transform;
-                        knucklesColliders.parent = ModelParent.transform;
-                        knucklesColliders.localPosition = Vector3.zero;
-                        knucklesColliders.localRotation = Quaternion.identity;
-                        knucklesColliders.localScale = Vector3.one;
-                    }
+                        Transform knucklesColliders = ModelParent.transform.Find(name);
+                        if (knucklesColliders == null)
+                        {
+                            knucklesColliders = GameObject.Instantiate(Resources.Load<GameObject>("ViveControllers/" + name)).transform;
+                            knucklesColliders.parent = ModelParent.transform;
+                            knucklesColliders.localPosition = Vector3.zero;
+                            knucklesColliders.localRotation = Quaternion.identity;
+                            knucklesColliders.localScale = Vector3.one;
+                        }
 
-                    colliders = knucklesColliders.GetComponentsInChildren<Collider>();
-                    break;
+                        colliders = knucklesColliders.GetComponentsInChildren<Collider>();
+                        break;
 
-                case "external_controllers":
-                case "oculus_cv1_controller_left":
-                case "oculus_cv1_controller_right":
-                    colliders = AddOculusTouchPhysicalColliders(ModelParent, controllerModel);
-                    break;
+                    case "external_controllers":
+                    case "oculus_cv1_controller_left":
+                    case "oculus_cv1_controller_right":
+                        colliders = AddOculusTouchPhysicalColliders(ModelParent, controllerModel);
+                        break;
 
-                default: //kindy hacky but may future proof a bit for released builds
-                    Debug.LogError("[NewtonVR] NVRSteamVRInputDevice Error. Unsupported device type while trying to setup physical colliders: " + controllerModel);
+                    default: //kindy hacky but may future proof a bit for released builds
+                        Debug.LogError("[NewtonVR] NVRSteamVRInputDevice Error. Unsupported device type while trying to setup physical colliders: " + controllerModel);
 
-                    SphereCollider defaultCollider = ModelParent.gameObject.AddComponent<SphereCollider>();
-                    defaultCollider.isTrigger = false;
-                    defaultCollider.radius = 0.15f;
+                        SphereCollider defaultCollider = ModelParent.gameObject.AddComponent<SphereCollider>();
+                        defaultCollider.isTrigger = false;
+                        defaultCollider.radius = 0.15f;
 
-                    colliders = new Collider[] { defaultCollider };
-                    break;
+                        colliders = new Collider[] { defaultCollider };
+                        break;
+                }
             }
 
             return colliders;
@@ -367,96 +374,128 @@ namespace NewtonVR
 
             string controllerModel = GetDeviceName();
             SteamVR_RenderModel renderModel = this.GetComponentInChildren<SteamVR_RenderModel>();
-
-            switch (controllerModel)
+            if (controllerModel.Contains("Windows"))
             {
-                case "vr_controller_05_wireless_b":
-                    Transform dk1Trackhat = renderModel.transform.Find("trackhat");
-                    if (dk1Trackhat == null)
-                    {
-                        // Dk1 controller model has trackhat
-                    }
-                    else
-                    {
-                        dk1Trackhat.gameObject.SetActive(true);
-                    }
+                colliders = AddOculusTouchTriggerCollider(renderModel.gameObject, controllerModel);
+            }
+            else
+            {
+                switch (controllerModel)
+                {
+                    case "vr_controller_05_wireless_b":
+                        Transform dk1Trackhat = renderModel.transform.Find("trackhat");
+                        if (dk1Trackhat == null)
+                        {
+                            // Dk1 controller model has trackhat
+                        }
+                        else
+                        {
+                            dk1Trackhat.gameObject.SetActive(true);
+                        }
 
-                    SphereCollider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<SphereCollider>();
-                    if (dk1TrackhatCollider == null)
-                    {
-                        dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<SphereCollider>();
-                        dk1TrackhatCollider.isTrigger = true;
-                    }
+                        SphereCollider dk1TrackhatCollider = dk1Trackhat.gameObject.GetComponent<SphereCollider>();
+                        if (dk1TrackhatCollider == null)
+                        {
+                            dk1TrackhatCollider = dk1Trackhat.gameObject.AddComponent<SphereCollider>();
+                            dk1TrackhatCollider.isTrigger = true;
+                        }
 
-                    colliders = new Collider[] { dk1TrackhatCollider };
-                    break;
+                        colliders = new Collider[] { dk1TrackhatCollider };
+                        break;
 
-                case "vr_controller_vive_1_5":
-                    Transform dk2Trackhat = renderModel.transform.Find("trackhat");
-                    if (dk2Trackhat == null)
-                    {
-                        dk2Trackhat = new GameObject("trackhat").transform;
-                        dk2Trackhat.gameObject.layer = this.gameObject.layer;
-                        dk2Trackhat.parent = renderModel.transform;
-                        dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
-                        dk2Trackhat.localScale = Vector3.one * 0.1f;
-                        dk2Trackhat.localEulerAngles = new Vector3(325, 0, 0);
-                        dk2Trackhat.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        dk2Trackhat.gameObject.SetActive(true);
-                    }
+                    case "vr_controller_vive_1_5":
+                        Transform dk2Trackhat = renderModel.transform.Find("trackhat");
+                        if (dk2Trackhat == null)
+                        {
+                            dk2Trackhat = new GameObject("trackhat").transform;
+                            dk2Trackhat.gameObject.layer = this.gameObject.layer;
+                            dk2Trackhat.parent = renderModel.transform;
+                            dk2Trackhat.localPosition = new Vector3(0, -0.033f, 0.014f);
+                            dk2Trackhat.localScale = Vector3.one * 0.1f;
+                            dk2Trackhat.localEulerAngles = new Vector3(325, 0, 0);
+                            dk2Trackhat.gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            dk2Trackhat.gameObject.SetActive(true);
+                        }
 
-                    Collider dk2TrackhatCollider = dk2Trackhat.gameObject.GetComponent<SphereCollider>();
-                    if (dk2TrackhatCollider == null)
-                    {
-                        dk2TrackhatCollider = dk2Trackhat.gameObject.AddComponent<SphereCollider>();
-                        dk2TrackhatCollider.isTrigger = true;
-                    }
+                        Collider dk2TrackhatCollider = dk2Trackhat.gameObject.GetComponent<SphereCollider>();
+                        if (dk2TrackhatCollider == null)
+                        {
+                            dk2TrackhatCollider = dk2Trackhat.gameObject.AddComponent<SphereCollider>();
+                            dk2TrackhatCollider.isTrigger = true;
+                        }
 
-                    colliders = new Collider[] { dk2TrackhatCollider };
-                    break;
-                case "{knuckles}valve_controller_knu_ev1_3_left":
-                case "{knuckles}valve_controller_knu_ev1_3_right":
-                    isKnuckles = true;
+                        colliders = new Collider[] { dk2TrackhatCollider };
+                        break;
+                    case "{knuckles}valve_controller_knu_ev1_3_left":
+                    case "{knuckles}valve_controller_knu_ev1_3_right":
+                        isKnuckles = true;
 
-                    Transform knucklesTrackpad = renderModel.transform.Find("trackpad").GetChild(0);
+                        Transform knucklesTrackpad = renderModel.transform.Find("trackpad").GetChild(0);
 
-                    SphereCollider knucklesTrackpadCollider = knucklesTrackpad.gameObject.GetComponent<SphereCollider>();
-                    if (knucklesTrackpadCollider == null)
-                    {
-                        knucklesTrackpadCollider = knucklesTrackpad.gameObject.AddComponent<SphereCollider>();
-                        knucklesTrackpadCollider.isTrigger = true;
-                        knucklesTrackpadCollider.radius = 0.04f;
-                    }
+                        SphereCollider knucklesTrackpadCollider = knucklesTrackpad.gameObject.GetComponent<SphereCollider>();
+                        if (knucklesTrackpadCollider == null)
+                        {
+                            knucklesTrackpadCollider = knucklesTrackpad.gameObject.AddComponent<SphereCollider>();
+                            knucklesTrackpadCollider.isTrigger = true;
+                            knucklesTrackpadCollider.radius = 0.04f;
+                        }
 
-                    colliders = new Collider[] { knucklesTrackpadCollider };
-                    break;
+                        colliders = new Collider[] { knucklesTrackpadCollider };
+                        break;
 
-                case "external_controllers":
-                    colliders = AddOculusTouchTriggerCollider(renderModel.gameObject, controllerModel);
-                    break;
+                    case "external_controllers":
+                        colliders = AddOculusTouchTriggerCollider(renderModel.gameObject, controllerModel);
+                        break;
 
-                case "oculus_cv1_controller_left":
-                    colliders = AddOculusTouchTriggerCollider(renderModel.gameObject, controllerModel);
-                    break;
+                    case "oculus_cv1_controller_left":
+                        colliders = AddOculusTouchTriggerCollider(renderModel.gameObject, controllerModel);
+                        break;
 
-                case "oculus_cv1_controller_right":
-                    colliders = AddOculusTouchTriggerCollider(renderModel.gameObject, controllerModel);
-                    break;
+                    case "oculus_cv1_controller_right":
+                        colliders = AddOculusTouchTriggerCollider(renderModel.gameObject, controllerModel);
+                        break;
 
-                default:
-                    SphereCollider defaultCollider = renderModel.gameObject.AddComponent<SphereCollider>();
-                    defaultCollider.isTrigger = true;
-                    defaultCollider.radius = 0.15f;
+                    default:
+                        SphereCollider defaultCollider = renderModel.gameObject.AddComponent<SphereCollider>();
+                        defaultCollider.isTrigger = true;
+                        defaultCollider.radius = 0.15f;
 
-                    colliders = new Collider[] { defaultCollider }; // kindy hacky but may future proof a bit
-                    Debug.LogError("Error. Unsupported device type: " + controllerModel);
-                    break;
+                        colliders = new Collider[] { defaultCollider }; // kindy hacky but may future proof a bit
+                        Debug.LogError("Error. Unsupported device type: " + controllerModel);
+                        break;
+                }
             }
 
             return colliders;
+        }
+
+        protected Collider[] AddAcerPhysicalColliders(Transform ModelParent, string controllerModel)
+        {
+            string name = "AcerController";
+            if (Hand.IsLeft == true)
+            {
+                name += "Left";
+            }
+            else
+            {
+                name += "Right";
+            }
+            name += "_Colliders";
+
+            Transform acerColliders = ModelParent.Find(name);
+            if (acerColliders == null)
+            {
+                acerColliders = GameObject.Instantiate(Resources.Load<GameObject>("AcerControllers/" + name)).transform;
+                acerColliders.parent = ModelParent;
+                acerColliders.localPosition = Vector3.zero;
+                acerColliders.localRotation = Quaternion.identity;
+                acerColliders.localScale = Vector3.one;
+            }
+
+            return acerColliders.GetComponentsInChildren<Collider>();
         }
 
         protected static Vector3 SteamVROculusControllerPositionAddition = new Vector3(0.001f, -0.0086f, -0.0197f);
