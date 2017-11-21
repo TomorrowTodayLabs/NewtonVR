@@ -170,17 +170,17 @@ namespace NewtonVR
         public virtual void EndInteraction(NVRHand hand)
         {
             AttachedHands.Remove(hand);
-            ClosestHeldPoint = Vector3.zero;
+            if (AttachedHands.Count == 0) {
+				ClosestHeldPoint = Vector3.zero;
 
-            if (EnableKinematicOnDetach == true)
-            {
-                Rigidbody.isKinematic = true;
-            }
+				if (EnableKinematicOnDetach == true) {
+					Rigidbody.isKinematic = true;
+				}
 
-            if (EnableGravityOnDetach == true)
-            {
-                Rigidbody.useGravity = true;
-            }
+				if (EnableGravityOnDetach == true) {
+					Rigidbody.useGravity = true;
+				}
+			}
         }
 
         protected virtual void DroppedBecauseOfDistance(NVRHand hand)
