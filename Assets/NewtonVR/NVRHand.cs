@@ -662,6 +662,9 @@ namespace NewtonVR
             NVRInteractable interactable = NVRInteractables.GetInteractable(collider);
             if (interactable == null || interactable.enabled == false)
                 return;
+	    
+	    if (CurrentlyHoveringOver == null)
+	        CurrentlyHoveringOver = new Dictionary<NVRInteractable, Dictionary<Collider, float>> ();
 
             if (CurrentlyHoveringOver.ContainsKey(interactable) == false)
                 CurrentlyHoveringOver[interactable] = new Dictionary<Collider, float>();
