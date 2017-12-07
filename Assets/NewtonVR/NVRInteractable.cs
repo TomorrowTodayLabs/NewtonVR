@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -126,11 +126,21 @@ namespace NewtonVR
             if (hand.UseButtonUp == true)
             {
                 UseButtonUp();
+                
+                if (hand.OnEndUseInteraction != null)
+                {
+                    hand.OnEndUseInteraction.Invoke(this);
+                }
             }
 
             if (hand.UseButtonDown == true)
             {
                 UseButtonDown();
+                
+                if (hand.OnBeginUseInteraction != null)
+                {
+                    hand.OnBeginUseInteraction.Invoke(this);
+                }
             }
         }
 
@@ -160,17 +170,17 @@ namespace NewtonVR
         public virtual void EndInteraction(NVRHand hand)
         {
             AttachedHands.Remove(hand);
-            ClosestHeldPoint = Vector3.zero;
+            if (AttachedHands.Count == 0) {
+				ClosestHeldPoint = Vector3.zero;
 
-            if (EnableKinematicOnDetach == true)
-            {
-                Rigidbody.isKinematic = true;
-            }
+				if (EnableKinematicOnDetach == true) {
+					Rigidbody.isKinematic = true;
+				}
 
-            if (EnableGravityOnDetach == true)
-            {
-                Rigidbody.useGravity = true;
-            }
+				if (EnableGravityOnDetach == true) {
+					Rigidbody.useGravity = true;
+				}
+			}
         }
 
         protected virtual void DroppedBecauseOfDistance(NVRHand hand)
