@@ -157,7 +157,7 @@ MonoBehaviour:
   LayersThatBlockLaser:
     serializedVersion: 2
     m_Bits: 4294967295
-  CursorSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 3}
+  CursorSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   CursorMaterial: {fileID: 0}
   NormalCursorScale: 0.05
   LaserEnabled: 1
@@ -490,6 +490,8 @@ Camera:
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
+  m_AllowMSAA: 1
+  m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
@@ -524,6 +526,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
 --- !u!33 &33939186360863794
 MeshFilter:
@@ -636,6 +639,7 @@ LineRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
   - {x: 1, y: 1, z: 0}
@@ -669,30 +673,15 @@ LineRenderer:
       m_PostInfinity: 2
       m_RotationOrder: 4
     colorGradient:
-      key0:
-        serializedVersion: 2
-        rgba: 4278190335
-      key1:
-        serializedVersion: 2
-        rgba: 4278190335
-      key2:
-        serializedVersion: 2
-        rgba: 0
-      key3:
-        serializedVersion: 2
-        rgba: 0
-      key4:
-        serializedVersion: 2
-        rgba: 0
-      key5:
-        serializedVersion: 2
-        rgba: 0
-      key6:
-        serializedVersion: 2
-        rgba: 0
-      key7:
-        serializedVersion: 2
-        rgba: 0
+      serializedVersion: 2
+      key0: {r: 1, g: 0, b: 0, a: 1}
+      key1: {r: 1, g: 0, b: 0, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
       ctime1: 65535
       ctime2: 0
@@ -716,7 +705,9 @@ LineRenderer:
     numCapVertices: 2
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 0
+  m_Loop: 0
 --- !u!120 &120000014010457926
 LineRenderer:
   m_ObjectHideFlags: 1
@@ -747,6 +738,7 @@ LineRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions: []
   m_Parameters:
@@ -771,30 +763,15 @@ LineRenderer:
       m_PostInfinity: 2
       m_RotationOrder: 4
     colorGradient:
-      key0:
-        serializedVersion: 2
-        rgba: 4294902015
-      key1:
-        serializedVersion: 2
-        rgba: 16747264
-      key2:
-        serializedVersion: 2
-        rgba: 16777216
-      key3:
-        serializedVersion: 2
-        rgba: 0
-      key4:
-        serializedVersion: 2
-        rgba: 0
-      key5:
-        serializedVersion: 2
-        rgba: 0
-      key6:
-        serializedVersion: 2
-        rgba: 0
-      key7:
-        serializedVersion: 2
-        rgba: 0
+      serializedVersion: 2
+      key0: {r: 1, g: 0, b: 1, a: 1}
+      key1: {r: 0, g: 0.54509807, b: 1, a: 0}
+      key2: {r: 0, g: 0, b: 0, a: 0.003921569}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
       ctime1: 65535
       ctime2: 0
@@ -818,7 +795,9 @@ LineRenderer:
     numCapVertices: 1
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 1
+  m_Loop: 0
 --- !u!120 &120920895084539050
 LineRenderer:
   m_ObjectHideFlags: 1
@@ -849,6 +828,7 @@ LineRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
   - {x: 1, y: 0, z: 1}
@@ -876,30 +856,15 @@ LineRenderer:
       m_PostInfinity: 2
       m_RotationOrder: 4
     colorGradient:
-      key0:
-        serializedVersion: 2
-        rgba: 4294937344
-      key1:
-        serializedVersion: 2
-        rgba: 4294937344
-      key2:
-        serializedVersion: 2
-        rgba: 0
-      key3:
-        serializedVersion: 2
-        rgba: 0
-      key4:
-        serializedVersion: 2
-        rgba: 0
-      key5:
-        serializedVersion: 2
-        rgba: 0
-      key6:
-        serializedVersion: 2
-        rgba: 0
-      key7:
-        serializedVersion: 2
-        rgba: 0
+      serializedVersion: 2
+      key0: {r: 0, g: 0.54509807, b: 1, a: 1}
+      key1: {r: 0, g: 0.54509807, b: 1, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
       ctime1: 65535
       ctime2: 0
@@ -923,7 +888,9 @@ LineRenderer:
     numCapVertices: 0
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 0
+  m_Loop: 0
 --- !u!124 &124000013977819758
 Behaviour:
   m_ObjectHideFlags: 1

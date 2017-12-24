@@ -11,7 +11,7 @@ namespace NewtonVR
 		public GameObject TargetDisplay;
 
 		public bool LimitToHorizontal = false;
-		public float LimitSensitivity = 0f;
+		public float LimitSensitivity = 45f;
 
 		public NVRButtons TeleportButton = NVRButtons.Touchpad;
 
@@ -19,9 +19,17 @@ namespace NewtonVR
 		public LayerMask TeleportBlockMask;
 		private LayerMask fullMask;
 
-		public float ArcDistance = 5;
-		public int SamplePoints = 150;
-		public float SampleFrequency = 0.2f;
+        public float ArcStrength = 5;
+        public float ArcMaxLength = 30;
+        public float SampleFrequency = 0.2f;
+        
+        private int samplePoints
+        {
+            get
+            {
+                return Mathf.CeilToInt(ArcMaxLength / SampleFrequency);
+            }
+        }
 
 		private float curveMod = 0.25f;
 		private float acceleration = -5;
@@ -56,10 +64,10 @@ namespace NewtonVR
 
 		private void OnValidate()
 		{
-			ArcDistance = Mathf.Max(0.01f, ArcDistance);
-			SamplePoints = Mathf.Max(2, SamplePoints);
+            ArcStrength = Mathf.Max(0.01f, ArcStrength);
 			SampleFrequency = Mathf.Max(0.01f, SampleFrequency);
-		}
+            ArcMaxLength = Mathf.Max(SampleFrequency * 2, ArcMaxLength);
+        }
 
 		/// <summary>
 		/// Paint and check parabolic curve for valid teleport position. Returns null if none found. 
@@ -103,10 +111,10 @@ namespace NewtonVR
 			List<Vector3> points;
 			bool hit;
 			RaycastHit hitInfo;
-			bool validTeleport = CheckTeleportCurve(startPosition, origin.TransformDirection(Vector3.forward * ArcDistance), Vector3.up * acceleration, out points, out hit, out hitInfo);
+			bool validTeleport = CheckTeleportCurve(startPosition, origin.TransformDirection(Vector3.forward * ArcStrength), Vector3.up * acceleration, out points, out hit, out hitInfo);
 
 			//Render Line to second to last point (small gap for display)
-			teleportPreviews[controllerIndex].ArcLine.numPositions = points.Count - 1;
+			teleportPreviews[controllerIndex].ArcLine.positionCount = points.Count - 1;
 			for (int i = 0; i < points.Count - 1; i++)
 			{
 				teleportPreviews[controllerIndex].ArcLine.SetPosition(i, points[i]);
@@ -166,7 +174,10 @@ namespace NewtonVR
 		/// <param name="controllerIndex"></param>
 		public void HideArcTeleport(int controllerIndex)
 		{
-			teleportPreviews[controllerIndex].ArcLine.numPositions = 0;
+            if (teleportPreviews.ContainsKey(controllerIndex) == false)
+                return;
+
+			teleportPreviews[controllerIndex].ArcLine.positionCount = 0;
 			teleportPreviews[controllerIndex].ArcLine.enabled = false;
 			teleportPreviews[controllerIndex].PlaySpaceDisplay.SetActive(false);
 			teleportPreviews[controllerIndex].InvalidPointDisplay.SetActive(false);
@@ -192,7 +203,7 @@ namespace NewtonVR
 			Vector3 lastPoint = startingPoint;
 			float t = 0;
 
-			for (int i = 0; i < SamplePoints; i++)
+			for (int pointIndex = 0; pointIndex < samplePoints; pointIndex++)
 			{
 				t += SampleFrequency / CurveDerivitive(initialVelocity, initialAcceleration, t).magnitude;
 				Vector3 nextPoint = Curve(startingPoint, initialVelocity, initialAcceleration, t);
@@ -210,7 +221,7 @@ namespace NewtonVR
 					if (TeleportSurfaceMask == (TeleportSurfaceMask | 1 << hitInfo.collider.gameObject.layer))
 					{
 
-						if (!LimitToHorizontal || Vector3.Angle(hitInfo.normal, Vector3.up) <= LimitSensitivity)
+						if (LimitToHorizontal == false || Vector3.Angle(hitInfo.normal, Vector3.up) <= LimitSensitivity)
 						{
 							validTeleport = true;
 						}

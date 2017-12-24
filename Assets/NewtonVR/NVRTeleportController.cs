@@ -4,7 +4,9 @@ namespace NewtonVR
 {
 	public class NVRTeleportController : MonoBehaviour
 	{
-		NVRTeleporter teleporter;
+        public Transform BeamStart;
+
+		private NVRTeleporter teleporter;
 
 		//NVRHand sometimes gets destroyed. Pull it each time.
 		private NVRHand nvrHand
@@ -24,19 +26,19 @@ namespace NewtonVR
 		private bool held = false;
 
 		private Vector3? validTeleportPosition;
-
-		private void Awake()
-		{
-			teleporter = transform.parent.GetComponentInChildren<NVRTeleporter>();
-			if (teleporter == null)
-			{
-				Debug.LogError("NVRTeleporter is Missing");
-			}
-		}
-
+        
 		private void Start()
-		{ 
-			controllerIndex = System.Convert.ToInt32(nvrHand.IsLeft);
+        {
+            teleporter = NVRPlayer.Instance.GetComponentInChildren<NVRTeleporter>();
+            if (teleporter == null)
+            {
+                Debug.LogError("NVRTeleporter is Missing");
+            }
+
+            if (BeamStart == null)
+                BeamStart = this.transform;
+
+            controllerIndex = System.Convert.ToInt32(nvrHand.IsLeft);
 		}
 
 		private void FixedUpdate()
@@ -46,7 +48,7 @@ namespace NewtonVR
 				if (nvrHand.Inputs[teleporter.TeleportButton].IsPressed)
 				{
 					//Show Arc Teleport Preview
-					validTeleportPosition = teleporter.UpdateArcTeleport(transform, controllerIndex);
+					validTeleportPosition = teleporter.UpdateArcTeleport(BeamStart, controllerIndex);
 					held = true;
 				}
 				else if (held == true)
@@ -62,5 +64,13 @@ namespace NewtonVR
 				}
 			}
 		}
-	}
+
+        private void OnDestroy()
+        {
+            if (teleporter != null)
+            {
+                teleporter.HideArcTeleport(controllerIndex);
+            }
+        }
+    }
 }

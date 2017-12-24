@@ -18,9 +18,10 @@ namespace NewtonVR
 		private SerializedProperty teleportSurfaceMask;
 		private SerializedProperty teleportBlockMask;
 
-		//Arc Properties
-		private SerializedProperty arcDistanceProp;
-		private SerializedProperty sampleFrequencyProp;
+        //Arc Properties
+        private SerializedProperty arcStrengthProp;
+        private SerializedProperty arcLengthProp;
+        private SerializedProperty sampleFrequencyProp;
 
 		//Line Renderers
 		private bool _showRenderers = false;
@@ -54,10 +55,9 @@ namespace NewtonVR
 			invalidRendererTemplateProp = serializedObject.FindProperty("InvalidPointDisplay");
 			teleportTargetTemplateProp = serializedObject.FindProperty("TargetDisplay");
 
-			arcDistanceProp = serializedObject.FindProperty("ArcDistance");
-			sampleFrequencyProp = serializedObject.FindProperty("SampleFrequency");
-
-			arcLength = (float)teleporter.SamplePoints * teleporter.SampleFrequency;
+            arcStrengthProp = serializedObject.FindProperty("ArcStrength");
+            arcLengthProp = serializedObject.FindProperty("ArcMaxLength");
+            sampleFrequencyProp = serializedObject.FindProperty("SampleFrequency");
 
 			NVRPlayer player = teleporter.gameObject.GetComponentInParent<NVRPlayer>();
 			if (player != null)
@@ -88,7 +88,7 @@ namespace NewtonVR
 			if (limitToHorizontal)
 			{
 				EditorGUI.indentLevel = 2;
-				GUIContent limitSensitivityTooltip = new GUIContent("Tolerance", "Tolerance for horizontal surface limit. 0 limits to only perfectly flat surfaces.");
+				GUIContent limitSensitivityTooltip = new GUIContent("Tolerance", "How much of an angle we're allowed to teleport onto in degree difference from up.\nEx. A floor would be 0. A perpendicular wall would be 90.");
 				EditorGUILayout.PropertyField(limitSensitivityProp, limitSensitivityTooltip);
 				EditorGUI.indentLevel = 0;
 			}
@@ -99,14 +99,13 @@ namespace NewtonVR
 			//Arc Stuff
 			GUILayout.Label("Arc Editor", EditorStyles.boldLabel);
 
-			GUIContent arcDistanceTooltip = new GUIContent("Arc Distance", "How far the teleport arc reaches");
-			EditorGUILayout.PropertyField(arcDistanceProp, arcDistanceTooltip);
+			GUIContent arcStrengthTooltip = new GUIContent("Arc Strength", "How much the line extends forward before arching down");
+			EditorGUILayout.PropertyField(arcStrengthProp, arcStrengthTooltip);
 
-			GUIContent arcLengthTooltip = new GUIContent("Arc Length", "The length of the teleport arc line");
-			arcLength = EditorGUILayout.FloatField(arcLengthTooltip, arcLength);
-			arcLength = Mathf.Max(0.01f, arcLength);
+			GUIContent arcLengthTooltip = new GUIContent("Maximum Arc Length", "The maximum length the theleporter arc will go before cutting out");
+            EditorGUILayout.PropertyField(arcLengthProp, arcLengthTooltip);
 
-			GUIContent sampleFrequencyTooltip = new GUIContent("Sample Frequency", "How many points the teleport arc has");
+            GUIContent sampleFrequencyTooltip = new GUIContent("Sample Frequency", "How many points the teleport arc has (smaller is more smooth)");
 			EditorGUILayout.PropertyField(sampleFrequencyProp, sampleFrequencyTooltip);
 
 			GUILayout.Space(10);
@@ -114,10 +113,10 @@ namespace NewtonVR
 			//Layer Masks
 			GUILayout.Label("Layer Masks", EditorStyles.boldLabel);
 
-			GUIContent surfacaeMaskTooltip = new GUIContent("Teleport Surface Mask", "Layer Mask of Valid Teleport Surfaces");
+			GUIContent surfacaeMaskTooltip = new GUIContent("Teleport Surface Mask", "Layers that we can teleport onto");
 			EditorGUILayout.PropertyField(teleportSurfaceMask, surfacaeMaskTooltip);
 
-			GUIContent blockMaskTooltip = new GUIContent("Teleport Block Mask", "Layer Mask of Invalid Teleport Surfaces");
+			GUIContent blockMaskTooltip = new GUIContent("Teleport Block Mask", "Layers that should block teleportation");
 			EditorGUILayout.PropertyField(teleportBlockMask, blockMaskTooltip);
 
 			GUILayout.Space(10);
@@ -148,17 +147,10 @@ namespace NewtonVR
 				EditorGUILayout.PropertyField(teleportTargetTemplateProp, teleportTargetTooltip);
 			}
 
-			serializedObject.ApplyModifiedProperties();
 
-			//Adjust arc length based on density and desired length
-			if ((float)teleporter.SamplePoints * teleporter.SampleFrequency != teleporter.SamplePoints)
-			{
-				//Distance might be off by a litttle, because it moves in increments of sample distance
-				//Adjust user input to nearest point
-				teleporter.SamplePoints = Mathf.RoundToInt(arcLength / teleporter.SampleFrequency);
-				arcLength = (float)teleporter.SamplePoints * teleporter.SampleFrequency;
-			}
-		}
+
+            serializedObject.ApplyModifiedProperties();
+        }
 
 		private void HandCheck(Hand hand)
 		{
