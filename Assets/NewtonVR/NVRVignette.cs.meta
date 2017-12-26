@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: f7c4c7cc9b9979b47b61090724d41c16
+timeCreated: 1514273056
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - vignetteShader: {fileID: 4800000, guid: 8d47c25541776e345a1a8b1303fbf31d, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

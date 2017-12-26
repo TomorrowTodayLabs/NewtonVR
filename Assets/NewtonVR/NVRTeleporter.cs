@@ -1,10 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 namespace NewtonVR
 {
 	public class NVRTeleporter : MonoBehaviour
 	{
+        public bool TunnelTeleport = true;
+        public float TunnelOverTime = 0.2f;
+        public float VignettePower = 17;
+        public float VignetteEaseInTime = 0.125f;
+        public float VignetteEaseOutTime = 0.1f;
+
 		public LineRenderer ArcRendererDisplay;
 		public GameObject PlaySpaceDisplay;
 		public GameObject InvalidPointDisplay;
@@ -79,28 +86,28 @@ namespace NewtonVR
 			//Controller is not currently paired with a line. Assign
 			if (!teleportPreviews.ContainsKey(controllerIndex))
 			{
-				TeleportPreview tp = new TeleportPreview();
+				TeleportPreview preview = new TeleportPreview();
 
 				//Default line is not being used. Assign it.
 				if (teleportPreviews.Count == 0)
 				{
-					tp.ArcLine = ArcRendererDisplay;
-					tp.PlaySpaceDisplay = PlaySpaceDisplay;
-					tp.InvalidPointDisplay = InvalidPointDisplay;
-					tp.TeleportTargetDisplay = TargetDisplay;
+					preview.ArcLine = ArcRendererDisplay;
+					preview.PlaySpaceDisplay = PlaySpaceDisplay;
+					preview.InvalidPointDisplay = InvalidPointDisplay;
+					preview.TeleportTargetDisplay = TargetDisplay;
 				}
 				//Default line is already in use. Create another one.
 				else
 				{
 					GameObject newLine = Instantiate(ArcRendererDisplay.gameObject, transform) as GameObject;
-					tp.ArcLine = newLine.GetComponent<LineRenderer>();
+					preview.ArcLine = newLine.GetComponent<LineRenderer>();
 
-					tp.PlaySpaceDisplay = Instantiate(PlaySpaceDisplay, transform);
-					tp.InvalidPointDisplay = Instantiate(InvalidPointDisplay, transform);
-					tp.TeleportTargetDisplay = Instantiate(TargetDisplay, transform);
+					preview.PlaySpaceDisplay = Instantiate(PlaySpaceDisplay, transform);
+					preview.InvalidPointDisplay = Instantiate(InvalidPointDisplay, transform);
+					preview.TeleportTargetDisplay = Instantiate(TargetDisplay, transform);
 				}
 
-				teleportPreviews.Add(controllerIndex, tp);
+				teleportPreviews.Add(controllerIndex, preview);
 			}
 			teleportPreviews[controllerIndex].ArcLine.enabled = true;
 
@@ -246,27 +253,114 @@ namespace NewtonVR
 		/// <param name="teleportPosition"></param>
 		public void TeleportPlayer(Vector3 teleportPosition)
 		{
-			if (player != null)
-			{
-				Vector3 offset = player.Head.transform.position - player.transform.position;
-				offset.y = 0;
-
-				//Move Player
-				player.transform.position = teleportPosition - offset;
-
-				//Teleport any objects in left hand to new hand position
-				if (player.LeftHand.CurrentlyInteracting != null)
-				{
-					player.LeftHand.CurrentlyInteracting.transform.position = player.LeftHand.transform.position;
-				}
-
-				//Teleport any objects in left hand to new hand position
-				if (player.RightHand.CurrentlyInteracting != null)
-				{
-					player.RightHand.CurrentlyInteracting.transform.position = player.RightHand.transform.position;
-				}
-			}
+            if (TunnelTeleport)
+            {
+                StartCoroutine(DoTunnelTeleport(teleportPosition));
+            }
+            else
+            {
+                MovePosition(teleportPosition);
+            }
 		}
+
+        private void MovePosition(Vector3 newPosition)
+        {
+            if (player != null)
+            {
+                Vector3 offset = player.Head.transform.position - player.transform.position;
+                offset.y = 0;
+
+                //Move Player
+                Vector3 oldPosition = player.transform.position;
+                player.transform.position = newPosition - offset;
+
+                offset = player.transform.position - oldPosition;
+
+                //Teleport any objects in left hand to new hand position
+                if (player.LeftHand.CurrentlyInteracting != null)
+                {
+                    player.LeftHand.CurrentlyInteracting.transform.position += offset;
+                }
+
+                //Teleport any objects in left hand to new hand position
+                if (player.RightHand.CurrentlyInteracting != null)
+                {
+                    player.RightHand.CurrentlyInteracting.transform.position += offset;
+                }
+            }
+        }
+
+        private Vector3 GetPlayerPositionFromCameraPosition(Vector3 newCameraFloor)
+        {
+            if (player != null)
+            {
+                Vector3 offset = player.Head.transform.position - player.transform.position;
+                offset.y = 0;
+                
+                return newCameraFloor - offset;
+            }
+            return Vector3.zero;
+        }
+
+        private void MovePlayer(Vector3 newPlayerPosition)
+        {
+            if (player != null)
+            {
+                Vector3 offset = newPlayerPosition - player.transform.position;
+
+                //Move Player
+                player.transform.position = newPlayerPosition;
+
+                //Teleport any objects in left hand to new hand position
+                if (player.LeftHand.CurrentlyInteracting != null)
+                {
+                    player.LeftHand.CurrentlyInteracting.transform.position += offset;
+                }
+
+                //Teleport any objects in left hand to new hand position
+                if (player.RightHand.CurrentlyInteracting != null)
+                {
+                    player.RightHand.CurrentlyInteracting.transform.position += offset;
+                }
+            }
+        }
+        
+        private IEnumerator DoTunnelTeleport(Vector3 teleportPosition)
+        {
+            float easeInStartTime = Time.time;
+            float easeInEndTime = easeInStartTime + VignetteEaseInTime;
+
+            while (Time.time < easeInEndTime)
+            {
+                yield return null;
+                NVRVignette.instance.SetAmount(Mathf.Lerp(0, VignettePower, (Time.time - easeInStartTime) / VignetteEaseInTime));
+            }
+            NVRVignette.instance.SetAmount(VignettePower);
+
+            float moveTimeStart = Time.time;
+            float moveTimeEnd = moveTimeStart + TunnelOverTime;
+            Vector3 initialPosition = player.transform.position;
+            Vector3 endPosition = GetPlayerPositionFromCameraPosition(teleportPosition);
+            while (Time.time < moveTimeEnd)
+            {
+                Vector3 lerpPosition = Vector3.Lerp(initialPosition, endPosition, (Time.time - moveTimeStart) / TunnelOverTime);
+                MovePlayer(lerpPosition);
+                yield return null;
+            }
+            MovePlayer(endPosition);
+
+            float easeOutStartTime = Time.time;
+            float easeOutEndTime = easeOutStartTime + VignetteEaseOutTime;
+
+            while (Time.time < easeOutEndTime)
+            {
+                yield return null;
+                NVRVignette.instance.SetAmount(Mathf.Lerp(VignettePower, 0, (Time.time - easeOutStartTime) / VignetteEaseOutTime));
+            }
+
+            yield return null;
+            NVRVignette.instance.SetAmount(0);
+        }
 
 		private Vector3 CurveDerivitive(Vector3 velocity, Vector3 acceleration, float time)
 		{

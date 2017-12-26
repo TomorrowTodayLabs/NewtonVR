@@ -290,6 +290,7 @@ GameObject:
   - component: {fileID: 92000013402849364}
   - component: {fileID: 124000013977819758}
   - component: {fileID: 81000014173449286}
+  - component: {fileID: 114487851455738404}
   m_Layer: 0
   m_Name: Head
   m_TagString: MainCamera
@@ -560,21 +561,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e55ac3d8a610cf64cad0de126442c8ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TunnelTeleport: 1
+  TunnelOverTime: 0.2
+  VignettePower: 17
+  VignetteEaseInTime: 0.125
+  VignetteEaseOutTime: 0.1
   ArcRendererDisplay: {fileID: 120000014010457926}
   PlaySpaceDisplay: {fileID: 1000011782565264}
   InvalidPointDisplay: {fileID: 1000013590611312}
   TargetDisplay: {fileID: 1796728774068190}
-  LimitToHorizontal: 0
-  LimitSensitivity: 0
+  LimitToHorizontal: 1
+  LimitSensitivity: 45
   TeleportButton: 16
   TeleportSurfaceMask:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 4294967295
   TeleportBlockMask:
     serializedVersion: 2
     m_Bits: 2048
-  ArcDistance: 5
-  SamplePoints: 150
+  ArcStrength: 5
+  ArcMaxLength: 30
   SampleFrequency: 0.2
 --- !u!114 &114000011294332214
 MonoBehaviour:
@@ -598,6 +604,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b877423336a7a74f862e2c482f243c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BeamStart: {fileID: 0}
 --- !u!114 &114000013881573400
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -609,6 +616,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b877423336a7a74f862e2c482f243c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BeamStart: {fileID: 0}
+--- !u!114 &114487851455738404
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010304442640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7c4c7cc9b9979b47b61090724d41c16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vignetteShader: {fileID: 0}
 --- !u!120 &120000010751469176
 LineRenderer:
   m_ObjectHideFlags: 1
