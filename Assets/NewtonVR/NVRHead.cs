@@ -5,7 +5,7 @@ namespace NewtonVR
 {
     public class NVRHead : MonoBehaviour
     {
-        public void Initialize()
+        public virtual void Initialize()
         {
 
         }

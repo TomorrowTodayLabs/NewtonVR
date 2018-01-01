@@ -83,6 +83,12 @@ namespace NewtonVR
         {
             return Vector3.Project(velocity, path);
         }
+
+        public void SetValue(float newValue)
+        {
+            CurrentValue = newValue;
+            this.transform.position = Vector3.Lerp(StartPoint.position, EndPoint.position, CurrentValue);
+        }
     }
 }
 
