@@ -11,10 +11,18 @@ namespace NewtonVR.Example
 
         public Renderer Result;
 
+        public Color ResultColor = Color.black;
 
         private void Update()
         {
-            Result.material.color = new Color(SliderRed.CurrentValue, SliderGreen.CurrentValue, SliderBlue.CurrentValue);
+            if (SliderRed != null && SliderGreen != null && SliderBlue != null)
+            {
+                ResultColor.r = SliderRed.CurrentValue;
+                ResultColor.g = SliderGreen.CurrentValue;
+                ResultColor.b = SliderBlue.CurrentValue;
+
+                Result.material.color = ResultColor;
+            }
         }
     }
 }

@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 using System.Linq;
 using System;
+using System.Reflection;
+
+#if UNITY_WSA
+#endif
 
 namespace NewtonVR
 {
@@ -23,7 +27,7 @@ namespace NewtonVR
         protected float AttachedRotationMagic = 20f;
         protected float AttachedPositionMagic = 3000f;
 
-        private Type[] KeepTypes = new Type[] {typeof(MeshFilter), typeof(Renderer), typeof(Transform), typeof(Rigidbody)};
+        private Type[] KeepTypes = new Type[] { typeof(MeshFilter), typeof(Renderer), typeof(Transform), typeof(Rigidbody) };
 
         public void Initialize(NVRHand trackingHand, bool initialState)
         {
@@ -41,7 +45,11 @@ namespace NewtonVR
             for (int componentIndex = 0; componentIndex < components.Length; componentIndex++)
             {
                 Type componentType = components[componentIndex].GetType();
+#if UNITY_WSA && !UNITY_EDITOR
+                if (KeepTypes.Any(keepType => keepType == componentType || componentType.GetTypeInfo().IsSubclassOf(keepType)) == false)
+#else
                 if (KeepTypes.Any(keepType => keepType == componentType || componentType.IsSubclassOf(keepType)) == false)
+#endif
                 {
                     DestroyImmediate(components[componentIndex]);
                 }

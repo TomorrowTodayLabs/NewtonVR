@@ -19,3 +19,8 @@
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+
+# MR Generated or sdks
+Holotoolkit/
+.vs/ 
+Assets/HoloToolkit.meta

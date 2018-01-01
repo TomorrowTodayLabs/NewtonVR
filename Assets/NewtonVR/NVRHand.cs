@@ -134,7 +134,6 @@ namespace NewtonVR
             }
         }
 
-
         public virtual void PreInitialize(NVRPlayer player)
         {
             Player = player;
@@ -187,6 +186,28 @@ namespace NewtonVR
             else if (Player.CurrentIntegrationType == NVRSDKIntegrations.SteamVR)
             {
                 InputDevice = this.gameObject.AddComponent<NVRSteamVRInputDevice>();
+
+                if (Player.OverrideSteamVR == true)
+                {
+                    if (IsLeft)
+                    {
+                        CustomModel = Player.OverrideSteamVRLeftHand;
+                        CustomPhysicalColliders = Player.OverrideSteamVRLeftHandPhysicalColliders;
+                    }
+                    else if (IsRight)
+                    {
+                        CustomModel = Player.OverrideSteamVRRightHand;
+                        CustomPhysicalColliders = Player.OverrideSteamVRRightHandPhysicalColliders;
+                    }
+                    else
+                    {
+                        Debug.LogError("[NewtonVR] Error: Unknown hand for SteamVR model override.");
+                    }
+                }
+            }
+            else if (Player.CurrentIntegrationType == NVRSDKIntegrations.WindowsMR)
+            {
+                InputDevice = this.gameObject.AddComponent<NVRWindowsMRInput>();
 
                 if (Player.OverrideSteamVR == true)
                 {
@@ -595,22 +616,21 @@ namespace NewtonVR
             NVRInteractable closest = null;
             float closestDistance = float.MaxValue;
 
-            foreach (var collider in GhostColliders)
-            {
-                foreach (var hovering in CurrentlyHoveringOver)
-                {
-                    if (hovering.Key == null)
-                        continue;
+			foreach(var collider in GhostColliders)
+			{
+	            foreach (var hovering in CurrentlyHoveringOver)
+	            {
+	                if (hovering.Key == null)
+	                    continue;
 
-                    float distance = Vector3.Distance(collider.transform.position, hovering.Key.transform.position);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closest = hovering.Key;
-                    }
-                }
-            }
-
+	                float distance = Vector3.Distance(collider.transform.position, hovering.Key.transform.position);
+	                if (distance < closestDistance)
+	                {
+	                    closestDistance = distance;
+	                    closest = hovering.Key;
+	                }
+	            }
+			}
             if (closest != null)
             {
                 BeginInteraction(closest);
