@@ -9,7 +9,18 @@ namespace NewtonVR
 {
     public abstract class NVRInputDevice : MonoBehaviour
     {
-        protected NVRHand Hand;
+        private NVRHand _hand;
+        protected NVRHand Hand
+        {
+            get
+            {
+                return _hand;
+            }
+            set
+            {
+                _hand = value;
+            }
+        }
 
         public virtual void Initialize(NVRHand hand)
         {

@@ -11,5 +11,6 @@ namespace NewtonVR
         FallbackNonVR,
         SteamVR,
         Oculus,
+        WindowsMR,
     }
 }
