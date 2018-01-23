@@ -45,6 +45,10 @@ namespace NewtonVR
 
         private static string CheckForUpdatesKey = "NewtonVRCheckForUpdates";
 
+        private static string addingDefine;
+
+        private static string AddingDefineKey = "NVR_addingDefine";
+
         [DidReloadScripts]
         private static void DidReloadScripts()
         {
@@ -54,15 +58,17 @@ namespace NewtonVR
 
             hasSteamVR = DoesTypeExist("SteamVR");
 
-            hasWindowsMR = DoesTypeExist("MixedRealityCameraManager");
+            hasWindowsMR = DoesTypeExist("HoloToolkit.Unity.InputModule.BaseInputSource", true);
 
             string scriptingDefine = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
             string[] scriptingDefines = scriptingDefine.Split(';');
             hasOculusSDKDefine = scriptingDefines.Contains(OculusDefine);
             hasSteamVRDefine = scriptingDefines.Contains(SteamVRDefine);
+
             scriptingDefine = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.WSA);
             scriptingDefines = scriptingDefine.Split(';');
             hasWindowsMRDefine = scriptingDefines.Contains(WindowsMRDefine);
+
             waitingForReload = false;
 
             ClearProgressBar();
@@ -72,6 +78,16 @@ namespace NewtonVR
                 Thread thread = new Thread(new ThreadStart(CheckForUpdate));
                 thread.Start();
             }
+
+            
+            if (PlayerPrefs.GetString(AddingDefineKey, string.Empty) == WindowsMRDefine)
+            {
+#if NVR_WindowsMR
+                HoloToolkit.Unity.AutoConfigureMenu.ShowProjectSettingsWindow();
+                Debug.Log("[NewtonVR] Showing auto configuration dialog for Windows MR. If you have a Windows MR headset, select \"Support occluded devices\"");
+#endif
+            }
+            PlayerPrefs.SetString(AddingDefineKey, string.Empty);
         }
 
         private static void CheckForUpdate() //turn this off in NVRPlayer inspector under NotifyOnVersionUpdate.
@@ -97,12 +113,23 @@ namespace NewtonVR
             }
         }
 
-        private static bool DoesTypeExist(string className)
+        private static bool DoesTypeExist(string className, bool fullname = false)
         {
-            var foundType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-                        from type in assembly.GetTypes()
-                        where type.Name == className
-                        select type).FirstOrDefault();
+            Type foundType = null;
+            if (fullname)
+            {
+                foundType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                                 from type in assembly.GetTypes()
+                                 where type.FullName == className
+                                 select type).FirstOrDefault();
+            }
+            else
+            {
+                foundType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                                 from type in assembly.GetTypes()
+                                 where type.Name == className
+                                 select type).FirstOrDefault();
+            }
 
             return foundType != null;
         }
@@ -112,11 +139,17 @@ namespace NewtonVR
             DisplayProgressBar("Removing support for " + define);
             waitingForReload = true;
             startedWaitingForReload = DateTime.Now;
-            BuildTargetGroup group = BuildTargetGroup.Standalone;
 
             if (define == WindowsMRDefine)
-                group = BuildTargetGroup.WSA;
+            {
+                RemoveDefine(define, BuildTargetGroup.WSA);
+            }
 
+            RemoveDefine(define, BuildTargetGroup.Standalone);
+        }
+
+        private void RemoveDefine(string define, BuildTargetGroup group)
+        {
             string scriptingDefine = PlayerSettings.GetScriptingDefineSymbolsForGroup(group);
             string[] scriptingDefines = scriptingDefine.Split(';');
             List<string> listDefines = scriptingDefines.ToList();
@@ -129,12 +162,23 @@ namespace NewtonVR
         private void AddDefine(string define)
         {
             DisplayProgressBar("Setting up support for " + define);
+            PlayerPrefs.SetString(AddingDefineKey, define);
             waitingForReload = true;
             startedWaitingForReload = DateTime.Now;
-            BuildTargetGroup group = BuildTargetGroup.Standalone;
 
             if (define == WindowsMRDefine)
-                group = BuildTargetGroup.WSA;
+                AddDefineToGroup(define, BuildTargetGroup.WSA);
+
+            AddDefineToGroup(define, BuildTargetGroup.Standalone);
+
+            if (PlayerSettings.virtualRealitySupported == false)
+            {
+                PlayerSettings.virtualRealitySupported = true;
+            }
+        }
+
+        private void AddDefineToGroup(string define, BuildTargetGroup group)
+        {
             string scriptingDefine = PlayerSettings.GetScriptingDefineSymbolsForGroup(group);
 
             string[] scriptingDefines = scriptingDefine.Split(';');
@@ -143,11 +187,6 @@ namespace NewtonVR
 
             string newDefines = string.Join(";", listDefines.ToArray());
             PlayerSettings.SetScriptingDefineSymbolsForGroup(group, newDefines);
-
-            if (PlayerSettings.virtualRealitySupported == false)
-            {
-                PlayerSettings.virtualRealitySupported = true;
-            }
         }
 
         private static void DisplayProgressBar(string newMessage = null)
@@ -397,7 +436,7 @@ namespace NewtonVR
 
             if (installWindowsMR == true)
             {
-                Application.OpenURL("https://github.com/Microsoft/MixedRealityToolkit-Unity");
+                Application.OpenURL("https://github.com/Microsoft/MixedRealityToolkit-Unity/tree/master/External/Unitypackages");
             }
 
             DrawDefaultInspector();

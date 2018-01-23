@@ -22,7 +22,7 @@ using Windows.Storage.Streams;
 
 
 
-#if NVR_WindowsMR
+#if NVR_WindowsMR && UNITY_WSA
 namespace NewtonVR
 {
     public class NVRWindowsMRInput : NVRInputDevice
