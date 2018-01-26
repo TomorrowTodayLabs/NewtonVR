@@ -13,12 +13,12 @@ namespace NewtonVR
 
         public static void Register(Collider col, NVRAttachPoint point)
         {
-            Colliders.Add(col, point);
+            if (!Colliders.ContainsKey(col) ) Colliders.Add(col, point);
         }
 
         public static void Deregister(Collider col)
         {
-            Colliders.Remove(col);
+            if (Colliders.ContainsKey(col)) Colliders.Remove(col);
         }
 
         public static NVRAttachPoint GetAttachPoint(Collider col)
