@@ -65,8 +65,8 @@ namespace NewtonVR
         [HideInInspector]
         public NVRPhysicalController PhysicalController;
 
-        private Collider[] GhostColliders;
-        private Renderer[] GhostRenderers;
+        protected Collider[] GhostColliders;
+        protected Renderer[] GhostRenderers;
 
         private NVRInputDevice InputDevice;
 
@@ -369,6 +369,7 @@ namespace NewtonVR
             else if (CurrentInteractionStyle == InterationStyle.ByScript)
             {
                 //this is handled by user customized scripts.
+               
             }
 
             if (IsInteracting == true)
@@ -709,7 +710,7 @@ namespace NewtonVR
                 CurrentlyHoveringOver.Remove(interactable);
         }
 
-        private void SetVisibility(VisibilityLevel visibility)
+        protected void SetVisibility(VisibilityLevel visibility)
         {
             if (CurrentVisibility != visibility)
             {
