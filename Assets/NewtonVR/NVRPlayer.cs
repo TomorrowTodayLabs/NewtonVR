@@ -30,6 +30,7 @@ namespace NewtonVR
 
         public InterationStyle InteractionStyle;
         public bool PhysicalHands = true;
+        public bool DisableHandsGhostMode = true;
         public bool MakeControllerInvisibleOnInteraction = false;
         public bool AutomaticallySetControllerTransparency = true;
         public bool VibrateOnHover = true;
