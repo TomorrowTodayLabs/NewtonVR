@@ -23,8 +23,10 @@ namespace NewtonVR
 
         [HideInInspector]
         public bool IsRight;
+
         [HideInInspector]
         public bool IsLeft;
+
         [HideInInspector]
         public NVRPlayer Player;
 
@@ -37,10 +39,12 @@ namespace NewtonVR
 
         [HideInInspector]
         public GameObject CustomModel;
+
         [HideInInspector]
         public GameObject CustomPhysicalColliders;
 
-        private VisibilityLevel CurrentVisibility = VisibilityLevel.Visible;
+        private VisibilityLevel CurrentVisibility;
+        public VisibilityLevel InitialVisibility;
         private bool VisibilityLocked = false;
 
         [HideInInspector]
@@ -79,6 +83,7 @@ namespace NewtonVR
                 return CurrentlyHoveringOver.Any(kvp => kvp.Value.Count > 0);
             }
         }
+
         public bool IsInteracting
         {
             get
@@ -86,6 +91,7 @@ namespace NewtonVR
                 return CurrentlyInteracting != null;
             }
         }
+
         public bool HasCustomModel
         {
             get
@@ -93,6 +99,7 @@ namespace NewtonVR
                 return CustomModel != null;
             }
         }
+
         public bool IsCurrentlyTracked
         {
             get
@@ -105,6 +112,7 @@ namespace NewtonVR
                 return false;
             }
         }
+
         public Vector3 CurrentForward
         {
             get
@@ -115,10 +123,11 @@ namespace NewtonVR
                 }
                 else
                 {
-                    return this.transform.forward;
+                    return transform.forward;
                 }
             }
         }
+
         public Vector3 CurrentPosition
         {
             get
@@ -129,7 +138,7 @@ namespace NewtonVR
                 }
                 else
                 {
-                    return this.transform.position;
+                    return transform.position;
                 }
             }
         }
@@ -163,7 +172,7 @@ namespace NewtonVR
 
             if (Player.CurrentIntegrationType == NVRSDKIntegrations.Oculus)
             {
-                InputDevice = this.gameObject.AddComponent<NVROculusInputDevice>();
+                InputDevice = gameObject.AddComponent<NVROculusInputDevice>();
 
                 if (Player.OverrideOculus == true)
                 {
@@ -185,7 +194,7 @@ namespace NewtonVR
             }
             else if (Player.CurrentIntegrationType == NVRSDKIntegrations.SteamVR)
             {
-                InputDevice = this.gameObject.AddComponent<NVRSteamVRInputDevice>();
+                InputDevice = gameObject.AddComponent<NVRSteamVRInputDevice>();
 
                 if (Player.OverrideSteamVR == true)
                 {
@@ -207,7 +216,7 @@ namespace NewtonVR
             }
             else if (Player.CurrentIntegrationType == NVRSDKIntegrations.WindowsMR)
             {
-                InputDevice = this.gameObject.AddComponent<NVRWindowsMRInput>();
+                InputDevice = gameObject.AddComponent<NVRWindowsMRInput>();
 
                 if (Player.OverrideSteamVR == true)
                 {
@@ -235,7 +244,6 @@ namespace NewtonVR
 
             if (Player.OverrideAll)
             {
-
                 if (IsLeft)
                 {
                     CustomModel = Player.OverrideAllLeftHand;
@@ -252,7 +260,6 @@ namespace NewtonVR
                     return;
                 }
             }
-
 
             InputDevice.Initialize(this);
             InitializeRenderModel();
@@ -369,7 +376,6 @@ namespace NewtonVR
             else if (CurrentInteractionStyle == InterationStyle.ByScript)
             {
                 //this is handled by user customized scripts.
-               
             }
 
             if (IsInteracting == true)
@@ -430,7 +436,6 @@ namespace NewtonVR
                         {
                             VisibilityLocked = false;
                         }
-
                     }
                     else if (CurrentHandState == HandState.GripToggleOnInteracting)
                     {
@@ -555,8 +560,8 @@ namespace NewtonVR
                 return;
             }
 
-            LastPositions[EstimationSampleIndex] = this.transform.position;
-            LastRotations[EstimationSampleIndex] = this.transform.rotation;
+            LastPositions[EstimationSampleIndex] = transform.position;
+            LastRotations[EstimationSampleIndex] = transform.rotation;
             LastDeltas[EstimationSampleIndex] = Time.deltaTime;
             EstimationSampleIndex++;
 
@@ -617,21 +622,21 @@ namespace NewtonVR
             NVRInteractable closest = null;
             float closestDistance = float.MaxValue;
 
-			foreach(var collider in GhostColliders)
-			{
-	            foreach (var hovering in CurrentlyHoveringOver)
-	            {
-	                if (hovering.Key == null)
-	                    continue;
+            foreach (var collider in GhostColliders)
+            {
+                foreach (var hovering in CurrentlyHoveringOver)
+                {
+                    if (hovering.Key == null)
+                        continue;
 
-	                float distance = Vector3.Distance(collider.transform.position, hovering.Key.transform.position);
-	                if (distance < closestDistance)
-	                {
-	                    closestDistance = distance;
-	                    closest = hovering.Key;
-	                }
-	            }
-			}
+                    float distance = Vector3.Distance(collider.transform.position, hovering.Key.transform.position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closest = hovering.Key;
+                    }
+                }
+            }
             if (closest != null)
             {
                 BeginInteraction(closest);
@@ -712,6 +717,11 @@ namespace NewtonVR
 
         protected void SetVisibility(VisibilityLevel visibility)
         {
+            if (Player.DisableHandsGhostMode && visibility == VisibilityLevel.Ghost)
+            {
+                visibility = VisibilityLevel.Invisible;
+            }
+
             if (CurrentVisibility != visibility)
             {
                 if (visibility == VisibilityLevel.Invisible)
@@ -786,7 +796,7 @@ namespace NewtonVR
             {
                 RenderModel = GameObject.Instantiate(CustomModel);
 
-                RenderModel.transform.parent = this.transform;
+                RenderModel.transform.parent = transform;
                 // there was a bug here. The sympton we have: When we modify the scale of the NVRPlayer on the scene to 6, the result is a tiny hand 6 times smaller than it should.
                 // also, the previous line had no effect on the localScale, so it must be buggy.
                 // This change works fine in my project
@@ -798,9 +808,9 @@ namespace NewtonVR
 
         public void Initialize()
         {
-            Rigidbody = this.GetComponent<Rigidbody>();
+            Rigidbody = GetComponent<Rigidbody>();
             if (Rigidbody == null)
-                Rigidbody = this.gameObject.AddComponent<Rigidbody>();
+                Rigidbody = gameObject.AddComponent<Rigidbody>();
             Rigidbody.isKinematic = true;
             Rigidbody.maxAngularVelocity = float.MaxValue;
             Rigidbody.useGravity = false;
@@ -825,7 +835,7 @@ namespace NewtonVR
                     PhysicalController.Kill();
                 }
 
-                PhysicalController = this.gameObject.AddComponent<NVRPhysicalController>();
+                PhysicalController = gameObject.AddComponent<NVRPhysicalController>();
                 PhysicalController.Initialize(this, false);
 
                 if (Player.AutomaticallySetControllerTransparency == true)
@@ -833,7 +843,7 @@ namespace NewtonVR
                     Color transparentcolor = Color.white;
                     transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
 
-                    GhostRenderers = this.GetComponentsInChildren<Renderer>();
+                    GhostRenderers = GetComponentsInChildren<Renderer>();
                     for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
                     {
                         NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
@@ -854,7 +864,7 @@ namespace NewtonVR
                     Color transparentcolor = Color.white;
                     transparentcolor.a = (float)VisibilityLevel.Ghost / 100f;
 
-                    GhostRenderers = this.GetComponentsInChildren<Renderer>();
+                    GhostRenderers = GetComponentsInChildren<Renderer>();
                     for (int rendererIndex = 0; rendererIndex < GhostRenderers.Length; rendererIndex++)
                     {
                         NVRHelpers.SetTransparent(GhostRenderers[rendererIndex].material, transparentcolor);
@@ -870,6 +880,8 @@ namespace NewtonVR
             }
 
             CurrentHandState = HandState.Idle;
+
+            SetVisibility(InitialVisibility);
         }
 
         public void ForceGhost()
@@ -883,7 +895,7 @@ namespace NewtonVR
     {
         Invisible = 0,
         Ghost = 70,
-        Visible = 100,
+        Visible = 100
     }
 
     public enum HandState
@@ -901,6 +913,6 @@ namespace NewtonVR
     {
         Hold,
         Toggle,
-        ByScript,
+        ByScript
     }
 }
