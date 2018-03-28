@@ -214,7 +214,7 @@ namespace NewtonVR
             gltfScript.UseStream = true;
             gltfScript.GLTFStream = new MemoryStream(fileBytes);
 
-            yield return gltfScript.LoadModel();
+            yield return gltfScript.WaitForModelLoad();
 
             RenderModelInitialized = true;
             loading = false;
