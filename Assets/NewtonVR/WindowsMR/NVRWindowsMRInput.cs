@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,7 @@ using System.Runtime.InteropServices;
 using GLTF;
 using UnityEngine.XR.WSA.Input;
 using HoloToolkit.Unity;
+using UnityGLTF;
 
 #if !UNITY_EDITOR
 using Windows.Foundation;
@@ -207,12 +209,12 @@ namespace NewtonVR
 #endif
 
             RenderModel = new GameObject { name = source.handedness + "-glTFController" };
-            GLTFComponentStreamingAssets gltfScript = RenderModel.AddComponent<GLTFComponentStreamingAssets>();
-            gltfScript.ColorMaterial = GLTFMaterial;
-            gltfScript.NoColorMaterial = GLTFMaterial;
-            gltfScript.GLTFData = fileBytes;
+            GLTFComponent gltfScript = RenderModel.AddComponent<GLTFComponent>();
+            gltfScript.GLTFConstant = gltfScript.GLTFStandard = gltfScript.GLTFStandardSpecular = GLTFMaterial.shader;
+            gltfScript.UseStream = true;
+            gltfScript.GLTFStream = new MemoryStream(fileBytes);
 
-            yield return gltfScript.LoadModel();
+            yield return gltfScript.WaitForModelLoad();
 
             RenderModelInitialized = true;
             loading = false;
