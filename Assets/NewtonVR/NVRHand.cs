@@ -606,6 +606,11 @@ namespace NewtonVR
 					
                     if (!hovering.Key.gameObject.activeInHierarchy)
                         continue;
+							
+                    var itemColliders = hovering.Value;
+
+                    itemColliders.Where (item => !item.Key.gameObject.activeInHierarchy).ToList ().ForEach (item => itemColliders.Remove (item.Key));
+
 
                     float distance = Vector3.Distance(collider.transform.position, hovering.Key.transform.position);
                     if (distance < closestDistance)
