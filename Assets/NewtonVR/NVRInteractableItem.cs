@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Events;
@@ -8,10 +8,10 @@ namespace NewtonVR
 {
     public class NVRInteractableItem : NVRInteractable
     {
-        protected const float MaxVelocityChange = 10f;
-        protected const float MaxAngularVelocityChange = 20f;
-        protected const float VelocityMagic = 6000f;
-        protected const float AngularVelocityMagic = 50f;
+        private const float MaxVelocityChange = 10f;
+        private const float MaxAngularVelocityChange = 20f;
+        private const float VelocityMagic = 6000f;
+        private const float AngularVelocityMagic = 50f;
 
         [Tooltip("If you have a specific point you'd like the object held at, create a transform there and set it to this variable")]
         public Transform InteractionPoint;
@@ -73,7 +73,7 @@ namespace NewtonVR
 
         protected virtual void GetTargetValues(out Vector3 targetHandPosition, out Quaternion targetHandRotation, out Vector3 targetItemPosition, out Quaternion targetItemRotation)
         {
-            if (AttachedHands.Count == 1) //faster path if only one hand, which is the standard scenario
+            if (AttachedHands.Count == 1 && PickupTransforms.Keys.Count > 0) //faster path if only one hand, which is the standard scenario
             {
                 NVRHand hand = AttachedHands[0];
 
@@ -87,6 +87,17 @@ namespace NewtonVR
                 }
                 else
                 {
+
+                    if (PickupTransforms.Keys.Count < 1 || PickupTransforms[hand] == null)
+                    {
+                        targetItemPosition = this.transform.position;
+                        targetItemRotation = this.transform.rotation;
+
+                        targetHandPosition = this.transform.position;
+                        targetHandRotation = this.transform.rotation;
+                        return;
+                    }
+
                     targetItemPosition = this.transform.position;
                     targetItemRotation = this.transform.rotation;
 
@@ -120,6 +131,17 @@ namespace NewtonVR
                     }
                     else
                     {
+
+                        if (PickupTransforms.Keys.Count < 1 || PickupTransforms[hand] == null)
+                        {
+                            targetItemPosition = this.transform.position;
+                            targetItemRotation = this.transform.rotation;
+
+                            targetHandPosition = this.transform.position;
+                            targetHandRotation = this.transform.rotation;
+                            return;
+                        }
+
                         targetItemRotation = this.transform.rotation;
                         cumulativeItemVector += this.transform.position;
 
