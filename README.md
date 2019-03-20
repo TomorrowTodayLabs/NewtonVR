@@ -7,7 +7,6 @@
 **Our feature roadmap is public and can be found on Trello here: [https://trello.com/b/iLvugNpK/newtonvr](https://trello.com/b/iLvugNpK/newtonvr)**
 
 Our system allows players to pick up, drop, throw, and use held objects. Items don't pass through other items (rigidbodies), or the environment (non-rigidbodies). Rather, held items interact with other rigidbodies naturally -- taking mass into account. For example, if you have two boxes of the same mass they can push each other equally, but a balloon, with considerably less mass, can't push a box.
-
 <img class='gfyitem' data-id='DistantPitifulAfricanhornbill' />
 
 Items can be configured to retain their orientation when grabbed, or rotate and position themselves to a predefined orientation. This lets you pick up a box from its corner as well as pick up a gun and have it orient to the grip.
