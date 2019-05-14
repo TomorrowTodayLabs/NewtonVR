@@ -31,6 +31,8 @@ namespace NewtonVR
 
             #if NVR_FMOD
             Provider = this.gameObject.AddComponent<NVRCollisionSoundProviderFMOD>();
+            #elif NVR_WWISE
+            Provider = this.gameObject.AddComponent<NVRCollisionSoundProviderWwise>();
             #else
             Provider = this.gameObject.AddComponent<NVRCollisionSoundProviderUnity>();
             #endif
@@ -48,5 +50,6 @@ namespace NewtonVR
         None,
         Unity,
         FMOD,
+        Wwise,
     }
 }

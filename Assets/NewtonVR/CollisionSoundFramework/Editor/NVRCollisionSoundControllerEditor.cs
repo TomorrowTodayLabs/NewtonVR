@@ -28,6 +28,7 @@ namespace NewtonVR
     public class NVRCollisionSoundControllerEditor : Editor
     {
         private const string FMODDefine = "NVR_FMOD";
+        private const string WwiseDefine = "NVR_WWISE";
 
         private static bool hasReloaded = false;
         private static bool waitingForReload = false;
@@ -36,6 +37,8 @@ namespace NewtonVR
         private static bool hasFMODSDK = false;
         //private static bool hasFMODDefine = false;
 
+        private static bool hasWwiseSDK = false;
+
         private static string progressBarMessage = null;
 
         [DidReloadScripts]
@@ -43,6 +46,8 @@ namespace NewtonVR
         {
             hasReloaded = true;
             hasFMODSDK = DoesTypeExist("FMODPlatform");
+
+            hasWwiseSDK = DoesTypeExist("AkSoundEngine");
 
             //string scriptingDefine = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
             //string[] scriptingDefines = scriptingDefine.Split(';');
@@ -133,9 +138,12 @@ namespace NewtonVR
                 HasWaitedLongEnough();
 
             bool installFMOD = false;
+            bool installWwise = false;
             bool isFMODEnabled = controller.SoundEngine == NVRCollisionSoundProviders.FMOD;
+            bool isWwiseEnabled = controller.SoundEngine == NVRCollisionSoundProviders.Wwise;
             bool isUnityEnabled = controller.SoundEngine == NVRCollisionSoundProviders.Unity;
             bool enableFMOD = controller.SoundEngine == NVRCollisionSoundProviders.FMOD;
+            bool enableWwise = controller.SoundEngine == NVRCollisionSoundProviders.Wwise;
             bool enableUnity = controller.SoundEngine == NVRCollisionSoundProviders.Unity;
 
 
@@ -153,7 +161,22 @@ namespace NewtonVR
                 enableFMOD = EditorGUILayout.Toggle("Use FMOD", enableFMOD);
             }
             EditorGUILayout.EndHorizontal();
-            
+
+            EditorGUILayout.BeginHorizontal();
+            if (hasWwiseSDK == false)
+            {
+                using (new EditorGUI.DisabledScope(hasWwiseSDK == false))
+                {
+                    EditorGUILayout.Toggle("Use Wwise", false);
+                }
+                installWwise = GUILayout.Button("Install Wwise");
+            }
+            else
+            {
+                enableWwise = EditorGUILayout.Toggle("Use Wwise", enableWwise);
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.BeginHorizontal();
             enableUnity = EditorGUILayout.Toggle("Use Unity Sound", enableUnity);
             EditorGUILayout.EndHorizontal();
@@ -174,15 +197,27 @@ namespace NewtonVR
                 controller.SoundEngine = NVRCollisionSoundProviders.FMOD;
             }
 
+            if (enableWwise == false && isWwiseEnabled == true)
+            {
+                RemoveDefine(WwiseDefine);
+                controller.SoundEngine = NVRCollisionSoundProviders.None;
+            }
+            else if (enableWwise == true && isWwiseEnabled == false)
+            {
+                AddDefine(WwiseDefine);
+                controller.SoundEngine = NVRCollisionSoundProviders.Wwise;
+            }
 
             if (enableUnity == false && isUnityEnabled == true)
             {
                 RemoveDefine(FMODDefine);
+                RemoveDefine(WwiseDefine);
                 controller.SoundEngine = NVRCollisionSoundProviders.None;
             }
             else if (enableUnity == true && isUnityEnabled == false)
             {
                 RemoveDefine(FMODDefine);
+                RemoveDefine(WwiseDefine);
                 controller.SoundEngine = NVRCollisionSoundProviders.Unity;
             }
             
@@ -191,7 +226,10 @@ namespace NewtonVR
             {
                 Application.OpenURL("http://www.fmod.org/download/");
             }
-            
+            if (installWwise == true)
+            {
+                Application.OpenURL("https://www.audiokinetic.com/download/");
+            }
 
             DrawDefaultInspector();
 
