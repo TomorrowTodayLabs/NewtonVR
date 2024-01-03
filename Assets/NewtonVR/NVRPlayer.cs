@@ -269,8 +269,19 @@ namespace NewtonVR
 #if NVR_Oculus
                 if (VRDevice.model.IndexOf("oculus", System.StringComparison.CurrentCultureIgnoreCase) != -1)
                 {
-                    currentIntegration = NVRSDKIntegrations.Oculus;
-                    resultLog += "Using Oculus SDK";
+                    // if we see an oculus headset check if the oculus sdk sees one. If not use steamvr.
+                    if (OVRManager.isHmdPresent)
+                    {
+                        currentIntegration = NVRSDKIntegrations.Oculus;
+                        resultLog += "Using Oculus SDK";
+                    }
+#if NVR_SteamVR
+                    else
+                    {
+                        currentIntegration = NVRSDKIntegrations.SteamVR;
+                        resultLog += "Using SteamVR SDK (Steam Link or SteamVR Compatibility Mode)";
+                    }
+#endif
                 }
 #endif
 
